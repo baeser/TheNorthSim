@@ -184,7 +184,7 @@
             <div class="info-box"><div class="text-sm text-indigo-800 font-semibold">Income / Round</div><div id="roundIncome" class="text-xl font-bold text-indigo-900">0</div></div>
             <div class="info-box"><div class="text-sm text-indigo-800 font-semibold">Army Units</div><div id="armyUnits" class="text-xl font-bold text-indigo-900">0</div></div>
             <div class="info-box"><div class="text-sm text-indigo-800 font-semibold">Navy Units</div><div id="navyUnits" class="text-xl font-bold text-indigo-900">0</div></div>
-            <div class="info-box"><div class="text-sm text-indigo-800 font-semibold">Colonies</div><div id="coloniesCount" class="text-xl font-bold text-indigo-900">0</div></div>
+            <div class="info-box"><div class="text-sm text-indigo-800 font-semibold">Happiness</div><div id="happinessTopDisplay" class="text-xl font-bold text-indigo-900">100</div></div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -362,8 +362,49 @@
                                 <!-- War approval content will be injected here -->
                             </div>
                             <h3 class="text-xl font-bold text-gray-800 mb-2">Minister of Domestic Tranquility</h3>
-                            <p class="text-gray-600 mb-4">Your duty is to manage national morale (PNP) and symbols of national pride, like the country's flag.</p>
+                            <p class="text-gray-600 mb-4">Your duty is to manage national morale (PNP) and symbols of national pride.</p>
+                             <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-semibold">Happiness Index:</span>
+                                    <span id="happinessDisplay" class="text-2xl font-bold text-blue-900">100</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-4">
+                                    <div id="happinessBar" class="bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 h-4 rounded-full transition-all duration-500" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <label class="block font-medium text-gray-700 mb-2">
+                                        Healthcare: <span id="healthcarePercent" class="font-bold text-indigo-600">20%</span>
+                                        <span id="healthcareDollars" class="text-sm text-gray-600 ml-2">($0)</span>
+                                    </label>
+                                    <input type="range" id="healthcareSlider" min="0" max="50" value="20" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer" oninput="updateDomesticSpending()">
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <label class="block font-medium text-gray-700 mb-2">
+                                        Education: <span id="educationPercent" class="font-bold text-indigo-600">20%</span>
+                                        <span id="educationDollars" class="text-sm text-gray-600 ml-2">($0)</span>
+                                    </label>
+                                    <input type="range" id="educationSlider" min="0" max="50" value="20" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer" oninput="updateDomesticSpending()">
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <label class="block font-medium text-gray-700 mb-2">
+                                        Infrastructure: <span id="infrastructurePercent" class="font-bold text-indigo-600">20%</span>
+                                        <span id="infrastructureDollars" class="text-sm text-gray-600 ml-2">($0)</span>
+                                    </label>
+                                    <input type="range" id="infrastructureSlider" min="0" max="50" value="20" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer" oninput="updateDomesticSpending()">
+                                </div>
+                            </div>
+                            <div id="domesticWarnings" class="mt-4 space-y-2"></div>
+                            <button onclick="saveDomesticBudget()" class="btn btn-success w-full mt-4">Save Domestic Budget</button>
                             
+                            <div class="border-t pt-4 mt-4">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-3">Active National Events</h4>
+                                <div id="activeEventsList" class="space-y-2 max-h-40 overflow-y-auto">
+                                    <p class="text-gray-500">No active events.</p>
+                                </div>
+                            </div>
+
                             <div class="border-t pt-4 mt-4">
                                 <h4 class="text-lg font-semibold text-gray-800 mb-3">National Flag</h4>
                                 <div class="flex flex-col md:flex-row items-center gap-4">
@@ -722,6 +763,50 @@
             });
         });
 
+        function updateConnectionStatus(connected, message) {
+            const statusEl = document.getElementById('connectionStatus');
+            if (statusEl) {
+                statusEl.textContent = message;
+                statusEl.classList.remove('bg-green-500', 'bg-red-500', 'bg-yellow-500');
+                if (connected) {
+                    statusEl.classList.add('bg-green-500');
+                } else {
+                    statusEl.classList.add('bg-red-500');
+                }
+            }
+        }
+
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            if (errorEl) {
+                errorEl.textContent = message;
+            }
+        }
+
+        function showInfoModal(title, bodyHtml) {
+            document.getElementById('infoModalTitle').textContent = title;
+            document.getElementById('infoModalBody').innerHTML = bodyHtml;
+            document.getElementById('infoModal').classList.remove('hidden');
+        }
+
+        window.closeInfoModal = function() {
+            document.getElementById('infoModal').classList.add('hidden');
+        }
+
+        async function loadExistingRoster() {
+            // Placeholder
+            console.log("loadExistingRoster called");
+        }
+
+        function maybeTriggerRoleAssignment() {
+            // Placeholder
+        }
+
+        async function notifyApprovers(warId, warDeclaration) {
+            // Placeholder
+            console.log('notifyApprovers called for warId:', warId, warDeclaration);
+        }
+        
         async function signInWithGoogle() {
             const provider = new GoogleAuthProvider();
             try {
@@ -818,7 +903,11 @@
                     isTeacher: false, dollars: STARTING_BUDGETS[myCountryName] || 50000,
                     pnp: initialPnp, income: BASE_INCOME, army: 0, navy: 0,
                     colonies: {}, colonialPlans: {}, alliances: {},
-                    militaryBudgetPercentage: 25, militarySpendingThisRound: 0,
+                    militaryBudgetPercentage: 25, 
+                    domesticSpending: { healthcare: 20, education: 20, infrastructure: 20 },
+                    happinessIndex: 100,
+                    activeEvents: [],
+                    militarySpendingThisRound: 0,
                     role: preAssignedRole,
                 };
                 await setDoc(playerRef, initialPlayerData);
@@ -931,9 +1020,10 @@
             });
         }
 
-        async function createLog(message) {
-            if (isTeacher) return;
-            const logColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${userId}/log`);
+        async function createLog(message, forUserId = userId) {
+            if (isTeacher && !forUserId) return; // Teachers don't have personal logs
+            const finalUserId = isTeacher ? forUserId : userId;
+            const logColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${finalUserId}/log`);
             await addDoc(logColRef, { message, timestamp: serverTimestamp() });
         }
         
@@ -989,16 +1079,35 @@
 
         function updateAllPlayersUI() {
             const myData = localPlayersState[userId];
-            const banner = document.getElementById('studentCountryBanner');
-            const mainHeader = document.getElementById('mainHeader');
+            if (myData && !isTeacher) {
+                document.getElementById('countryBudget').textContent = (myData.dollars || 0).toLocaleString();
+                document.getElementById('roundIncome').textContent = (myData.income || 0).toLocaleString();
+                document.getElementById('armyUnits').textContent = myData.army || 0;
+                document.getElementById('navyUnits').textContent = myData.navy || 0;
+                document.getElementById('happinessTopDisplay').textContent = myData.happinessIndex || 100;
 
-            if (myData) {
-                // ... (existing UI update logic)
-                document.getElementById('displayPlayerName').textContent = user.displayName;
-                document.getElementById('displayClassCode').textContent = currentClassCode;
-                // ...
+                // Initialize sliders from database
+                const domesticSpending = myData.domesticSpending || { healthcare: 20, education: 20, infrastructure: 20 };
+                document.getElementById('healthcareSlider').value = domesticSpending.healthcare;
+                document.getElementById('educationSlider').value = domesticSpending.education;
+                document.getElementById('infrastructureSlider').value = domesticSpending.infrastructure;
+
+                // Display active events
+                const activeEvents = myData.activeEvents || [];
+                const eventsListEl = document.getElementById('activeEventsList');
+                if (eventsListEl) {
+                    if (activeEvents.length > 0) {
+                        eventsListEl.innerHTML = activeEvents.map(evt =>
+                            `<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800">${evt}</div>`
+                        ).join('');
+                    } else {
+                        eventsListEl.innerHTML = '<p class="text-gray-500">No active events.</p>';
+                    }
+                }
+                
+                // Update UI based on slider values
+                updateDomesticSpending();
             }
-
             updateWarDeclarationUI();
             updateLeaderboard();
             const colonialPlanningUI = document.getElementById('colonialPlanning');
@@ -1138,13 +1247,273 @@
             }
         }
 
-        // ==== War Declaration System (pendingWars, activeWars, warApprovals, warNotifications) ====
-        // Variables used by this system
-        let pendingWarDeclarations = {};
-        let activeWars = {};
+        // ==== Domestic Policy System ====
+        window.updateDomesticSpending = function() {
+            const myData = localPlayersState[userId];
+            if (!myData) return;
+            const totalBudget = myData.dollars || 0;
+            
+            // Read CURRENT slider values
+            const healthcare = parseInt(document.getElementById('healthcareSlider')?.value || 20);
+            const education = parseInt(document.getElementById('educationSlider')?.value || 20);
+            const infrastructure = parseInt(document.getElementById('infrastructureSlider')?.value || 20);
 
-        // War-enabled tabs: show special UI for Secretary of War after round 4,
-        // and add approval panes for Secretary of State and Minister of Domestic Tranquility.
+            // Update the UI with those values...
+            document.getElementById('healthcarePercent').textContent = `${healthcare}%`;
+            document.getElementById('educationPercent').textContent = `${education}%`;
+            document.getElementById('infrastructurePercent').textContent = `${infrastructure}%`;
+
+            const healthcareDollars = Math.floor(totalBudget * healthcare / 100);
+            const educationDollars = Math.floor(totalBudget * education / 100);
+            const infrastructureDollars = Math.floor(totalBudget * infrastructure / 100);
+
+            document.getElementById('healthcareDollars').textContent = `($${healthcareDollars.toLocaleString()})`;
+            document.getElementById('educationDollars').textContent = `($${educationDollars.toLocaleString()})`;
+            document.getElementById('infrastructureDollars').textContent = `($${infrastructureDollars.toLocaleString()})`;
+
+            const warnings = [];
+            const total = healthcare + education + infrastructure;
+            
+            if (total < 15) warnings.push({ type: 'danger', msg: '💀 CATASTROPHIC: Revolution imminent!' });
+            else if (total < 30) warnings.push({ type: 'danger', msg: '🚨 CRISIS: Total domestic spending critically low!' });
+            else if (total < 45) warnings.push({ type: 'warning', msg: '⚠️ WARNING: Unrest growing' });
+            
+            if (healthcare < 5) warnings.push({ type: 'danger', msg: '🏥 Healthcare system collapsed' });
+            else if (healthcare < 10) warnings.push({ type: 'danger', msg: '🏥 Healthcare crisis imminent' });
+            else if (healthcare < 15) warnings.push({ type: 'warning', msg: '🏥 Healthcare strained' });
+            
+            if (education < 5) warnings.push({ type: 'danger', msg: '📚 Education system destroyed' });
+            else if (education < 10) warnings.push({ type: 'danger', msg: '📚 Education collapsing' });
+            else if (education < 15) warnings.push({ type: 'warning', msg: '📚 Education declining' });
+            
+            if (infrastructure < 5) warnings.push({ type: 'danger', msg: '🛤️ Infrastructure failed' });
+            else if (infrastructure < 10) warnings.push({ type: 'danger', msg: '🛤️ Infrastructure failing' });
+            else if (infrastructure < 15) warnings.push({ type: 'warning', msg: '🛤️ Infrastructure deteriorating' });
+
+            const warningsDiv = document.getElementById('domesticWarnings');
+            if(warningsDiv) {
+                if (warnings.length === 0) {
+                    warningsDiv.innerHTML = '<div class="bg-green-50 border border-green-200 rounded-lg p-3 text-green-800">✓ Domestic spending adequate</div>';
+                } else {
+                    warningsDiv.innerHTML = warnings.map(w => 
+                        `<div class="bg-${w.type === 'danger' ? 'red' : 'yellow'}-50 border border-${w.type === 'danger' ? 'red' : 'yellow'}-300 rounded-lg p-3 text-${w.type === 'danger' ? 'red' : 'yellow'}-800 font-semibold">${w.msg}</div>`
+                    ).join('');
+                }
+            }
+
+            const happiness = myData.happinessIndex || 100;
+            document.getElementById('happinessDisplay').textContent = happiness;
+            document.getElementById('happinessBar').style.width = `${Math.min(100, happiness)}%`;
+        };
+
+        window.saveDomesticBudget = async function() {
+            const healthcare = parseInt(document.getElementById('healthcareSlider').value);
+            const education = parseInt(document.getElementById('educationSlider').value);
+            const infrastructure = parseInt(document.getElementById('infrastructureSlider').value);
+            
+            const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, userId);
+            try {
+                await updateDoc(playerRef, {
+                    "domesticSpending.healthcare": healthcare,
+                    "domesticSpending.education": education,
+                    "domesticSpending.infrastructure": infrastructure
+                });
+                showInfoModal("Success", "<p>Domestic budget allocations saved.</p>");
+                createLog(`Updated domestic budget: Healthcare ${healthcare}%, Education ${education}%, Infrastructure ${infrastructure}%.`);
+            } catch (error) {
+                console.error("Failed to save domestic budget:", error);
+                showInfoModal("Error", `<p>Could not save budget: ${error.message}</p>`);
+            }
+        };
+
+        // ==== Teacher Controls ====
+        window.endRound = async function() {
+            showInfoModal("Processing...", "<p>Ending round and calculating effects. This may take a moment.</p>");
+            
+            const batch = writeBatch(db);
+            const playersColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`);
+            const q = query(playersColRef, where("isTeacher", "!=", true));
+            const playerDocs = await getDocs(q);
+
+            for (const playerDoc of playerDocs.docs) {
+                const pId = playerDoc.id;
+                const player = playerDoc.data();
+                const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, pId);
+                
+                const spending = player.domesticSpending || { healthcare: 20, education: 20, infrastructure: 20 };
+                const total = spending.healthcare + spending.education + spending.infrastructure;
+            
+                let happinessChange = 0;
+                let incomeModifier = 1.0;
+                let unitLosses = { army: 0, navy: 0 };
+                let events = [];
+                
+                if (total >= 75) { happinessChange = 10; incomeModifier = 1.15; events.push("✓ HIGH PROSPERITY: Economy booming! (+15% income)"); } 
+                else if (total >= 60) { happinessChange = 5; incomeModifier = 1.05; events.push("✓ Stable conditions (+5% income)"); } 
+                else if (total >= 45) { happinessChange = 0; events.push("~ Barely adequate (no changes)"); } 
+                else if (total >= 30) { happinessChange = -5; incomeModifier = 0.85; if (Math.random() < 0.2) unitLosses.army = 1; events.push("⚠️ DISCONTENT: Unrest growing (-15% income)"); } 
+                else if (total >= 15) { happinessChange = -10; incomeModifier = 0.65; unitLosses.army = Math.floor(Math.random() * 2) + 1; events.push("🚨 CRISIS: Mass protests (-35% income, lost " + unitLosses.army + " army)"); } 
+                else { happinessChange = -20; incomeModifier = 0.4; unitLosses.army = 2; events.push("💀 CATASTROPHIC: Revolution imminent! (-60% income, lost 2 army)"); }
+                
+                if (spending.healthcare < 5) { events.push("🏥 PLAGUE: Healthcare collapsed"); unitLosses.army += 2; incomeModifier *= 0.7; } 
+                else if (spending.healthcare < 10) { events.push("🏥 Disease outbreak: Lost units"); unitLosses.army += 1; }
+                
+                if (spending.education < 5) { events.push("📚 ILLITERACY: Generation lost"); incomeModifier *= 0.5; } 
+                else if (spending.education < 10) { events.push("📚 Factory accidents (-20% income)"); incomeModifier *= 0.8; }
+                
+                if (spending.infrastructure < 5) { events.push("🛤️ COLLAPSE: Cannot trade"); incomeModifier *= 0.5; } 
+                else if (spending.infrastructure < 10) { events.push("🛤️ Trade routes severed (-25% income)"); incomeModifier *= 0.75; }
+
+                const newHappiness = Math.max(0, Math.min(200, (player.happinessIndex || 100) + happinessChange));
+                const newIncome = Math.max(5, Math.floor((player.income || BASE_INCOME) * incomeModifier));
+                const newArmy = Math.max(0, (player.army || 0) - unitLosses.army);
+                const newDollars = (player.dollars || 0) + newIncome;
+
+                batch.update(playerRef, {
+                    happinessIndex: newHappiness,
+                    income: newIncome,
+                    army: newArmy,
+                    dollars: newDollars,
+                    activeEvents: events
+                });
+
+                for (const event of events) {
+                    const logColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${pId}/log`);
+                    const logDocRef = doc(logColRef);
+                    batch.set(logDocRef, { message: event, timestamp: serverTimestamp() });
+                }
+            }
+
+            const gameDocRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}`);
+            batch.update(gameDocRef, { phase: 'review' });
+            
+            await batch.commit();
+            closeInfoModal();
+        };
+
+
+        // ==== War Declaration System ====
+        async function loadPendingWarDeclarations() {
+            const pendingDiv = document.getElementById('pendingWarDeclarations');
+            const listDiv = document.getElementById('pendingWarList');
+            if (!pendingDiv || !listDiv) return;
+            
+            const warsQuery = query(
+                collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/pendingWars`),
+                where('declaringCountry', '==', myCountryName)
+            );
+            
+            const snapshot = await getDocs(warsQuery);
+            if (snapshot.empty) {
+                pendingDiv.classList.add('hidden');
+                return;
+            }
+            
+            pendingDiv.classList.remove('hidden');
+            listDiv.innerHTML = snapshot.docs.map(doc => {
+                const data = doc.data();
+                const targets = data.targetCountries.map(t => t.country).join(', ');
+                return `<div class="bg-yellow-50 p-3 rounded">
+                    Awaiting approval to declare war on: <strong>${targets}</strong>
+                </div>`;
+            }).join('');
+        }
+
+        async function loadWarApprovals() {
+            const myRole = getMyRole();
+            if (myRole !== 'Secretary of State' && myRole !== 'Minister of Domestic Tranquility') return;
+            
+            const approvalKey = myRole === 'Secretary of State' ? 'secretaryOfState' : 'ministerOfDomestic';
+            
+            const warsQuery = query(
+                collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/pendingWars`)
+            );
+            
+            const snapshot = await getDocs(warsQuery);
+            const needsApproval = snapshot.docs.filter(doc => 
+                doc.data().declaringCountry === myCountryName && doc.data().approvals[approvalKey] === false
+            );
+            
+            const listDiv = document.getElementById('warApprovalList');
+            const noApprovalsDiv = document.getElementById('noWarApprovals');
+            
+            if (!listDiv || !noApprovalsDiv) return;
+
+            if (needsApproval.length === 0) {
+                listDiv.innerHTML = '';
+                noApprovalsDiv.classList.remove('hidden');
+                return;
+            }
+            
+            noApprovalsDiv.classList.add('hidden');
+            listDiv.innerHTML = needsApproval.map(doc => {
+                const data = doc.data();
+                const targets = data.targetCountries.map(t => t.country).join(', ');
+                return `<div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="mb-2"><strong>War against:</strong> ${targets}</p>
+                    ${data.justification ? `<p class="text-sm text-gray-600 mb-3">"${data.justification}"</p>` : ''}
+                    <div class="flex gap-2">
+                        <button onclick="approveWar('${doc.id}', true)" class="btn btn-success flex-1">Approve</button>
+                        <button onclick="approveWar('${doc.id}', false)" class="btn btn-danger flex-1">Reject</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        window.approveWar = async function(warId, approved) {
+            const myRole = getMyRole();
+            const approvalKey = myRole === 'Secretary of State' ? 'approvals.secretaryOfState' : 'approvals.ministerOfDomestic';
+            
+            const warRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/pendingWars`, warId);
+            await updateDoc(warRef, {
+                [approvalKey]: approved
+            });
+            
+            // Check if both have approved
+            const warSnap = await getDoc(warRef);
+            const approvals = warSnap.data().approvals;
+            
+            if (approvals.secretaryOfState === true && approvals.ministerOfDomestic === true) {
+                // Move to active wars and notify enemies
+                await declareWarFinalized(warId, warSnap.data());
+            } else if (approvals.secretaryOfState === false || approvals.ministerOfDomestic === false) {
+                // Rejected - delete
+                await deleteDoc(warRef);
+                showInfoModal("Declaration Rejected", "<p>The war declaration has been rejected by a minister.</p>");
+                await createLog(`A war declaration against ${warSnap.data().targetCountries.map(t=>t.country).join(', ')} was rejected.`);
+            }
+            
+            await loadWarApprovals();
+            await loadPendingWarDeclarations();
+        };
+
+        async function declareWarFinalized(warId, warData) {
+            // Move to activeWars collection
+            const activeWarRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/activeWars`, warId);
+            await setDoc(activeWarRef, {
+                ...warData,
+                status: 'active',
+                declaredAt: serverTimestamp()
+            });
+            
+            // Notify all target countries
+            for (const target of warData.targetCountries) {
+                const notifCol = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${target.playerId}/notifications`);
+                await addDoc(notifCol, {
+                    type: 'war_declared',
+                    from: warData.declaringCountry,
+                    message: `⚔️ ${warData.declaringCountry} has declared WAR on your nation!`,
+                    timestamp: serverTimestamp()
+                });
+            }
+            
+            // Delete pending war
+            await deleteDoc(doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/pendingWars`, warId));
+            
+            showInfoModal("War Declared!", "<p>War has been officially declared. May fortune favor the bold!</p>");
+            await createLog(`Our nation has officially declared war on ${warData.targetCountries.map(t=>t.country).join(', ')}.`);
+        }
+
         function setupStudentTabsWithWar() {
             const tabsContainer = document.getElementById('roleTabs');
             const contentContainer = document.getElementById('roleTabContent');
@@ -1172,7 +1541,11 @@
                     const warApprovalTemplate = document.getElementById('warApprovalTemplate');
                     if (baseTemplate) tabPanel.innerHTML = baseTemplate.innerHTML;
                     if (warApprovalTemplate && (localGameState.round || 1) >= 4) {
-                        tabPanel.innerHTML += warApprovalTemplate.innerHTML;
+                        const approvalSection = tabPanel.querySelector('#ministerWarApprovalSection, #allianceWarApprovalSection');
+                        if (approvalSection) {
+                            approvalSection.innerHTML = warApprovalTemplate.innerHTML;
+                            approvalSection.classList.remove('hidden');
+                        }
                     }
                 } else if (role.contentId) {
                     const tpl = document.getElementById(role.contentId);
@@ -1202,9 +1575,8 @@
                     warInterface.classList.add('hidden');
                 }
             }
-            if (typeof loadPendingWarDeclarations === 'function') {
-                loadPendingWarDeclarations().catch(console.error);
-            }
+            loadPendingWarDeclarations().catch(console.error);
+            loadWarApprovals().catch(console.error);
         }
 
         // Open/close modal
@@ -1301,25 +1673,34 @@
             const justification = (document.getElementById('warJustification')?.value || '').trim();
 
             try {
-                // If the project already defines a helper, use it; otherwise fall back to a sane default write.
-                if (typeof createPendingWarDeclaration === 'function') {
-                    await createPendingWarDeclaration(targets, justification);
-                } else {
-                    const warsCol = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/pendingWars`);
-                    await addDoc(warsCol, {
-                        createdBy: userId,
-                        createdByCountry: myCountryName,
-                        targets,
-                        justification,
-                        createdAt: serverTimestamp(),
-                        approvals: { state: null, minister: null }
-                    });
-                }
+                const warDeclaration = {
+                    declaringCountry: myCountryName,
+                    declaringPlayerId: userId,
+                    targetCountries: targets,
+                    justification: justification || 'No justification provided',
+                    timestamp: serverTimestamp(),
+                    approvals: {
+                        secretaryOfState: false,
+                        ministerOfDomestic: false
+                    },
+                    status: 'pending',
+                    round: localGameState.round || 1
+                };
+
+                const warsCol = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/pendingWars`);
+                const warRef = doc(warsCol);
+                await setDoc(warRef, warDeclaration);
+
+                await notifyApprovers(warRef.id, warDeclaration);
 
                 closeWarDeclarationModal();
                 showInfoModal("Submitted", "<p>Your declaration has been submitted for approval.</p>");
+                await loadPendingWarDeclarations();
             } catch (e) {
                 console.error('submitWarDeclaration failed:', e);
                 showInfoModal("Error", `<p>${e?.message || 'Something went wrong.'}</p>`);
             }
-        }
+        };
+    </script>
+</body>
+</html>
