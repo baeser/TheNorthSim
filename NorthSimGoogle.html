@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The North - Pre-WWI Simulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            background-color: #f3f0e9; /* Parchment-like color */
+            background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill-opacity="0.05"><rect x="50" width="50" height="50" /><rect y="50" width="50" height="50" /></g></svg>');
+        }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Cinzel', serif; }
+        
+        .card { @apply bg-white/80 backdrop-blur-sm rounded-xl shadow-lg transition-all duration-300 border border-black/10 hover:shadow-2xl; }
+        
+        .btn { @apply px-6 py-2 rounded-lg font-bold text-white shadow-md transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 hover:-translate-y-0.5; }
+        .btn-primary { @apply bg-gradient-to-br from-indigo-600 to-indigo-800 hover:from-indigo-700 hover:to-indigo-900; }
+        .btn-secondary { @apply bg-gradient-to-br from-gray-600 to-gray-800 text-white hover:from-gray-700 hover:to-gray-900; }
+        .btn-danger { @apply bg-gradient-to-br from-red-600 to-red-800 hover:from-red-700 hover:to-red-900; }
+        .btn-success { @apply bg-gradient-to-br from-green-600 to-green-800 hover:from-green-700 hover:to-green-900; }
+        .btn-warning { @apply bg-gradient-to-br from-yellow-500 to-yellow-700 text-black hover:from-yellow-600 hover:to-yellow-800; }
+
+        .info-box { @apply bg-white/70 p-4 rounded-lg text-center shadow-md border border-black/10; }
+        .modal-backdrop { @apply fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50; }
+        
+        .tab-btn { @apply cursor-pointer py-4 px-6 border-b-4 font-semibold text-gray-500 border-transparent hover:text-gray-900 hover:border-gray-300 whitespace-nowrap transition-colors duration-200; }
+        .tab-btn.active { @apply border-indigo-700 text-indigo-800; }
+        .tab-panel { @apply hidden; }
+        .tab-panel.active { @apply block; }
+
+        #studentCountryBanner h1 {
+            font-family: 'Cinzel Decorative', cursive;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div id="connectionStatus" class="fixed top-4 right-4 text-white text-sm font-bold py-1 px-3 rounded-full z-50 bg-yellow-500">Connecting...</div>
+
+    <div id="loginScreen" class="fixed inset-0 bg-cover bg-center z-40 flex items-center justify-center p-4" style="background-image: url('https://placehold.co/1920x1080/2c3e50/ecf0f1?text=The+North');">
+        <div class="bg-white bg-opacity-90 p-8 rounded-2xl shadow-2xl w-full max-w-md text-center backdrop-blur-sm">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Welcome to The North</h2>
+            <p class="text-gray-600 mb-6">A game of national pride and international power.</p>
+            <button id="signInBtn" class="btn btn-primary w-full text-lg py-3 flex items-center justify-center gap-3">
+                <svg class="w-6 h-6" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.012 36.49 44 30.861 44 24c0-1.341-.138-2.65-.389-3.917z"></path></svg>
+                Sign In with Google
+            </button>
+            <p id="loginError" class="text-red-500 mt-4 font-semibold"></p>
+        </div>
+    </div>
+
+    <div id="rosterScreen" class="hidden fixed inset-0 bg-gray-200 z-30 flex items-center justify-center p-4">
+        <div class="card p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Manage Student Roster</h2>
+                <div class="text-sm text-gray-600">Class Code: <span id="rosterClassCode" class="font-semibold"></span></div>
+            </div>
+            
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                <h3 class="text-lg font-semibold mb-3">Add Students</h3>
+                
+                <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h4 class="font-medium text-blue-800 mb-2">CSV Upload (Recommended for large classes)</h4>
+                    <p class="text-sm text-blue-700 mb-3">Upload a CSV file with columns: Email, Country, Section (optional)</p>
+                    <div class="flex items-center gap-4 mb-2">
+                        <input type="file" id="csvFile" accept=".csv" class="px-3 py-2 border border-blue-300 rounded-lg">
+                        <button onclick="uploadCSV()" class="btn btn-primary">Upload CSV</button>
+                        <button onclick="downloadTemplate()" class="btn btn-secondary text-sm">Download Template</button>
+                    </div>
+                    <p class="text-xs text-blue-600">CSV format: student1@email.com,Tobermory,2A or student1@email.com,Tobermory</p>
+                    <p class="text-xs text-blue-600">Multiple students can be assigned to the same country (teams)</p>
+                </div>
+
+                <div class="p-4 bg-gray-100 border border-gray-200 rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-2">Manual Entry (Single Student)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <input type="email" id="studentEmail" placeholder="Student email address" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <select id="studentCountry" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">-- Select Country --</option>
+                            <option value="Tobermory">Tobermory ($100,000)</option>
+                            <option value="Metz">Metz ($100,000)</option>
+                            <option value="Omsk">Omsk ($75,000)</option>
+                            <option value="Grenoble">Grenoble ($60,000)</option>
+                            <option value="Klagenfurt">Klagenfurt ($50,000)</option>
+                            <option value="Tivoli">Tivoli ($40,000)</option>
+                            <option value="Razgrad">Razgrad ($25,000)</option>
+                        </select>
+                        <select id="studentPeriod" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">-- Select Period --</option>
+                            <option value="1">Period 1</option>
+                            <option value="2">Period 2</option>
+                            <option value="3">Period 3</option>
+                            <option value="4">Period 4</option>
+                            <option value="5">Period 5</option>
+                            <option value="6">Period 6</option>
+                            <option value="7">Period 7</option>
+                            <option value="8">Period 8</option>
+                            <option value="9">Period 9</option>
+                            <option value="10">Period 10</option>
+                            <option value="11">Period 11</option>
+                            <option value="12">Period 12</option>
+                        </select>
+                        <button onclick="addStudentToRoster()" class="btn btn-primary">Add Student</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-lg font-semibold">Current Roster</h3>
+                    <button id="removeSelectedBtn" type="button" onclick="removeSelectedStudents()" class="btn btn-danger">Remove Selected</button>
+                </div>
+                <form id="rosterForm">
+                    <div id="rosterList" class="space-y-2 min-h-[200px] max-h-[300px] overflow-y-auto border border-gray-200 rounded-lg p-4 bg-white">
+                        <p class="text-gray-500 text-center">No students added yet</p>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3">Class Period Breakdown</h3>
+                <div id="periodBreakdown" class="space-y-4">
+                    </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Select Class Period to Start:</label>
+                        <select id="classPeriodSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">-- Select Period --</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="startSimulationDirectly()" class="btn btn-success flex-grow">Start Simulation</button>
+                        <button onclick="clearAllRoster()" class="btn btn-danger">Clear All</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="classCodeScreen" class="hidden fixed inset-0 bg-gray-200 z-30 flex items-center justify-center p-4">
+        <div class="card p-8 w-full max-w-sm text-center">
+             <h2 class="text-2xl font-bold text-gray-800 mb-4">Enter Class Code</h2>
+             <input type="text" id="classCodeInput" placeholder="e.g., HISTORY101" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase">
+             <button id="joinClassBtn" class="btn btn-primary w-full mt-4">Join / Create Simulation</button>
+             <p id="classCodeError" class="text-red-500 mt-4 font-semibold"></p>
+        </div>
+    </div>
+
+    <div id="gameContainer" class="hidden p-4 lg:p-6 max-w-7xl mx-auto">
+        <div id="studentCountryBanner" class="hidden w-full h-48 lg:h-64 mb-6 rounded-xl shadow-2xl bg-cover bg-center flex items-center justify-center text-white relative overflow-hidden">
+            <div class="absolute inset-0 bg-black/40"></div>
+            <div id="bannerContent" class="z-10 flex items-center gap-4 lg:gap-8">
+                <div id="bannerEmblem" class="w-16 h-16 lg:w-24 lg:h-24">
+                </div>
+                <h1 id="bannerCountryName" class="text-5xl md:text-7xl font-bold">Country Name</h1>
+            </div>
+        </div>
+        
+        <header id="mainHeader" class="card p-4 mb-6">
+            <div class="flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-indigo-900">The North</h1>
+                    <p class="text-gray-500">Class: <span id="displayClassCode" class="font-semibold"></span> | Player: <span id="displayPlayerName" class="font-semibold text-indigo-700"></span></p>
+                </div>
+                <div id="phaseIndicator" class="text-center bg-gray-500 text-white rounded-full px-6 py-2">
+                    <div class="font-bold text-lg">Round <span id="currentRound">1</span></div>
+                    <div class="text-sm" id="phaseText">Waiting for Teacher...</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+            <div class="info-box"><div class="text-sm text-indigo-800 font-semibold">Budget ($)</div><div id="countryBudget" class="text-xl font-bold text-indigo-900">0</div></div>
+            <div class="info-box"><div class="text-sm text-indigo-800 font-semibold">Income / Round</div><div id="roundIncome" class="text-xl font-bold text-indigo-900">0</div></div>
+            <div class="info-box"><div class="text-sm text-indigo-800 font-semibold">Army Units</div><div id="armyUnits" class="text-xl font-bold text-indigo-900">0</div></div>
+            <div class="info-box"><div class="text-sm text-indigo-800 font-semibold">Navy Units</div><div id="navyUnits" class="text-xl font-bold text-indigo-900">0</div></div>
+            <div class="info-box"><div class="text-sm text-indigo-800 font-semibold">Colonies</div><div id="coloniesCount" class="text-xl font-bold text-indigo-900">0</div></div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div id="studentColumn" class="lg:col-span-2 space-y-6">
+                <div id="studentRoleInterface" class="card hidden">
+                    <div class="border-b border-gray-200">
+                        <nav id="roleTabs" class="flex flex-wrap -mb-px px-6 overflow-x-auto" aria-label="Tabs">
+                        </nav>
+                    </div>
+                    <div id="roleTabContent" class="p-6">
+                    </div>
+                </div>
+
+                <div id="actionCardTemplates" class="hidden">
+                    <div id="treasuryCardTemplate">
+                        <div class="card p-6 mb-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">National Treasury</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                                <div class="info-box bg-blue-100 p-4">
+                                    <div class="text-sm text-blue-800 font-semibold">Total Country Budget</div>
+                                    <div id="treasuryTotalBudget" class="text-2xl font-bold text-blue-900">$0</div>
+                                </div>
+                                <div class="info-box bg-red-100 p-4">
+                                    <div class="text-sm text-red-800 font-semibold">Allocated Military Budget</div>
+                                    <div id="treasuryMilitaryBudget" class="text-2xl font-bold text-red-900">$0</div>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <label for="militaryBudgetSlider" class="block font-medium text-gray-700">Military Budget Allocation: <span id="militaryBudgetPercentageDisplay" class="font-bold text-indigo-600">25%</span></label>
+                                <input type="range" id="militaryBudgetSlider" min="0" max="100" value="25" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="setMilitaryBudget(this.value)">
+                            </div>
+                        </div>
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Colonial Investment Planning</h3>
+                            <p class="text-sm text-gray-600 mb-4">Pay now to attempt colonization. Results are revealed by the teacher at the end of the round.</p>
+                            <div id="colonialPlanning" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                </div>
+                        </div>
+                    </div>
+                    <div id="militaryCardTemplate">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Department of War</h3>
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-center">
+                                <div class="bg-red-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-red-800">Total Military Budget</h4>
+                                    <p id="warTotalBudget" class="text-2xl font-bold text-red-900">$0</p>
+                                </div>
+                                <div class="bg-green-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-green-800">Remaining Funds</h4>
+                                    <p id="warRemainingBudget" class="text-2xl font-bold text-green-900">$0</p>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-gray-50 p-4 rounded-lg">
+                                    <div>
+                                        <div class="font-bold text-lg">Army Regiment</div>
+                                        <div class="text-sm text-gray-600">Cost: 750 $ per unit</div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" id="armyQuantity" min="1" value="1" class="w-20 text-center border-gray-300 rounded-md">
+                                        <button onclick="purchaseUnits('army')" class="btn btn-danger flex-grow">Purchase</button>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-gray-50 p-4 rounded-lg">
+                                    <div>
+                                        <div class="font-bold text-lg">Naval Fleet</div>
+                                        <div class="text-sm text-gray-600">Cost: 1000 $ per unit</div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" id="navyQuantity" min="1" value="1" class="w-20 text-center border-gray-300 rounded-md">
+                                        <button onclick="purchaseUnits('navy')" class="btn btn-danger flex-grow">Purchase</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="warDeclarationSection" class="hidden mt-6 border-t-2 border-red-700 pt-4">
+                                <h4 class="text-lg font-bold text-red-800 mb-2">Hostilities</h4>
+                                <button id="declareWarBtn" onclick="showDeclareWarModal()" class="btn btn-danger w-full text-lg py-3">Declare War</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end of #militaryCardTemplate -->
+
+                    <div id="warDeclarationTemplate">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Department of War - Military Operations</h3>
+                            
+                            <!-- Regular purchase interface (existing) -->
+                            <div id="warPurchaseInterface">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-center">
+                                    <div class="bg-red-50 p-4 rounded-lg">
+                                        <h4 class="font-semibold text-red-800">Total Military Budget</h4>
+                                        <p id="warTotalBudget2" class="text-2xl font-bold text-red-900">$0</p>
+                                    </div>
+                                    <div class="bg-green-50 p-4 rounded-lg">
+                                        <h4 class="font-semibold text-green-800">Remaining Funds</h4>
+                                        <p id="warRemainingBudget2" class="text-2xl font-bold text-green-900">$0</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-gray-50 p-4 rounded-lg">
+                                        <div>
+                                            <div class="font-bold text-lg">Army Regiment</div>
+                                            <div class="text-sm text-gray-600">Cost: 750 $ per unit</div>
+                                        </div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" id="armyQuantity" min="1" value="1" class="w-20 text-center border-gray-300 rounded-md">
+                                        <button onclick="purchaseUnits('army')" class="btn btn-danger flex-grow">Purchase</button>
+                                    </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-gray-50 p-4 rounded-lg">
+                                        <div>
+                                            <div class="font-bold text-lg">Naval Fleet</div>
+                                            <div class="text-sm text-gray-600">Cost: 1000 $ per unit</div>
+                                        </div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" id="navyQuantity" min="1" value="1" class="w-20 text-center border-gray-300 rounded-md">
+                                        <button onclick="purchaseUnits('navy')" class="btn btn-danger flex-grow">Purchase</button>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- War Declaration Interface (only shows after round 4) -->
+                            <div id="warDeclarationInterface" class="hidden mt-6 pt-6 border-t-2 border-red-300">
+                                <div class="bg-red-900 text-white p-4 rounded-lg mb-4">
+                                    <h4 class="text-lg font-bold mb-2">⚔️ MILITARY AGGRESSION AUTHORIZED ⚔️</h4>
+                                    <p class="text-sm">You may now declare war on rival alliances. Approval required from Secretary of State and Minister of Domestic Tranquility.</p>
+                                </div>
+                                <button onclick="showWarDeclarationModal()" class="btn btn-danger w-full text-lg py-4 bg-gradient-to-br from-red-700 to-red-900 hover:from-red-800 hover:to-black">
+                                    DECLARE WAR
+                                </button>
+                                
+                                <!-- Show pending war declarations -->
+                                <div id="pendingWarDeclarations" class="mt-4 hidden">
+                                    <h5 class="font-semibold text-gray-700 mb-2">Pending War Declarations (Awaiting Approval):</h5>
+                                    <div id="pendingWarList" class="space-y-2">
+                                        <!-- Populated dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add approval interfaces for Secretary of State and Minister -->
+                    <div id="warApprovalTemplate">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">War Declaration Approval</h3>
+                            <div id="warApprovalContent">
+                                <p class="text-gray-600 mb-4">You must approve any declarations of war before they are sent to enemy nations.</p>
+                                <div id="warApprovalList" class="space-y-3">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                            <div id="noWarApprovals" class="text-gray-500 text-center py-8">
+                                <p>No war declarations pending your approval.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="allianceCardTemplate">
+                        <div class="card p-6">
+                            <div id="allianceWarApprovalSection" class="hidden mb-6 border-2 border-red-300 pt-4 bg-red-50 p-4 rounded-lg">
+                                <!-- War approval content will be injected here -->
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Alliances</h3>
+                            <p class="text-sm text-gray-600 mb-4">Form alliances for mutual benefit. Beware of historical rivalries!</p>
+                            <button class="btn btn-primary w-full" onclick="showAllianceModal()">Manage Alliances</button>
+                            <div id="myAlliances" class="mt-4">
+                                </div>
+                        </div>
+                    </div>
+                    <div id="ministerCardTemplate">
+                         <div class="card p-6 bg-gray-50">
+                            <div id="ministerWarApprovalSection" class="hidden mb-6 border-2 border-red-300 pt-4 bg-red-50 p-4 rounded-lg">
+                                <!-- War approval content will be injected here -->
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Minister of Domestic Tranquility</h3>
+                            <p class="text-gray-600 mb-4">Your duty is to manage national morale (PNP) and symbols of national pride, like the country's flag.</p>
+                            
+                            <div class="border-t pt-4 mt-4">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-3">National Flag</h4>
+                                <div class="flex flex-col md:flex-row items-center gap-4">
+                                    <div class="w-48 h-28 bg-gray-200 rounded-md flex items-center justify-center border-2 border-dashed">
+                                        <img id="flagPreview" src="https://placehold.co/192x112/e2e8f0/94a3b8?text=No+Flag" alt="Flag preview" class="w-full h-full object-cover rounded-md">
+                                    </div>
+                                    <div class="flex-grow">
+                                        <label for="flagUploader" class="block text-sm font-medium text-gray-700 mb-2">Select a new flag image (max 1MB):</label>
+                                        <input type="file" id="flagUploader" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"/>
+                                        <button id="uploadFlagBtn" onclick="uploadFlag()" class="btn btn-primary mt-3">Upload Flag</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div id="teacherPanel" class="card p-6 hidden">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Teacher Controls</h3>
+                    <div class="space-y-3">
+                         <div class="text-center p-3 rounded-lg bg-indigo-50 border border-indigo-200">
+                            <label for="timerMinutes" class="font-semibold text-indigo-800">Round Timer</label>
+                            <div class="flex justify-center items-center gap-2 mt-1">
+                                <input type="number" id="timerMinutes" value="15" min="1" class="w-20 text-center border-gray-300 rounded-md">
+                                <span class="text-gray-600">minutes</span>
+                            </div>
+                        </div>
+                        <button id="startRoundBtn" onclick="startRound()" class="btn btn-success w-full">1. Start Round</button>
+                        <button id="endRoundBtn" onclick="endRound()" class="btn btn-warning w-full">2. End Round & Lock Actions</button>
+                        <button id="colonialChanceBtn" onclick="resolveColonialChance()" class="btn btn-primary w-full">3. Resolve Colonial Chance</button>
+                        <button id="checkAlliancesBtn" onclick="checkAlliances()" class="btn btn-primary w-full">4. Check Alliances</button>
+                        <button id="nextRoundBtn" onclick="nextRound()" class="btn btn-success w-full bg-purple-600 hover:bg-purple-700">5. Advance to Next Round</button>
+                        <button id="enterDemoBtn" onclick="showStudentDemoModal()" class="btn btn-primary w-full bg-indigo-600 hover:bg-indigo-700">Enter Student Demo</button>
+                        <button id="exitDemoBtn" onclick="exitStudentDemo()" class="btn btn-secondary w-full" disabled>Exit Demo Mode</button>
+                        <hr class="my-3">
+                        <button onclick="showPnpPanel()" class="btn btn-secondary w-full">Award/Deduct PNP</button>
+                        <button onclick="exportResults()" class="btn btn-secondary w-full bg-teal-600 hover:bg-teal-700">Export Results (PDF)</button>
+                        <button onclick="resetGame()" class="btn btn-danger w-full mt-4">Reset Full Game</button>
+                    </div>
+                </div>
+                 <div class="card p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Country Log</h3>
+                    <div id="eventLog" class="space-y-2 max-h-60 overflow-y-auto pr-2 text-sm">
+                       <p class="text-gray-500">No events yet.</p>
+                    </div>
+                </div>
+
+                <div class="card p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Power Rankings</h3>
+                    <div id="leaderboardList" class="space-y-2 max-h-96 overflow-y-auto pr-2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="warDeclarationModal" class="modal-backdrop hidden">
+        <div class="card p-6 w-full max-w-2xl m-4 max-h-[80vh] overflow-y-auto">
+            <h3 class="text-2xl font-bold text-red-800 mb-4">⚔️ Declaration of War</h3>
+            
+            <div class="bg-yellow-100 border-2 border-yellow-400 rounded-lg p-4 mb-4">
+                <p class="text-sm font-semibold text-yellow-800">⚠️ WARNING: This action will declare war on all selected nations!</p>
+                <p class="text-xs text-yellow-700 mt-1">Requires unanimous approval from Secretary of State and Minister of Domestic Tranquility</p>
+            </div>
+            
+            <div class="mb-4">
+                <h4 class="font-semibold text-gray-700 mb-2">Enemy Alliances:</h4>
+                <div id="enemyAlliancesList" class="space-y-4">
+                    <!-- Populated with enemy alliances -->
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="warJustification" class="block font-medium text-gray-700 mb-2">Justification for War (Optional):</label>
+                <textarea id="warJustification" rows="3" placeholder="State your casus belli..." 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+            </div>
+            
+            <div class="flex justify-end gap-3 mt-6">
+                <button class="btn btn-secondary" onclick="closeWarDeclarationModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="submitWarDeclaration()">Submit Declaration</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="warNotificationModal" class="modal-backdrop hidden">
+        <div class="card p-8 w-full max-w-md m-4 text-center bg-red-50 border-4 border-red-600">
+            <h3 class="text-3xl font-bold text-red-800 mb-4">⚔️ WAR DECLARED! ⚔️</h3>
+            <div id="warNotificationContent" class="space-y-4">
+                <!-- Populated dynamically -->
+            </div>
+            <button onclick="acknowledgeWarDeclaration()" class="btn btn-danger mt-6 w-full py-3 text-lg">
+                Acknowledge Declaration
+            </button>
+        </div>
+    </div>
+
+    <div id="allianceModal" class="modal-backdrop hidden">
+        <div class="card p-6 w-full max-w-lg m-4">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Form an Alliance</h3>
+            <p class="text-sm text-gray-600 mb-4">Select countries to form an alliance with. Forming an alliance is mutual.</p>
+            <div id="countryCheckboxes" class="space-y-2 max-h-60 overflow-y-auto border p-3 rounded-lg"></div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button class="btn btn-secondary" onclick="closeAllianceModal()">Cancel</button>
+                <button class="btn btn-success" onclick="proposeAlliance()">Confirm Alliances</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pnpPanel" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div class="bg-red-900 text-white rounded-xl shadow-lg p-8 w-full max-w-2xl relative">
+            <button onclick="closePnpPanel()" class="absolute top-4 right-4 text-gray-300 hover:text-white transition-colors">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-3xl font-bold mb-6 text-center">Award or Deduct PNP</h3>
+            <div class="space-y-6">
+                <div>
+                    <label for="pnpCountry" class="block text-lg font-medium text-gray-200 mb-2">Select Country:</label>
+                    <select id="pnpCountry" class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black">
+                        <option value="">-- Select a Country --</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                         <label for="pnpAmount" class="block text-lg font-medium text-gray-200 mb-2">Amount:</label>
+                        <input type="number" id="pnpAmount" placeholder="e.g. 20 or -10" class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black">
+                    </div>
+                     <div>
+                        <label for="pnpReasonDropdown" class="block text-lg font-medium text-gray-200 mb-2">Reason Template:</label>
+                        <select id="pnpReasonDropdown" class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black" onchange="handleReasonChange()">
+                            <option value="">-- Select a Reason --</option>
+                            <option value="Citizen out of area">Citizen out of area</option>
+                            <option value="Citizen on cell phone">Citizen on cell phone</option>
+                            <option value="Citizen being annoying">Citizen being annoying</option>
+                            <option value="Excellent diplomacy">Excellent diplomacy</option>
+                            <option value="Good roleplay">Good roleplay</option>
+                            <option value="Historical accuracy">Historical accuracy</option>
+                            <option value="Leadership shown">Leadership shown</option>
+                            <option value="Disruptive behavior">Disruptive behavior</option>
+                            <option value="Out of character">Out of character</option>
+                            <option value="Custom">Custom (enter below)</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label for="pnpReason" class="block text-lg font-medium text-gray-200 mb-2">Final Reason:</label>
+                    <input type="text" id="pnpReason" placeholder="Enter custom reason or edit selected reason" class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black">
+                </div>
+            </div>
+            <div class="mt-8 flex justify-end gap-4">
+                <button class="btn btn-danger text-lg px-8 py-3" onclick="closePnpPanel()">Cancel</button>
+                <button class="btn btn-success text-lg px-8 py-3" onclick="awardPnpToCountry()">Submit</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="hourSelectionModal" class="modal-backdrop hidden">
+        <div class="card p-6 w-full max-w-md m-4">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Select Class Hour</h3>
+            <p class="text-sm text-gray-600 mb-4">Which class period are you teaching right now?</p>
+            <div id="availableHours" class="space-y-2 mb-6">
+                </div>
+            <div class="flex justify-end gap-3">
+                <button class="btn btn-secondary" onclick="closeHourSelection()">Cancel</button>
+                <button class="btn btn-success" onclick="startSimulationWithHour()" id="startWithHourBtn" disabled>Start Simulation</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="confirmModal" class="modal-backdrop hidden">
+        <div class="card p-6 w-full max-w-sm m-4 text-center">
+            <h3 id="confirmModalTitle" class="text-xl font-bold text-gray-800 mb-4">Are you sure?</h3>
+            <p id="confirmModalBody" class="text-gray-600 mb-6"></p>
+            <div class="flex justify-center gap-4">
+                <button id="confirmCancelBtn" class="btn btn-secondary px-6">Cancel</button>
+                <button id="confirmOkBtn" class="btn btn-danger px-6">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="infoModal" class="modal-backdrop hidden">
+        <div class="card p-6 w-full max-w-2xl m-4 max-h-[80vh] overflow-y-auto">
+            <h3 id="infoModalTitle" class="text-2xl font-bold text-gray-800 mb-4">Results</h3>
+            <div id="infoModalBody" class="space-y-3"></div>
+            <div class="mt-6 flex justify-end">
+                <button class="btn btn-primary" onclick="closeInfoModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="studentNotificationModal" class="modal-backdrop hidden">
+        <div class="card p-8 w-full max-w-md m-4 text-center transform transition-all duration-300 scale-95 opacity-0">
+            <h3 id="studentNotificationTitle" class="text-2xl font-bold text-gray-800 mb-4">Update from Teacher</h3>
+            <div id="studentNotificationBody" class="text-lg text-gray-700 space-y-3">
+            </div>
+            <div class="mt-8">
+                <button onclick="closeStudentNotificationModal()" class="btn btn-primary px-10 py-3 text-lg">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="roleAssignmentModal" class="modal-backdrop hidden">
+        <div class="card p-6 w-full max-w-2xl m-4">
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Assign Team Roles</h3>
+            <p class="text-sm text-gray-600 mb-4">Round 1 setup: assign a role to each teammate on <span class="font-semibold" id="roleAssignCountryName">...</span>. These can be changed later by the teacher if needed.</p>
+            <div id="roleAssignmentList" class="space-y-3 max-h-[55vh] overflow-y-auto border rounded-lg p-3 bg-gray-50"></div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button id="saveRolesBtn" class="btn btn-success px-6" onclick="saveRoleAssignments()">Save Roles</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, runTransaction, updateDoc, writeBatch, query, where, getDocs, deleteDoc, serverTimestamp, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+
+        let db, auth, storage;
+        let user; 
+        let userId, isTeacher = false, currentClassCode, myCountryName;
+        
+        let gameStateUnsubscribe = null;
+        let playersUnsubscribe = null;
+        let logUnsubscribe = null;
+        let notificationUnsubscribe = null;
+        let countryDataUnsubscribe = null;
+        let warDeclarationsUnsubscribe = null;
+
+        let localGameState = {};
+        let localPlayersState = {};
+        let localCountryData = {};
+        let localWarDeclarations = {};
+        let iAmRoleCaptain = false;
+        const APP_ID = 'default-north-sim';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDxnJPzzE23ikC2aag0OKzsx1oG0fExI7I",
+            authDomain: "the-north-1bffa.firebaseapp.com",
+            databaseURL: "https://the-north-1bffa-default-rtdb.firebaseio.com",
+            projectId: "the-north-1bffa",
+            storageBucket: "the-north-1bffa.appspot.com",
+            messagingSenderId: "610595088129",
+            appId: "1:610595088129:web:838554a99867882a219d00"
+        };
+        
+        const BASE_INCOME = 25;
+        const STARTING_BUDGETS = {
+            'Tobermory': 100000, 'Grenoble': 60000, 'Omsk': 75000, 'Metz': 100000,
+            'Klagenfurt': 50000, 'Tivoli': 40000, 'Razgrad': 25000
+        };
+        const COLONIAL_TERRITORIES = {
+            'baw': { name: 'Baw', cost: 10000, income: 18, description: 'Gold mines, fish' },
+            'rangoon': { name: 'Rangoon', cost: 20000, income: 15, description: 'Trade routes, forests' },
+            'bauru': { name: 'Bauru', cost: 5000, income: 12, description: 'Sugar, cotton, coffee' },
+            'tandil': { name: 'Tandil', cost: 10000, income: 14, description: 'Lush plains, food crops' },
+            'abyssinia': { name: 'Abyssinia', cost: 15000, income: 16, description: 'Gold, metals, livestock' },
+            'kamina': { name: 'Kamina', cost: 5000, income: 22, description: 'Rubber, gold, diamonds' }
+        };
+        const ALLIANCE_RESTRICTIONS = {
+            'Tobermory': ['Metz', 'Klagenfurt', 'Tivoli'], 'Omsk': ['Metz', 'Klagenfurt', 'Tivoli'],
+            'Grenoble': ['Metz', 'Klagenfurt', 'Tivoli'], 'Tivoli': ['Tobermory', 'Omsk', 'Grenoble', 'Razgrad'],
+            'Metz': ['Tobermory', 'Omsk', 'Grenoble', 'Razgrad'], 'Klagenfurt': ['Tobermory', 'Omsk', 'Grenoble', 'Razgrad'],
+            'Razgrad': ['Metz', 'Klagenfurt', 'Tivoli']
+        };
+        const STUDENT_ROLES = [
+            { name: 'Secretary of the Treasury', contentId: 'treasuryCardTemplate' },
+            { name: 'Secretary of War', contentId: 'militaryCardTemplate' },
+            { name: 'Secretary of State', contentId: 'allianceCardTemplate' },
+            { name: 'Ambassador', contentId: 'allianceCardTemplate' }, 
+            { name: 'Minister of Domestic Tranquility', contentId: 'ministerCardTemplate' },
+            { name: 'Historian', description: 'You are responsible for recording the events of your nation. Use the Country Log to track actions and outcomes.' },
+            { name: 'Media Specialist', description: 'Your role is to craft the public image of your nation through unbiased reporting and press releases.' },
+            { name: 'Director of Propaganda', description: 'Your objective is to influence other nations and bolster domestic support through compelling narratives, whether true or not.' }
+        ];
+        const COUNTRY_THEMES = {
+            'Tobermory': {
+                banner: 'https://placehold.co/1200x200/0a3d62/ffffff?text=+',
+                color: 'text-white',
+                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><circle cx="50" cy="60" r="15" fill="#f9ca24"/></g></svg>`
+            },
+            'Metz': {
+                banner: 'https://placehold.co/1200x200/4a1818/ffffff?text=+',
+                color: 'text-white',
+                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><path d="M30 40 L70 80 M70 40 L30 80" stroke-width="8"/></g></svg>`
+            },
+            'Omsk': {
+                banner: 'https://placehold.co/1200x200/222f3e/ffffff?text=+',
+                color: 'text-white',
+                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><polygon points="50,40 65,70 35,70" fill="#c8d6e5"/></g></svg>`
+            },
+            'Grenoble': {
+                banner: 'https://placehold.co/1200x200/1e3a8a/ffffff?text=+',
+                color: 'text-white',
+                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><path d="M50 40 L50 80 M30 60 L70 60" stroke-width="8"/></g></svg>`
+            },
+            'Klagenfurt': {
+                banner: 'https://placehold.co/1200x200/8c7ae6/ffffff?text=+',
+                color: 'text-white',
+                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><circle cx="50" cy="60" r="10" /><circle cx="35" cy="60" r="10"/><circle cx="65" cy="60" r="10"/></g></svg>`
+            },
+            'Tivoli': {
+                banner: 'https://placehold.co/1200x200/009432/ffffff?text=+',
+                color: 'text-white',
+                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><rect x="35" y="45" width="30" height="30" fill="#f1c40f"/></g></svg>`
+            },
+            'Razgrad': {
+                banner: 'https://placehold.co/1200x200/d35400/ffffff?text=+',
+                color: 'text-white',
+                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><polygon points="50,40 70,75 30,75" stroke-width="8"/></g></svg>`
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeApp(firebaseConfig);
+            auth = getAuth();
+            db = getFirestore();
+            storage = getStorage();
+            
+            document.getElementById('signInBtn').onclick = signInWithGoogle;
+            document.getElementById('joinClassBtn').onclick = joinSimulation;
+            document.getElementById('confirmCancelBtn').onclick = () => closeConfirmModal(false);
+            document.getElementById('confirmOkBtn').onclick = () => closeConfirmModal(true);
+
+            const flagUploader = document.getElementById('flagUploader');
+            if(flagUploader) {
+                flagUploader.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if(file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            document.getElementById('flagPreview').src = event.target.result;
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            onAuthStateChanged(auth, async (currentUser) => {
+                user = currentUser;
+                if (user) {
+                    userId = user.uid;
+                    const displayName = user.displayName || user.email || 'User';
+                    updateConnectionStatus(true, `Signed in as ${displayName}`);
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('classCodeScreen').classList.remove('hidden');
+                } else {
+                    updateConnectionStatus(false, 'Disconnected');
+                    document.getElementById('loginScreen').classList.remove('hidden');
+                    document.getElementById('classCodeScreen').classList.add('hidden');
+                    document.getElementById('gameContainer').classList.add('hidden');
+                    cleanupListeners();
+                }
+            });
+        });
+
+        async function signInWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error("Google Sign-In failed:", error);
+                document.getElementById('loginError').textContent = `Sign-in failed: ${error.message}`;
+            }
+        }
+
+        async function joinSimulation() {
+            if (!user || !user.email) {
+                showError('classCodeError', 'Authentication error. Please sign in again.');
+                return;
+            }
+
+            const classCode = document.getElementById('classCodeInput').value.trim().toUpperCase();
+            if (!classCode) {
+                showError('classCodeError', 'Please enter a class code.');
+                return;
+            }
+            currentClassCode = classCode;
+            const joinBtn = document.getElementById('joinClassBtn');
+            joinBtn.disabled = true;
+            joinBtn.textContent = 'Verifying...';
+
+            try {
+                const teacherRef = doc(db, `apps/${APP_ID}/teachers`, user.email);
+                const simRef = doc(db, `apps/${APP_ID}/simulations`, classCode);
+                const rosterRef = doc(db, `apps/${APP_ID}/simulations/${classCode}/roster`, user.email);
+                
+                const [teacherSnap, simSnap, rosterSnap] = await Promise.all([getDoc(teacherRef), getDoc(simRef), getDoc(rosterRef)]);
+
+                if (teacherSnap.exists()) {
+                    await setupNewTeacher(simSnap, simRef);
+                } else if (rosterSnap.exists()) {
+                    await setupNewStudent(simSnap, rosterSnap);
+                    document.getElementById('classCodeScreen').classList.add('hidden');
+                    document.getElementById('gameContainer').classList.remove('hidden');
+                    setupFirestoreListeners();
+                } else {
+                    showError('classCodeError', 'You are not on the roster for this class.');
+                }
+            } catch (error) {
+                console.error("Error joining simulation:", error);
+                showError('classCodeError', `An error occurred: ${error.message}`);
+            } finally {
+                joinBtn.disabled = false;
+                joinBtn.textContent = 'Join / Create Simulation';
+            }
+        }
+
+        async function setupNewTeacher(simSnap, simRef) {
+            isTeacher = true;
+            myCountryName = 'Teacher';
+            if (!simSnap.exists()) {
+                await setDoc(simRef, {
+                    teacherId: user.uid,
+                    teacherEmail: user.email,
+                    round: 1,
+                    phase: 'waiting',
+                    timerEnds: null,
+                });
+            }
+            const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, userId);
+            await setDoc(playerRef, { name: user.displayName, isTeacher: true }, { merge: true });
+
+            document.getElementById('classCodeScreen').classList.add('hidden');
+            document.getElementById('rosterScreen').classList.remove('hidden');
+            document.getElementById('rosterClassCode').textContent = currentClassCode;
+            loadExistingRoster();
+        }
+
+        async function setupNewStudent(simSnap, rosterSnap) {
+            isTeacher = false;
+            if (!simSnap.exists()) {
+                showError('classCodeError', 'This class code does not exist.');
+                throw new Error('Simulation not found');
+            }
+            myCountryName = rosterSnap.data().country;
+
+            const countryRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/countryData`, myCountryName);
+            const countrySnap = await getDoc(countryRef);
+            const initialPnp = countrySnap.exists() ? countrySnap.data().pnp : 100;
+            const roleAssignments = countrySnap.exists() ? (countrySnap.data().roleAssignments || {}) : {};
+            const preAssignedRole = roleAssignments[user.email] || null;
+
+            const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, userId);
+            const playerSnap = await getDoc(playerRef);
+
+            if (!playerSnap.exists()) {
+                const initialPlayerData = {
+                    name: user.displayName, email: user.email, country: myCountryName,
+                    isTeacher: false, dollars: STARTING_BUDGETS[myCountryName] || 50000,
+                    pnp: initialPnp, income: BASE_INCOME, army: 0, navy: 0,
+                    colonies: {}, colonialPlans: {}, alliances: {},
+                    militaryBudgetPercentage: 25, militarySpendingThisRound: 0,
+                    role: preAssignedRole,
+                };
+                await setDoc(playerRef, initialPlayerData);
+            }
+            setupStudentTabs();
+        }
+        
+        function cleanupListeners() {
+            if (gameStateUnsubscribe) gameStateUnsubscribe();
+            if (playersUnsubscribe) playersUnsubscribe();
+            if (logUnsubscribe) logUnsubscribe();
+            if (notificationUnsubscribe) notificationUnsubscribe();
+            if (countryDataUnsubscribe) countryDataUnsubscribe();
+            if (warDeclarationsUnsubscribe) warDeclarationsUnsubscribe();
+        }
+
+        function setupFirestoreListeners() {
+            cleanupListeners();
+            
+            const gameDocRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}`);
+            gameStateUnsubscribe = onSnapshot(gameDocRef, (doc) => {
+                if (doc.exists()) {
+                    localGameState = doc.data();
+                    updateGameUI();
+                    maybeTriggerRoleAssignment();
+                }
+            });
+
+            const playersColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`);
+            playersUnsubscribe = onSnapshot(playersColRef, (snapshot) => {
+                localPlayersState = {};
+                snapshot.forEach(doc => { localPlayersState[doc.id] = doc.data(); });
+                updateAllPlayersUI();
+                maybeTriggerRoleAssignment();
+            });
+
+            const countryDataColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/countryData`);
+            countryDataUnsubscribe = onSnapshot(countryDataColRef, (snapshot) => {
+                localCountryData = {};
+                snapshot.forEach(doc => { localCountryData[doc.id] = doc.data(); });
+                updateAllPlayersUI(); 
+                maybeTriggerRoleAssignment();
+            });
+            
+            const warDeclarationsColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/warDeclarations`);
+            warDeclarationsUnsubscribe = onSnapshot(warDeclarationsColRef, (snapshot) => {
+                localWarDeclarations = {};
+                snapshot.forEach(doc => { localWarDeclarations[doc.id] = doc.data(); });
+                updateAllPlayersUI();
+            });
+
+
+            if (!isTeacher) {
+                const logColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${userId}/log`);
+                logUnsubscribe = onSnapshot(query(logColRef), (snapshot) => {
+                    const logEntries = snapshot.docs.map(d => d.data());
+                    updateEventLog(logEntries);
+                });
+                
+                const notificationColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${userId}/notifications`);
+                notificationUnsubscribe = onSnapshot(query(notificationColRef), (snapshot) => {
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === "added") {
+                            showStudentNotificationModal(change.doc.data(), change.doc.id);
+                        }
+                    });
+                });
+            }
+        }
+        
+        function setupStudentTabs() {
+            setupStudentTabsWithWar();
+        }
+        function getMyRole() {
+            return (localCountryData[myCountryName]?.roleAssignments?.[user?.email])
+                || (localPlayersState[userId]?.role)
+                || null;
+        }
+
+        async function updateWarDeclarationUI() {
+            const warInterface = document.getElementById('warDeclarationInterface');
+            const myRole = getMyRole();
+            const round = localGameState.round || 1;
+
+            if (warInterface) {
+                if (myRole === 'Secretary of War' && round >= 4) {
+                    warInterface.classList.remove('hidden');
+                } else {
+                    warInterface.classList.add('hidden');
+                }
+            }
+
+            if (myRole === 'Secretary of State' || myRole === 'Minister of Domestic Tranquility') {
+                if (typeof loadWarApprovals === 'function') {
+                    try { await loadWarApprovals(); } catch (err) { console.error('loadWarApprovals failed:', err); }
+                }
+            }
+
+            if (typeof loadPendingWarDeclarations === 'function') {
+                try { await loadPendingWarDeclarations(); } catch (err) { console.error('loadPendingWarDeclarations failed:', err); }
+            }
+        }
+
+        window.switchTab = function(targetId) {
+            document.querySelectorAll('#roleTabs .tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.target === targetId);
+            });
+            document.querySelectorAll('#roleTabContent .tab-panel').forEach(panel => {
+                panel.classList.toggle('active', panel.id === targetId);
+            });
+        }
+
+        async function createLog(message) {
+            if (isTeacher) return;
+            const logColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${userId}/log`);
+            await addDoc(logColRef, { message, timestamp: serverTimestamp() });
+        }
+        
+        function updateGameUI() {
+            const { round, phase, timerEnds } = localGameState;
+            document.getElementById('currentRound').textContent = round || 1;
+            const phaseIndicator = document.getElementById('phaseIndicator');
+            const phaseTextEl = document.getElementById('phaseText');
+            let phaseDisplay, phaseColor;
+            switch (phase) {
+                case 'active': phaseDisplay = `Active - ${getTimerDisplay(timerEnds)}`; phaseColor = 'bg-green-600'; break;
+                case 'review': phaseDisplay = 'Review Phase'; phaseColor = 'bg-yellow-500'; break;
+                default: phaseDisplay = 'Waiting for Teacher'; phaseColor = 'bg-gray-500';
+            }
+            phaseTextEl.textContent = phaseDisplay;
+            phaseIndicator.className = `text-center text-white rounded-full px-6 py-2 ${phaseColor}`;
+
+            if (isTeacher) {
+                document.getElementById('teacherPanel').classList.remove('hidden');
+                document.getElementById('studentRoleInterface').classList.add('hidden');
+                document.getElementById('startRoundBtn').disabled = phase === 'active';
+                document.getElementById('endRoundBtn').disabled = phase !== 'active';
+                document.getElementById('colonialChanceBtn').disabled = phase !== 'review';
+                document.getElementById('checkAlliancesBtn').disabled = phase !== 'review';
+                document.getElementById('nextRoundBtn').disabled = phase !== 'review';
+            }
+            // Keep student UI (e.g., war button visibility) in sync when only the game doc changes
+            if (!isTeacher) {
+                updateWarDeclarationUI();
+            }
+        }
+        
+        let countdownInterval;
+        function getTimerDisplay(timerEnds) {
+            clearInterval(countdownInterval);
+            if (!timerEnds) return '00:00';
+            const endTime = timerEnds.toDate().getTime();
+            const update = () => {
+                const now = Date.now();
+                const timeLeft = Math.max(0, endTime - now);
+                const minutes = Math.floor(timeLeft / 60000);
+                const seconds = Math.floor((timeLeft % 60000) / 1000);
+                const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                if (localGameState.phase === 'active') {
+                    document.getElementById('phaseText').textContent = `Active - ${display}`;
+                }
+                if(timeLeft <= 0) clearInterval(countdownInterval);
+            };
+            update();
+            countdownInterval = setInterval(update, 1000);
+            return '';
+        }
+
+        function updateAllPlayersUI() {
+            const myData = localPlayersState[userId];
+            const banner = document.getElementById('studentCountryBanner');
+            const mainHeader = document.getElementById('mainHeader');
+
+            if (myData) {
+                // ... (existing UI update logic)
+                document.getElementById('displayPlayerName').textContent = user.displayName;
+                document.getElementById('displayClassCode').textContent = currentClassCode;
+                // ...
+            }
+
+            updateWarDeclarationUI();
+            updateLeaderboard();
+            const colonialPlanningUI = document.getElementById('colonialPlanning');
+            if(colonialPlanningUI) populateColonialOptions();
+        }
+        
+        function updateEventLog(entries) {
+            const logEl = document.getElementById('eventLog');
+            if (!entries || entries.length === 0) {
+                logEl.innerHTML = `<p class="text-gray-500">No events yet.</p>`;
+                return;
+            }
+            logEl.innerHTML = entries
+                .sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0))
+                .map(entry => `<div class="p-2 rounded bg-gray-50">${entry.message}</div>`)
+                .join('');
+        }
+
+        function calculateTotalPnp(player) {
+            const armyPnp = (player.army || 0) * 750;
+            const navyPnp = (player.navy || 0) * 1000;
+            const coloniesPnp = Object.values(player.colonies || {}).reduce((sum, colony) => sum + (colony.cost || 0), 0);
+            return (player.pnp || 0) + armyPnp + navyPnp + coloniesPnp;
+        }
+
+        function updateLeaderboard() {
+            const playersArray = Object.values(localPlayersState).filter(p => !p.isTeacher);
+            playersArray.forEach(p => {
+                p.basePnp = (localCountryData[p.country]?.pnp || 100) + (p.pnp - 100);
+                const armyPnp = (p.army || 0) * 750;
+                const navyPnp = (p.navy || 0) * 1000;
+                const coloniesPnp = Object.values(p.colonies || {}).reduce((sum, colony) => sum + (colony.cost || 0), 0);
+                p.assetScore = armyPnp + navyPnp + coloniesPnp;
+                p.totalScore = p.basePnp + p.assetScore;
+            });
+            playersArray.sort((a, b) => b.totalScore - a.totalScore);
+            const listEl = document.getElementById('leaderboardList');
+            listEl.innerHTML = playersArray.map((p, index) => {
+                const isMe = p.country === myCountryName;
+                const bgColor = isMe ? 'bg-indigo-100' : 'bg-gray-50';
+                const countryData = localCountryData[p.country] || {};
+                const flagUrl = countryData.flagUrl;
+                const emblem = COUNTRY_THEMES[p.country]?.emblem || `<div class="w-8 h-6 bg-gray-300 rounded-sm"></div>`;
+                const flagElement = flagUrl 
+                    ? `<img src="${flagUrl}" alt="${p.country} flag" class="w-8 h-6 object-cover rounded-sm shadow-sm">` 
+                    : `<div class="w-8 h-6 flex items-center justify-center">${emblem}</div>`;
+
+                return `
+                    <div class="p-3 rounded-lg ${bgColor} flex justify-between items-center">
+                        <div class="flex items-center flex-grow">
+                            ${flagElement}
+                            <div class="ml-3">
+                                <span class="font-bold text-gray-800">${index+1}. ${p.country}</span>
+                                <span class="text-sm text-gray-500 ml-2">(${p.name})</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                             <span class="font-bold text-indigo-700">${p.totalScore.toLocaleString()} PNP</span>
+                             <div class="text-xs text-gray-500">Base: ${p.basePnp.toLocaleString()} + Assets: ${p.assetScore.toLocaleString()}</div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+        
+        function populateColonialOptions() {
+            const container = document.getElementById('colonialPlanning');
+            if (!container) return;
+            container.innerHTML = '';
+            const myData = localPlayersState[userId] || {};
+            const phase = localGameState.phase;
+
+            for (const [key, territory] of Object.entries(COLONIAL_TERRITORIES)) {
+                const isOwnedByAnyone = Object.values(localPlayersState).some(p => p.colonies && p.colonies[key]);
+                const haveIPlanned = myData.colonialPlans && myData.colonialPlans[key];
+                let buttonHtml;
+                if(isOwnedByAnyone) {
+                    const owner = Object.values(localPlayersState).find(p => p.colonies && p.colonies[key]);
+                    buttonHtml = `<button class="btn btn-secondary w-full" disabled>Owned by ${owner.country}</button>`;
+                } else if (haveIPlanned) {
+                    buttonHtml = `<button class="btn btn-success w-full" disabled>Attempt Planned</button>`;
+                } else {
+                    buttonHtml = `<button class="btn btn-warning w-full" onclick="planColonization('${key}')" ${phase !== 'active' ? 'disabled' : ''}>Plan Attempt</button>`;
+                }
+                container.innerHTML += `
+                    <div class="bg-gray-50 p-3 rounded-lg space-y-2">
+                        <div class="font-bold">${territory.name}</div>
+                        <div class="text-sm text-gray-600">Cost: ${territory.cost.toLocaleString()} $ | Income: ${territory.income} $</div>
+                        ${buttonHtml}
+                    </div>`;
+            }
+        }
+
+        function updateMyAllianceUI(myAlliances) {
+            const container = document.getElementById('myAlliances');
+            if (!container) return;
+            const allies = Object.keys(myAlliances).filter(id => myAlliances[id] === true);
+            if(allies.length === 0) {
+                container.innerHTML = `<h4 class="font-semibold mt-4">My Current Allies:</h4> <p class="text-gray-500">None</p>`;
+            } else {
+                const allyNames = allies.map(id => localPlayersState[id]?.country || '...').join(', ');
+                container.innerHTML = `<h4 class="font-semibold mt-4">My Current Allies:</h4> <p class="text-green-700 font-semibold">${allyNames}</p>`;
+            }
+        }
+        
+        window.uploadFlag = async function() {
+            const uploader = document.getElementById('flagUploader');
+            const uploadBtn = document.getElementById('uploadFlagBtn');
+            const file = uploader.files[0];
+
+            if (!file) return showInfoModal("No File", "<p>Please select a file to upload.</p>");
+            if (file.size > 1024 * 1024) return showInfoModal("File Too Large", "<p>Please select an image smaller than 1MB.</p>");
+
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Uploading...';
+
+            try {
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    const base64String = event.target.result;
+                    const storageRef = ref(storage, `apps/${APP_ID}/simulations/${currentClassCode}/flags/${myCountryName}.png`);
+                    const uploadResult = await uploadString(storageRef, base64String, 'data_url');
+                    const downloadURL = await getDownloadURL(uploadResult.ref);
+
+                    const countryDocRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/countryData`, myCountryName);
+                    await setDoc(countryDocRef, { flagUrl: downloadURL }, { merge: true });
+
+                    showInfoModal("Success!", "<p>Your national flag has been updated.</p>");
+                    await createLog(`Uploaded a new national flag.`);
+                };
+                reader.readAsDataURL(file);
+            } catch(error) {
+                console.error("Flag upload failed:", error);
+                showInfoModal("Upload Failed", `<p>An error occurred: ${error.message}</p>`);
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Upload Flag';
+            }
+        }
+
+        // ==== War Declaration System (pendingWars, activeWars, warApprovals, warNotifications) ====
+        // Variables used by this system
+        let pendingWarDeclarations = {};
+        let activeWars = {};
+
+        // War-enabled tabs: show special UI for Secretary of War after round 4,
+        // and add approval panes for Secretary of State and Minister of Domestic Tranquility.
+        function setupStudentTabsWithWar() {
+            const tabsContainer = document.getElementById('roleTabs');
+            const contentContainer = document.getElementById('roleTabContent');
+            tabsContainer.innerHTML = '';
+            contentContainer.innerHTML = '';
+
+            STUDENT_ROLES.forEach((role, index) => {
+                const roleId = role.name.replace(/\s+/g, '-');
+                const tabButton = document.createElement('button');
+                tabButton.className = 'tab-btn' + (index === 0 ? ' active' : '');
+                tabButton.textContent = role.name;
+                tabButton.dataset.target = roleId;
+                tabButton.onclick = () => switchTab(roleId);
+                tabsContainer.appendChild(tabButton);
+
+                const tabPanel = document.createElement('div');
+                tabPanel.id = roleId;
+                tabPanel.className = 'tab-panel space-y-6' + (index === 0 ? ' active' : '');
+                
+                if (role.name === 'Secretary of War') {
+                    const template = document.getElementById('warDeclarationTemplate');
+                    if (template) tabPanel.innerHTML = template.innerHTML;
+                } else if (role.name === 'Secretary of State' || role.name === 'Minister of Domestic Tranquility') {
+                    const baseTemplate = role.contentId ? document.getElementById(role.contentId) : null;
+                    const warApprovalTemplate = document.getElementById('warApprovalTemplate');
+                    if (baseTemplate) tabPanel.innerHTML = baseTemplate.innerHTML;
+                    if (warApprovalTemplate && (localGameState.round || 1) >= 4) {
+                        tabPanel.innerHTML += warApprovalTemplate.innerHTML;
+                    }
+                } else if (role.contentId) {
+                    const tpl = document.getElementById(role.contentId);
+                    if (tpl) tabPanel.innerHTML = tpl.innerHTML;
+                } else if (role.description) {
+                    tabPanel.innerHTML = `
+                        <div class="card p-6 bg-gray-50">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">${role.name}</h3>
+                            <p class="text-gray-600">${role.description}</p>
+                        </div>`;
+                }
+                contentContainer.appendChild(tabPanel);
+            });
+
+            document.getElementById('studentRoleInterface').classList.remove('hidden');
+            updateWarDeclarationVisibility();
+        }
+
+        function updateWarDeclarationVisibility() {
+            const warInterface = document.getElementById('warDeclarationInterface');
+            const myRole = getMyRole();
+            const round = localGameState.round || 1;
+            if (warInterface) {
+                if (myRole === 'Secretary of War' && round >= 4) {
+                    warInterface.classList.remove('hidden');
+                } else {
+                    warInterface.classList.add('hidden');
+                }
+            }
+            if (typeof loadPendingWarDeclarations === 'function') {
+                loadPendingWarDeclarations().catch(console.error);
+            }
+        }
+
+        // Open/close modal
+        window.showWarDeclarationModal = function() {
+            const modal = document.getElementById('warDeclarationModal');
+            const enemyList = document.getElementById('enemyAlliancesList');
+
+            // Current player's alliance block
+            const me = localPlayersState[userId] || {};
+            const myAllies = Object.keys(me.alliances || {}).filter(id => me.alliances[id]);
+            myAllies.push(userId);
+
+            // Group enemies by their alliance
+            const enemyAlliances = {};
+            Object.entries(localPlayersState).forEach(([id, player]) => {
+                if (player.isTeacher || myAllies.includes(id)) return;
+                const theirAllies = Object.keys(player.alliances || {}).filter(aid => player.alliances[aid]);
+                theirAllies.push(id);
+                const key = theirAllies.sort().join(',');
+                if (!enemyAlliances[key]) enemyAlliances[key] = [];
+                enemyAlliances[key].push(player);
+            });
+
+            // Render
+            enemyList.innerHTML = '';
+            Object.entries(enemyAlliances).forEach(([key, countries], idx) => {
+                const block = document.createElement('div');
+                block.className = 'bg-gray-50 p-4 rounded-lg';
+                const title = document.createElement('h5');
+                title.className = 'font-semibold text-gray-700 mb-2';
+                title.textContent = `Enemy Alliance ${idx + 1}`;
+                block.appendChild(title);
+
+                const checks = document.createElement('div');
+                checks.className = 'space-y-2';
+
+                countries.forEach(country => {
+                    const label = document.createElement('label');
+                    label.className = 'flex items-center p-2 rounded hover:bg-gray-100 cursor-pointer';
+
+                    const cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.value = country.country;
+                    cb.dataset.playerId = Object.keys(localPlayersState).find(pid => localPlayersState[pid].country === country.country);
+                    cb.className = 'h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500';
+
+                    const name = document.createElement('span');
+                    name.className = 'ml-3 text-gray-700 font-medium';
+                    name.textContent = `${country.country} (${country.name})`;
+
+                    const stats = document.createElement('span');
+                    stats.className = 'ml-auto text-sm text-gray-500';
+                    stats.textContent = `Army: ${country.army || 0}, Navy: ${country.navy || 0}`;
+
+                    label.appendChild(cb);
+                    label.appendChild(name);
+                    label.appendChild(stats);
+                    checks.appendChild(label);
+                });
+
+                block.appendChild(checks);
+                enemyList.appendChild(block);
+            });
+
+            modal.classList.remove('hidden');
+        };
+
+        window.closeWarDeclarationModal = function() {
+            document.getElementById('warDeclarationModal').classList.add('hidden');
+        };
+
+        // Submit declaration -> apps/{APP_ID}/simulations/{classCode}/pendingWars/{warId}
+        window.submitWarDeclaration = async function() {
+            const checked = document.querySelectorAll('#enemyAlliancesList input[type="checkbox"]:checked');
+            const selected = Array.from(checked);
+            if (selected.length === 0) {
+                showInfoModal("No Targets Selected", "<p>Select at least one enemy nation.</p>");
+                return;
+            }
+
+            const me = localPlayersState[userId] || {};
+            const myAllies = Object.keys(me.alliances || {}).filter(id => me.alliances[id]);
+
+            const targets = selected.map(cb => ({ country: cb.value, playerId: cb.dataset.playerId }));
+
+            // Prevent declaring war on current allies
+            const alliedTargets = targets.filter(t => myAllies.includes(t.playerId));
+            if (alliedTargets.length > 0) {
+                const names = alliedTargets.map(t => t.country).join(', ');
+                showInfoModal("Allied Nations Selected", `<p>You cannot declare war on current allies: <strong>${names}</strong>. Break the alliance first.</p>`);
+                return;
+            }
+
+            const justification = (document.getElementById('warJustification')?.value || '').trim();
+
+            try {
+                // If the project already defines a helper, use it; otherwise fall back to a sane default write.
+                if (typeof createPendingWarDeclaration === 'function') {
+                    await createPendingWarDeclaration(targets, justification);
+                } else {
+                    const warsCol = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/pendingWars`);
+                    await addDoc(warsCol, {
+                        createdBy: userId,
+                        createdByCountry: myCountryName,
+                        targets,
+                        justification,
+                        createdAt: serverTimestamp(),
+                        approvals: { state: null, minister: null }
+                    });
+                }
+
+                closeWarDeclarationModal();
+                showInfoModal("Submitted", "<p>Your declaration has been submitted for approval.</p>");
+            } catch (e) {
+                console.error('submitWarDeclaration failed:', e);
+                showInfoModal("Error", `<p>${e?.message || 'Something went wrong.'}</p>`);
+            }
+        }
