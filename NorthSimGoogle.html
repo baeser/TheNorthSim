@@ -244,8 +244,8 @@
                                         <div class="text-sm text-gray-600">Cost: 750 $ per unit</div>
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        <input type="number" id="armyQuantity" min="1" value="1" class="w-20 text-center border-gray-300 rounded-md">
-                                        <button onclick="purchaseUnits('army')" class="btn btn-danger flex-grow">Purchase</button>
+                                        <input type="number" id="armyQuantity-main" min="1" value="1" class="w-20 text-center border-gray-300 rounded-md">
+                                        <button onclick="purchaseUnits('army', 'main')" class="btn btn-danger flex-grow">Purchase</button>
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-gray-50 p-4 rounded-lg">
@@ -254,14 +254,10 @@
                                         <div class="text-sm text-gray-600">Cost: 1000 $ per unit</div>
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        <input type="number" id="navyQuantity" min="1" value="1" class="w-20 text-center border-gray-300 rounded-md">
-                                        <button onclick="purchaseUnits('navy')" class="btn btn-danger flex-grow">Purchase</button>
+                                        <input type="number" id="navyQuantity-main" min="1" value="1" class="w-20 text-center border-gray-300 rounded-md">
+                                        <button onclick="purchaseUnits('navy', 'main')" class="btn btn-danger flex-grow">Purchase</button>
                                     </div>
                                 </div>
-                            </div>
-                            <div id="warDeclarationSection" class="hidden mt-6 border-t-2 border-red-700 pt-4">
-                                <h4 class="text-lg font-bold text-red-800 mb-2">Hostilities</h4>
-                                <button id="declareWarBtn" onclick="showDeclareWarModal()" class="btn btn-danger w-full text-lg py-3">Declare War</button>
                             </div>
                         </div>
                     </div>
@@ -277,11 +273,11 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-center">
                                     <div class="bg-red-50 p-4 rounded-lg">
                                         <h4 class="font-semibold text-red-800">Total Military Budget</h4>
-                                        <p id="warTotalBudget2" class="text-2xl font-bold text-red-900">$0</p>
+                                        <p id="warTotalBudget-war" class="text-2xl font-bold text-red-900">$0</p>
                                     </div>
                                     <div class="bg-green-50 p-4 rounded-lg">
                                         <h4 class="font-semibold text-green-800">Remaining Funds</h4>
-                                        <p id="warRemainingBudget2" class="text-2xl font-bold text-green-900">$0</p>
+                                        <p id="warRemainingBudget-war" class="text-2xl font-bold text-green-900">$0</p>
                                     </div>
                                 </div>
                                 <div class="space-y-4">
@@ -291,8 +287,8 @@
                                             <div class="text-sm text-gray-600">Cost: 750 $ per unit</div>
                                         </div>
                                     <div class="flex items-center gap-2">
-                                        <input type="number" id="armyQuantity" min="1" value="1" class="w-20 text-center border-gray-300 rounded-md">
-                                        <button onclick="purchaseUnits('army')" class="btn btn-danger flex-grow">Purchase</button>
+                                        <input type="number" id="armyQuantity-war" min="1" value="1" class="w-20 text-center border-gray-300 rounded-md">
+                                        <button onclick="purchaseUnits('army', 'war')" class="btn btn-danger flex-grow">Purchase</button>
                                     </div>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-gray-50 p-4 rounded-lg">
@@ -301,8 +297,8 @@
                                             <div class="text-sm text-gray-600">Cost: 1000 $ per unit</div>
                                         </div>
                                     <div class="flex items-center gap-2">
-                                        <input type="number" id="navyQuantity" min="1" value="1" class="w-20 text-center border-gray-300 rounded-md">
-                                        <button onclick="purchaseUnits('navy')" class="btn btn-danger flex-grow">Purchase</button>
+                                        <input type="number" id="navyQuantity-war" min="1" value="1" class="w-20 text-center border-gray-300 rounded-md">
+                                        <button onclick="purchaseUnits('navy', 'war')" class="btn btn-danger flex-grow">Purchase</button>
                                     </div>
                                     </div>
                                 </div>
@@ -331,15 +327,15 @@
 
                     <!-- Add approval interfaces for Secretary of State and Minister -->
                     <div id="warApprovalTemplate">
-                        <div class="card p-6">
+                        <div class="p-6">
                             <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">War Declaration Approval</h3>
                             <div id="warApprovalContent">
-                                <p class="text-gray-600 mb-4">You must approve any declarations of war before they are sent to enemy nations.</p>
-                                <div id="warApprovalList" class="space-y-3">
+                                <p class="text-gray-600 mb-4">You must approve any declarations of war from your country before they are finalized.</p>
+                                <div class="war-approval-list space-y-3">
                                     <!-- Populated dynamically -->
                                 </div>
                             </div>
-                            <div id="noWarApprovals" class="text-gray-500 text-center py-8">
+                            <div class="no-war-approvals text-gray-500 text-center py-8">
                                 <p>No war declarations pending your approval.</p>
                             </div>
                         </div>
@@ -442,6 +438,7 @@
                         <button id="enterDemoBtn" onclick="showStudentDemoModal()" class="btn btn-primary w-full bg-indigo-600 hover:bg-indigo-700">Enter Student Demo</button>
                         <button id="exitDemoBtn" onclick="exitStudentDemo()" class="btn btn-secondary w-full" disabled>Exit Demo Mode</button>
                         <hr class="my-3">
+                        <button onclick="showTeacherRoleEditor()" class="btn btn-secondary w-full">Edit Roles</button>
                         <button onclick="showPnpPanel()" class="btn btn-secondary w-full">Award/Deduct PNP</button>
                         <button onclick="exportResults()" class="btn btn-secondary w-full bg-teal-600 hover:bg-teal-700">Export Results (PDF)</button>
                         <button onclick="resetGame()" class="btn btn-danger w-full mt-4">Reset Full Game</button>
@@ -611,9 +608,12 @@
     <div id="roleAssignmentModal" class="modal-backdrop hidden">
         <div class="card p-6 w-full max-w-2xl m-4">
             <h3 class="text-2xl font-bold text-gray-800 mb-2">Assign Team Roles</h3>
-            <p class="text-sm text-gray-600 mb-4">Round 1 setup: assign a role to each teammate on <span class="font-semibold" id="roleAssignCountryName">...</span>. These can be changed later by the teacher if needed.</p>
+            <div id="roleAssignCountryName" class="text-sm text-gray-600 mb-4">
+                Round 1 setup: assign a role to each teammate. These can be changed later by the teacher if needed.
+            </div>
             <div id="roleAssignmentList" class="space-y-3 max-h-[55vh] overflow-y-auto border rounded-lg p-3 bg-gray-50"></div>
             <div class="mt-6 flex justify-end gap-3">
+                <button id="cancelRolesBtn" class="btn btn-secondary px-6" onclick="closeRoleAssignmentModal()">Cancel</button>
                 <button id="saveRolesBtn" class="btn btn-success px-6" onclick="saveRoleAssignments()">Save Roles</button>
             </div>
         </div>
@@ -641,6 +641,9 @@
         let localCountryData = {};
         let localWarDeclarations = {};
         let iAmRoleCaptain = false;
+        let roleAssignmentShown = false;
+        let confirmResolve = null;
+        let isTeacherEditingRoles = false;
         const APP_ID = 'default-north-sim';
 
         const firebaseConfig = {
@@ -793,18 +796,79 @@
             document.getElementById('infoModal').classList.add('hidden');
         }
 
+        function showConfirmModal(title, body) {
+            document.getElementById('confirmModalTitle').textContent = title;
+            document.getElementById('confirmModalBody').innerHTML = body;
+            document.getElementById('confirmModal').classList.remove('hidden');
+            return new Promise(resolve => {
+                confirmResolve = resolve;
+            });
+        }
+
+        function closeConfirmModal(result) {
+            document.getElementById('confirmModal').classList.add('hidden');
+            if (confirmResolve) {
+                confirmResolve(result);
+                confirmResolve = null;
+            }
+        }
+        
+        function showStudentNotificationModal(notificationData, notificationId) {
+            const modal = document.getElementById('studentNotificationModal');
+            const titleEl = document.getElementById('studentNotificationTitle');
+            const bodyEl = document.getElementById('studentNotificationBody');
+            
+            titleEl.textContent = notificationData.type === 'war_declared' ? '⚔️ WAR DECLARED!' : 'Update from Teacher';
+            bodyEl.innerHTML = `<p class="font-semibold">${notificationData.message}</p>`;
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.card').classList.remove('scale-95', 'opacity-0');
+                modal.querySelector('.card').classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        window.closeStudentNotificationModal = async function() {
+            const modal = document.getElementById('studentNotificationModal');
+            modal.classList.add('hidden');
+            
+            // Delete the notification after viewing
+            const notificationColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${userId}/notifications`);
+            const q = query(notificationColRef);
+            const snapshot = await getDocs(q);
+            const batch = writeBatch(db);
+            snapshot.docs.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+        };
+
+        window.acknowledgeWarDeclaration = async function() {
+            // Same as closeStudentNotificationModal
+            await closeStudentNotificationModal();
+        };
+
+
         async function loadExistingRoster() {
             // Placeholder
             console.log("loadExistingRoster called");
         }
-
-        function maybeTriggerRoleAssignment() {
-            // Placeholder
-        }
-
+        
         async function notifyApprovers(warId, warDeclaration) {
-            // Placeholder
-            console.log('notifyApprovers called for warId:', warId, warDeclaration);
+             const approverRoles = ['Secretary of State', 'Minister of Domestic Tranquility'];
+             const countryPlayers = Object.values(localPlayersState).filter(p => p.country === myCountryName);
+             
+             for(const player of countryPlayers) {
+                if(approverRoles.includes(player.role)) {
+                    const player_id = Object.keys(localPlayersState).find(key => localPlayersState[key] === player);
+                    const notifCol = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${player_id}/notifications`);
+                    await addDoc(notifCol, {
+                        type: 'war_approval_request',
+                        from: myCountryName,
+                        message: `Your approval is required for a declaration of war.`,
+                        warId: warId,
+                        timestamp: serverTimestamp()
+                    });
+                }
+             }
         }
         
         async function signInWithGoogle() {
@@ -836,7 +900,7 @@
             try {
                 const teacherRef = doc(db, `apps/${APP_ID}/teachers`, user.email);
                 const simRef = doc(db, `apps/${APP_ID}/simulations`, classCode);
-                const rosterRef = doc(db, `apps/${APP_ID}/simulations/${classCode}/roster`, user.email);
+                const rosterRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/roster`, user.email);
                 
                 const [teacherSnap, simSnap, rosterSnap] = await Promise.all([getDoc(teacherRef), getDoc(simRef), getDoc(rosterRef)]);
 
@@ -978,36 +1042,41 @@
             }
         }
         
-        function setupStudentTabs() {
-            setupStudentTabsWithWar();
-        }
-        function getMyRole() {
-            return (localCountryData[myCountryName]?.roleAssignments?.[user?.email])
-                || (localPlayersState[userId]?.role)
-                || null;
+        function getMyRoles() { // Plural
+            const myPlayerData = localPlayersState[userId];
+            if (myPlayerData && myPlayerData.roles && Array.isArray(myPlayerData.roles)) {
+                return myPlayerData.roles;
+            }
+            // Fallback for old structure
+            if (myPlayerData && myPlayerData.role) {
+                return [myPlayerData.role];
+            }
+            return [];
         }
 
         async function updateWarDeclarationUI() {
+            const myRoles = getMyRoles();
             const warInterface = document.getElementById('warDeclarationInterface');
-            const myRole = getMyRole();
             const round = localGameState.round || 1;
 
             if (warInterface) {
-                if (myRole === 'Secretary of War' && round >= 4) {
+                if (myRoles.includes('Secretary of War') && round >= 4) {
                     warInterface.classList.remove('hidden');
                 } else {
                     warInterface.classList.add('hidden');
                 }
             }
 
-            if (myRole === 'Secretary of State' || myRole === 'Minister of Domestic Tranquility') {
+            if (myRoles.includes('Secretary of State') || myRoles.includes('Minister of Domestic Tranquility')) {
                 if (typeof loadWarApprovals === 'function') {
                     try { await loadWarApprovals(); } catch (err) { console.error('loadWarApprovals failed:', err); }
                 }
             }
 
-            if (typeof loadPendingWarDeclarations === 'function') {
-                try { await loadPendingWarDeclarations(); } catch (err) { console.error('loadPendingWarDeclarations failed:', err); }
+            if (myRoles.includes('Secretary of War')) {
+                if (typeof loadPendingWarDeclarations === 'function') {
+                    try { await loadPendingWarDeclarations(); } catch (err) { console.error('loadPendingWarDeclarations failed:', err); }
+                }
             }
         }
 
@@ -1018,6 +1087,7 @@
             document.querySelectorAll('#roleTabContent .tab-panel').forEach(panel => {
                 panel.classList.toggle('active', panel.id === targetId);
             });
+            updateWarDeclarationUI();
         }
 
         async function createLog(message, forUserId = userId) {
@@ -1105,6 +1175,26 @@
                     }
                 }
                 
+                // Update military budget displays
+                const militaryBudget = Math.floor((myData.dollars || 0) * ((myData.militaryBudgetPercentage || 25) / 100));
+                const remainingBudget = militaryBudget - (myData.militarySpendingThisRound || 0);
+
+                ['main', 'war'].forEach(context => {
+                    const totalEl = document.getElementById(`warTotalBudget-${context}`);
+                    const remainingEl = document.getElementById(`warRemainingBudget-${context}`);
+                    if (totalEl) totalEl.textContent = `$${militaryBudget.toLocaleString()}`;
+                    if (remainingEl) remainingEl.textContent = `$${remainingBudget.toLocaleString()}`;
+                });
+                
+                const treasuryTotal = document.getElementById('treasuryTotalBudget');
+                const treasuryMilitary = document.getElementById('treasuryMilitaryBudget');
+                if (treasuryTotal) treasuryTotal.textContent = `$${(myData.dollars || 0).toLocaleString()}`;
+                if (treasuryMilitary) treasuryMilitary.textContent = `$${militaryBudget.toLocaleString()}`;
+
+                // Update slider
+                const slider = document.getElementById('militaryBudgetSlider');
+                if (slider) slider.value = myData.militaryBudgetPercentage || 25;
+
                 // Update UI based on slider values
                 updateDomesticSpending();
             }
@@ -1420,22 +1510,21 @@
         }
 
         async function loadWarApprovals() {
-            const myRole = getMyRole();
-            if (myRole !== 'Secretary of State' && myRole !== 'Minister of Domestic Tranquility') return;
+            const myRoles = getMyRoles();
+            const container = document.querySelector('.tab-panel.active');
+            if (!container || (!myRoles.includes('Secretary of State') && !myRoles.includes('Minister of Domestic Tranquility'))) return;
+
+            const approvalKey = myRoles.includes('Secretary of State') ? 'secretaryOfState' : 'ministerOfDomestic';
             
-            const approvalKey = myRole === 'Secretary of State' ? 'secretaryOfState' : 'ministerOfDomestic';
-            
-            const warsQuery = query(
-                collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/pendingWars`)
-            );
+            const warsQuery = query(collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/pendingWars`));
             
             const snapshot = await getDocs(warsQuery);
             const needsApproval = snapshot.docs.filter(doc => 
                 doc.data().declaringCountry === myCountryName && doc.data().approvals[approvalKey] === false
             );
             
-            const listDiv = document.getElementById('warApprovalList');
-            const noApprovalsDiv = document.getElementById('noWarApprovals');
+            const listDiv = container.querySelector('.war-approval-list');
+            const noApprovalsDiv = container.querySelector('.no-war-approvals');
             
             if (!listDiv || !noApprovalsDiv) return;
 
@@ -1461,8 +1550,14 @@
         }
 
         window.approveWar = async function(warId, approved) {
-            const myRole = getMyRole();
-            const approvalKey = myRole === 'Secretary of State' ? 'approvals.secretaryOfState' : 'approvals.ministerOfDomestic';
+            const myRoles = getMyRoles();
+            let approvalKey = '';
+            if (myRoles.includes('Secretary of State')) {
+                approvalKey = 'approvals.secretaryOfState';
+            } else if (myRoles.includes('Minister of Domestic Tranquility')) {
+                approvalKey = 'approvals.ministerOfDomestic';
+            }
+            if (!approvalKey) return;
             
             const warRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/pendingWars`, warId);
             await updateDoc(warRef, {
@@ -1476,7 +1571,7 @@
             if (approvals.secretaryOfState === true && approvals.ministerOfDomestic === true) {
                 // Move to active wars and notify enemies
                 await declareWarFinalized(warId, warSnap.data());
-            } else if (approvals.secretaryOfState === false || approvals.ministerOfDomestic === false) {
+            } else if (approved === false) {
                 // Rejected - delete
                 await deleteDoc(warRef);
                 showInfoModal("Declaration Rejected", "<p>The war declaration has been rejected by a minister.</p>");
@@ -1513,14 +1608,284 @@
             showInfoModal("War Declared!", "<p>War has been officially declared. May fortune favor the bold!</p>");
             await createLog(`Our nation has officially declared war on ${warData.targetCountries.map(t=>t.country).join(', ')}.`);
         }
+        
+        // ==== Role Assignment System ====
+        function maybeTriggerRoleAssignment() {
+            if (isTeacher || !myCountryName || localGameState.round !== 1) return;
+            if (roleAssignmentShown) return;
+            
+            const countryData = localCountryData[myCountryName];
+            const rolesAssigned = countryData?.roleAssignments && 
+                Object.keys(countryData.roleAssignments).length > 0;
+            
+            if (rolesAssigned) return;
+            
+            const teammates = Object.entries(localPlayersState)
+                .filter(([id, player]) => player.country === myCountryName && !player.isTeacher)
+                .map(([id, player]) => ({ id, email: player.email, name: player.name }));
+            
+            if (teammates.length === 0) return;
+            
+            teammates.sort((a, b) => a.email.localeCompare(b.email));
+            const captain = teammates[0];
+            
+            if (userId !== captain.id) return;
+            
+            roleAssignmentShown = true;
+            showRoleAssignmentModal(teammates);
+        }
+
+        function showRoleAssignmentModal(teammates) {
+            const modal = document.getElementById('roleAssignmentModal');
+            const countryNameEl = document.getElementById('roleAssignCountryName');
+            const listEl = document.getElementById('roleAssignmentList');
+            
+            countryNameEl.innerHTML = `Round 1 setup: assign a role to each teammate on <span class="font-semibold">${myCountryName}</span>.`;
+            
+            listEl.innerHTML = `
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                    <p class="text-sm text-blue-800">
+                        <strong>Note:</strong> If your team has fewer than ${STUDENT_ROLES.length} members, 
+                        students can take multiple roles. Check multiple boxes per person.
+                    </p>
+                </div>
+                ${teammates.map(teammate => `
+                    <div class="bg-white p-4 rounded-lg border border-gray-200">
+                        <div class="font-semibold text-gray-800 mb-2">${teammate.name}</div>
+                        <div class="text-sm text-gray-500 mb-3">${teammate.email}</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            ${STUDENT_ROLES.map(role => `
+                                <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer">
+                                    <input type="checkbox" 
+                                           value="${role.name}" 
+                                           data-player-id="${teammate.id}" 
+                                           data-email="${teammate.email}"
+                                           class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                    <span class="ml-2 text-sm text-gray-700">${role.name}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+        
+        window.closeRoleAssignmentModal = function() {
+            document.getElementById('roleAssignmentModal').classList.add('hidden');
+            isTeacherEditingRoles = false; // Reset the flag
+        }
+
+        window.saveRoleAssignments = async function() {
+            if (isTeacherEditingRoles) {
+                // Teacher logic (using selects)
+                const selects = document.querySelectorAll('#roleAssignmentList select');
+                const assignments = {};
+
+                selects.forEach(select => {
+                    const email = select.dataset.email;
+                    const role = select.value;
+                    if (email) {
+                        assignments[email] = role ? [role] : []; // Store as array, even if single or empty
+                    }
+                });
+
+                try {
+                    const batch = writeBatch(db);
+                    const countryName = document.getElementById('teacherCountrySelect').value;
+                    const countryRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/countryData`, countryName);
+                    
+                    const roleAssignmentsForDb = {};
+                    Object.entries(assignments).forEach(([email, roles]) => {
+                        roleAssignmentsForDb[email] = roles;
+                    });
+                    batch.set(countryRef, { roleAssignments: roleAssignmentsForDb }, { merge: true });
+
+                    selects.forEach(select => {
+                        const playerId = select.dataset.playerId;
+                        const roles = assignments[select.dataset.email] || [];
+                        if (playerId) {
+                            const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, playerId);
+                            batch.update(playerRef, {
+                                roles: roles,
+                                role: roles[0] || null
+                            });
+                        }
+                    });
+
+                    await batch.commit();
+                    closeRoleAssignmentModal();
+                    showInfoModal("Roles Updated", `<p>Roles for ${countryName} have been updated.</p>`);
+                } catch (error) {
+                    console.error("Failed to save teacher role edits:", error);
+                    showInfoModal("Save Failed", `<p>Could not save role edits: ${error.message}</p>`);
+                }
+
+            } else {
+                // Original Student logic (using checkboxes)
+                const checkboxes = document.querySelectorAll('#roleAssignmentList input[type="checkbox"]');
+                const assignments = {}; // email -> array of roles
+                const roleCoverage = new Set(); // track which roles are assigned
+                
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        const email = checkbox.dataset.email;
+                        const role = checkbox.value;
+                        
+                        if (!assignments[email]) {
+                            assignments[email] = [];
+                        }
+                        assignments[email].push(role);
+                        roleCoverage.add(role);
+                    }
+                });
+                
+                const teammates = [...new Set(Array.from(checkboxes).map(cb => cb.dataset.email))];
+                const unassignedStudents = teammates.filter(email => !assignments[email] || assignments[email].length === 0);
+                
+                if (unassignedStudents.length > 0) {
+                    showInfoModal("Unassigned Students", 
+                        `<p>The following students have no roles assigned:</p>
+                         <ul class="list-disc list-inside mt-2">
+                             ${unassignedStudents.map(email => `<li>${email}</li>`).join('')}
+                         </ul>
+                         <p class="mt-2">Please assign at least one role to each student.</p>`);
+                    return;
+                }
+                
+                const criticalRoles = ['Secretary of the Treasury', 'Secretary of War', 'Secretary of State', 'Minister of Domestic Tranquility'];
+                const missingCritical = criticalRoles.filter(role => !roleCoverage.has(role));
+                
+                if (missingCritical.length > 0) {
+                    const body = `<p>Warning: The following important roles are not assigned:</p>
+                                  <ul class="list-disc list-inside mt-2 text-left">${missingCritical.map(r => `<li>${r}</li>`).join('')}</ul>
+                                  <p class="mt-2">These roles have key gameplay functions. Do you want to continue anyway?</p>`;
+                    const proceed = await showConfirmModal("Missing Critical Roles", body);
+                    if (!proceed) return;
+                }
+                
+                try {
+                    const batch = writeBatch(db);
+                    
+                    const countryRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/countryData`, myCountryName);
+                    batch.set(countryRef, { roleAssignments: assignments }, { merge: true });
+                    
+                    Object.entries(assignments).forEach(([email, roles]) => {
+                        const playerId = Array.from(checkboxes).find(cb => cb.dataset.email === email)?.dataset.playerId;
+                        if (playerId) {
+                            const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, playerId);
+                            batch.update(playerRef, { 
+                                roles: roles,
+                                role: roles[0] || null
+                            });
+                        }
+                    });
+                    
+                    await batch.commit();
+                    
+                    closeRoleAssignmentModal();
+                    showInfoModal("Roles Assigned", 
+                        `<p>Team roles have been successfully assigned!</p>
+                         <p class="text-sm text-gray-600 mt-2">Students with multiple roles will see all their role tabs.</p>`);
+                    
+                    setupStudentTabs();
+                    
+                } catch (error) {
+                    console.error("Failed to save role assignments:", error);
+                    showInfoModal("Save Failed", `<p>Could not save role assignments: ${error.message}</p>`);
+                }
+            }
+        };
+
+        window.showTeacherRoleEditor = async function() {
+            isTeacherEditingRoles = true;
+            const countries = [...new Set(Object.values(localPlayersState)
+                .filter(p => !p.isTeacher)
+                .map(p => p.country))];
+            
+            const modal = document.getElementById('roleAssignmentModal');
+            const countryNameEl = document.getElementById('roleAssignCountryName');
+            
+            const countrySelect = `
+                <div class="mb-4">
+                    <label class="block font-medium text-gray-700 mb-2">Select Country to Edit:</label>
+                    <select id="teacherCountrySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        ${countries.map(c => `<option value="${c}">${c}</option>`).join('')}
+                    </select>
+                </div>
+            `;
+            
+            countryNameEl.innerHTML = countrySelect;
+            
+            if (countries.length > 0) {
+                loadCountryRoles(countries[0]);
+            }
+            
+            setTimeout(() => {
+                document.getElementById('teacherCountrySelect').addEventListener('change', (e) => {
+                    loadCountryRoles(e.target.value);
+                });
+            }, 100);
+            
+            modal.classList.remove('hidden');
+        };
+
+        function loadCountryRoles(countryName) {
+            const countryData = localCountryData[countryName];
+            const currentAssignments = countryData?.roleAssignments || {};
+
+            const teammates = Object.entries(localPlayersState)
+                .filter(([id, player]) => player.country === countryName && !player.isTeacher)
+                .map(([id, player]) => ({ 
+                    id, 
+                    email: player.email, 
+                    name: player.name, 
+                    currentRoles: currentAssignments[player.email] || player.roles || [player.role] || []
+                }));
+
+            const listEl = document.getElementById('roleAssignmentList');
+            listEl.innerHTML = teammates.map(teammate => {
+                // For simplicity in the teacher editor, we'll assign one primary role.
+                const primaryRole = teammate.currentRoles[0] || '';
+                return `
+                <div class="bg-white p-4 rounded-lg border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <div class="font-semibold text-gray-800">${teammate.name}</div>
+                            <div class="text-sm text-gray-500">${teammate.email}</div>
+                        </div>
+                    </div>
+                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
+                            data-player-id="${teammate.id}" data-email="${teammate.email}">
+                        <option value="">-- No Role Assigned --</option>
+                        ${STUDENT_ROLES.map(role => 
+                            `<option value="${role.name}" ${role.name === primaryRole ? 'selected' : ''}>
+                                ${role.name}
+                            </option>`
+                        ).join('')}
+                    </select>
+                </div>
+            `}).join('');
+        }
+
 
         function setupStudentTabsWithWar() {
+            const myRoles = getMyRoles();
             const tabsContainer = document.getElementById('roleTabs');
             const contentContainer = document.getElementById('roleTabContent');
             tabsContainer.innerHTML = '';
             contentContainer.innerHTML = '';
+            
+            if (myRoles.length === 0) {
+                contentContainer.innerHTML = `<p class="text-gray-500">Your role has not been assigned yet. Please wait for your team captain.</p>`;
+                document.getElementById('studentRoleInterface').classList.remove('hidden');
+                return;
+            }
 
-            STUDENT_ROLES.forEach((role, index) => {
+            const relevantRoles = STUDENT_ROLES.filter(role => myRoles.includes(role.name));
+
+            relevantRoles.forEach((role, index) => {
                 const roleId = role.name.replace(/\s+/g, '-');
                 const tabButton = document.createElement('button');
                 tabButton.className = 'tab-btn' + (index === 0 ? ' active' : '');
@@ -1533,30 +1898,32 @@
                 tabPanel.id = roleId;
                 tabPanel.className = 'tab-panel space-y-6' + (index === 0 ? ' active' : '');
                 
-                if (role.name === 'Secretary of War') {
-                    const template = document.getElementById('warDeclarationTemplate');
-                    if (template) tabPanel.innerHTML = template.innerHTML;
-                } else if (role.name === 'Secretary of State' || role.name === 'Minister of Domestic Tranquility') {
-                    const baseTemplate = role.contentId ? document.getElementById(role.contentId) : null;
-                    const warApprovalTemplate = document.getElementById('warApprovalTemplate');
-                    if (baseTemplate) tabPanel.innerHTML = baseTemplate.innerHTML;
-                    if (warApprovalTemplate && (localGameState.round || 1) >= 4) {
-                        const approvalSection = tabPanel.querySelector('#ministerWarApprovalSection, #allianceWarApprovalSection');
-                        if (approvalSection) {
-                            approvalSection.innerHTML = warApprovalTemplate.innerHTML;
-                            approvalSection.classList.remove('hidden');
-                        }
-                    }
-                } else if (role.contentId) {
-                    const tpl = document.getElementById(role.contentId);
+                let templateId = role.contentId;
+                if(role.name === 'Secretary of War' && localGameState.round >= 4) {
+                    templateId = 'warDeclarationTemplate';
+                }
+
+                if (templateId) {
+                    const tpl = document.getElementById(templateId);
                     if (tpl) tabPanel.innerHTML = tpl.innerHTML;
                 } else if (role.description) {
-                    tabPanel.innerHTML = `
+                     tabPanel.innerHTML = `
                         <div class="card p-6 bg-gray-50">
                             <h3 class="text-xl font-bold text-gray-800 mb-2">${role.name}</h3>
                             <p class="text-gray-600">${role.description}</p>
                         </div>`;
                 }
+
+                // Inject war approval section
+                if ((role.name === 'Secretary of State' || role.name === 'Minister of Domestic Tranquility') && localGameState.round >= 4) {
+                    const warApprovalTemplate = document.getElementById('warApprovalTemplate');
+                    const approvalSection = tabPanel.querySelector('#ministerWarApprovalSection, #allianceWarApprovalSection');
+                    if (approvalSection && warApprovalTemplate) {
+                        approvalSection.innerHTML = warApprovalTemplate.innerHTML;
+                        approvalSection.classList.remove('hidden');
+                    }
+                }
+
                 contentContainer.appendChild(tabPanel);
             });
 
@@ -1565,11 +1932,11 @@
         }
 
         function updateWarDeclarationVisibility() {
+            const myRoles = getMyRoles();
             const warInterface = document.getElementById('warDeclarationInterface');
-            const myRole = getMyRole();
             const round = localGameState.round || 1;
             if (warInterface) {
-                if (myRole === 'Secretary of War' && round >= 4) {
+                if (myRoles.includes('Secretary of War') && round >= 4) {
                     warInterface.classList.remove('hidden');
                 } else {
                     warInterface.classList.add('hidden');
@@ -1579,17 +1946,16 @@
             loadWarApprovals().catch(console.error);
         }
 
-        // Open/close modal
         window.showWarDeclarationModal = function() {
             const modal = document.getElementById('warDeclarationModal');
             const enemyList = document.getElementById('enemyAlliancesList');
 
-            // Current player's alliance block
+            // Get my alliance bloc
             const me = localPlayersState[userId] || {};
             const myAllies = Object.keys(me.alliances || {}).filter(id => me.alliances[id]);
             myAllies.push(userId);
 
-            // Group enemies by their alliance
+            // Group enemies by alliance
             const enemyAlliances = {};
             Object.entries(localPlayersState).forEach(([id, player]) => {
                 if (player.isTeacher || myAllies.includes(id)) return;
@@ -1600,52 +1966,37 @@
                 enemyAlliances[key].push(player);
             });
 
-            // Render
+            // Render checkboxes
             enemyList.innerHTML = '';
             Object.entries(enemyAlliances).forEach(([key, countries], idx) => {
                 const block = document.createElement('div');
                 block.className = 'bg-gray-50 p-4 rounded-lg';
-                const title = document.createElement('h5');
-                title.className = 'font-semibold text-gray-700 mb-2';
-                title.textContent = `Enemy Alliance ${idx + 1}`;
-                block.appendChild(title);
-
-                const checks = document.createElement('div');
-                checks.className = 'space-y-2';
-
+                block.innerHTML = `<h5 class="font-semibold text-gray-700 mb-2">Enemy Alliance ${idx + 1}</h5>`;
+                
                 countries.forEach(country => {
-                    const label = document.createElement('label');
-                    label.className = 'flex items-center p-2 rounded hover:bg-gray-100 cursor-pointer';
-
-                    const cb = document.createElement('input');
-                    cb.type = 'checkbox';
-                    cb.value = country.country;
-                    cb.dataset.playerId = Object.keys(localPlayersState).find(pid => localPlayersState[pid].country === country.country);
-                    cb.className = 'h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500';
-
-                    const name = document.createElement('span');
-                    name.className = 'ml-3 text-gray-700 font-medium';
-                    name.textContent = `${country.country} (${country.name})`;
-
-                    const stats = document.createElement('span');
-                    stats.className = 'ml-auto text-sm text-gray-500';
-                    stats.textContent = `Army: ${country.army || 0}, Navy: ${country.navy || 0}`;
-
-                    label.appendChild(cb);
-                    label.appendChild(name);
-                    label.appendChild(stats);
-                    checks.appendChild(label);
+                    const playerId = Object.keys(localPlayersState).find(pid => localPlayersState[pid] === country);
+                    block.innerHTML += `
+                        <label class="flex items-center p-2 rounded hover:bg-gray-100 cursor-pointer">
+                            <input type="checkbox" value="${country.country}" data-player-id="${playerId}" 
+                                class="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500">
+                            <span class="ml-3 text-gray-700 font-medium">${country.country} (${country.name})</span>
+                            <span class="ml-auto text-sm text-gray-500">Army: ${country.army || 0}, Navy: ${country.navy || 0}</span>
+                        </label>`;
                 });
-
-                block.appendChild(checks);
                 enemyList.appendChild(block);
             });
 
             modal.classList.remove('hidden');
         };
-
+        
         window.closeWarDeclarationModal = function() {
             document.getElementById('warDeclarationModal').classList.add('hidden');
+        };
+        window.showAllianceModal = function() {
+            document.getElementById('allianceModal').classList.remove('hidden');
+        };
+        window.closeAllianceModal = function() {
+            document.getElementById('allianceModal').classList.add('hidden');
         };
 
         // Submit declaration -> apps/{APP_ID}/simulations/{classCode}/pendingWars/{warId}
@@ -1701,6 +2052,82 @@
                 showInfoModal("Error", `<p>${e?.message || 'Something went wrong.'}</p>`);
             }
         };
+
+        window.purchaseUnits = async function(unitType, context) {
+            const quantityEl = document.getElementById(`${unitType}Quantity-${context}`);
+            const quantity = parseInt(quantityEl.value);
+            if (isNaN(quantity) || quantity <= 0) {
+                showInfoModal("Invalid Quantity", "<p>Please enter a valid number of units to purchase.</p>");
+                return;
+            }
+            
+            const cost = unitType === 'army' ? 750 : 1000;
+            const totalCost = quantity * cost;
+
+            const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, userId);
+
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const playerDoc = await transaction.get(playerRef);
+                    if (!playerDoc.exists()) {
+                        throw "Player data not found!";
+                    }
+                    const playerData = playerDoc.data();
+                    const militaryBudget = (playerData.dollars * (playerData.militaryBudgetPercentage / 100));
+                    const remainingBudget = militaryBudget - (playerData.militarySpendingThisRound || 0);
+
+                    if (totalCost > remainingBudget) {
+                        throw `Not enough military funds. You have $${remainingBudget.toLocaleString()} left.`;
+                    }
+
+                    const newUnitCount = (playerData[unitType] || 0) + quantity;
+                    const newSpending = (playerData.militarySpendingThisRound || 0) + totalCost;
+                    
+                    transaction.update(playerRef, {
+                        [unitType]: newUnitCount,
+                        militarySpendingThisRound: newSpending
+                    });
+                });
+                showInfoModal("Purchase Successful", `<p>You have purchased ${quantity} ${unitType} unit(s).</p>`);
+                createLog(`Purchased ${quantity} ${unitType} unit(s).`);
+            } catch (error) {
+                console.error("Purchase failed:", error);
+                showInfoModal("Purchase Failed", `<p>${error.toString()}</p>`);
+            }
+        };
+
+        window.setMilitaryBudget = async function(value) {
+            const percentage = parseInt(value);
+            document.getElementById('militaryBudgetPercentageDisplay').textContent = `${percentage}%`;
+            const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, userId);
+            try {
+                await updateDoc(playerRef, { militaryBudgetPercentage: percentage });
+                 createLog(`Set military budget allocation to ${percentage}%.`);
+            } catch(e) {
+                console.error("Failed to set military budget", e);
+            }
+        };
+
+        // Dummy functions for placeholders
+        window.downloadTemplate = () => { alert('Download template clicked'); };
+        window.uploadCSV = () => { alert('Upload CSV clicked'); };
+        window.addStudentToRoster = () => { alert('Add student clicked'); };
+        window.removeSelectedStudents = () => { alert('Remove selected clicked'); };
+        window.startSimulationDirectly = () => { alert('Start sim clicked'); };
+        window.clearAllRoster = () => { alert('Clear roster clicked'); };
+        window.planColonization = (key) => { alert(`Plan colonization for ${key}`); };
+        window.proposeAlliance = () => { alert('Propose alliance clicked'); };
+        window.startRound = () => { alert('Start round clicked'); };
+        window.resolveColonialChance = () => { alert('Resolve colonial chance clicked'); };
+        window.checkAlliances = () => { alert('Check alliances clicked'); };
+        window.nextRound = () => { alert('Next round clicked'); };
+        window.showStudentDemoModal = () => { alert('Show student demo clicked'); };
+        window.exitStudentDemo = () => { alert('Exit demo clicked'); };
+        window.showPnpPanel = () => { alert('Show PNP panel clicked'); };
+        window.closePnpPanel = () => { alert('Close PNP panel clicked'); };
+        window.exportResults = () => { alert('Export results clicked'); };
+        window.resetGame = () => { alert('Reset game clicked'); };
+        window.awardPnpToCountry = () => { alert('Award PNP clicked'); };
     </script>
 </body>
 </html>
