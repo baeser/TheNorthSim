@@ -435,8 +435,7 @@
                         <button id="colonialChanceBtn" onclick="resolveColonialChance()" class="btn btn-primary w-full">3. Resolve Colonial Chance</button>
                         <button id="checkAlliancesBtn" onclick="checkAlliances()" class="btn btn-primary w-full">4. Check Alliances</button>
                         <button id="nextRoundBtn" onclick="nextRound()" class="btn btn-success w-full bg-purple-600 hover:bg-purple-700">5. Advance to Next Round</button>
-                        <button id="enterDemoBtn" onclick="showStudentDemoModal()" class="btn btn-primary w-full bg-indigo-600 hover:bg-indigo-700">Enter Student Demo</button>
-                        <button id="exitDemoBtn" onclick="exitStudentDemo()" class="btn btn-secondary w-full" disabled>Exit Demo Mode</button>
+                        
                         <hr class="my-3">
                         <button onclick="showTeacherRoleEditor()" class="btn btn-secondary w-full">Edit Roles</button>
                         <button onclick="showPnpPanel()" class="btn btn-secondary w-full">Award/Deduct PNP</button>
@@ -734,6 +733,16 @@
             document.getElementById('confirmCancelBtn').onclick = () => closeConfirmModal(false);
             document.getElementById('confirmOkBtn').onclick = () => closeConfirmModal(true);
 
+            // Disable purchase buttons and domestic sliders until player data is ready
+            ['armyQuantity-main','navyQuantity-main','armyQuantity-war','navyQuantity-war'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.setAttribute('disabled', 'disabled');
+            });
+            ['healthcareSlider','educationSlider','infrastructureSlider','militaryBudgetSlider'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.setAttribute('disabled', 'disabled');
+            });
+
             const flagUploader = document.getElementById('flagUploader');
             if(flagUploader) {
                 flagUploader.addEventListener('change', (e) => {
@@ -817,10 +826,23 @@
             const modal = document.getElementById('studentNotificationModal');
             const titleEl = document.getElementById('studentNotificationTitle');
             const bodyEl = document.getElementById('studentNotificationBody');
-            
-            titleEl.textContent = notificationData.type === 'war_declared' ? '⚔️ WAR DECLARED!' : 'Update from Teacher';
-            bodyEl.innerHTML = `<p class="font-semibold">${notificationData.message}</p>`;
-            
+            if (notificationData.type === 'war_declared') {
+                titleEl.textContent = '⚔️ WAR DECLARED!';
+                bodyEl.innerHTML = `<p class="font-semibold">${notificationData.message}</p>`;
+            } else if (notificationData.type === 'alliance_request') {
+                titleEl.textContent = 'Alliance Request';
+                bodyEl.innerHTML = `
+                    <p class="font-semibold mb-4">${notificationData.fromCountry || notificationData.from} has proposed an alliance.</p>
+                    <div class="flex gap-3 justify-center">
+                        <button class="btn btn-success px-6" onclick="acceptAllianceRequest('${notificationId}','${notificationData.fromPlayerId}')">Accept</button>
+                        <button class="btn btn-danger px-6" onclick="rejectAllianceRequest('${notificationId}','${notificationData.fromPlayerId}')">Reject</button>
+                    </div>
+                `;
+            } else {
+                titleEl.textContent = 'Update from Teacher';
+                bodyEl.innerHTML = `<p class="font-semibold">${notificationData.message}</p>`;
+            }
+
             modal.classList.remove('hidden');
             setTimeout(() => {
                 modal.querySelector('.card').classList.remove('scale-95', 'opacity-0');
@@ -847,10 +869,87 @@
         };
 
 
-        async function loadExistingRoster() {
-            // Placeholder
-            console.log("loadExistingRoster called");
-        }
+        // Load existing roster from database
+        window.loadExistingRoster = async function() {
+            const rosterListEl = document.getElementById('rosterList');
+            const periodBreakdownEl = document.getElementById('periodBreakdown');
+            const classPeriodSelectEl = document.getElementById('classPeriodSelect');
+            
+            try {
+                const rosterColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/roster`);
+                const snapshot = await getDocs(rosterColRef);
+                
+                if (snapshot.empty) {
+                    rosterListEl.innerHTML = '<p class="text-gray-500 text-center">No students added yet</p>';
+                    periodBreakdownEl.innerHTML = '<p class="text-gray-500">No students to display</p>';
+                    return;
+                }
+                
+                const students = [];
+                snapshot.forEach(doc => {
+                    students.push({ email: doc.id, ...doc.data() });
+                });
+                
+                // Sort by email
+                students.sort((a, b) => a.email.localeCompare(b.email));
+                
+                // Display roster list with checkboxes
+                rosterListEl.innerHTML = students.map(student => `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <label class="flex items-center flex-grow cursor-pointer">
+                            <input type="checkbox" value="${student.email}" 
+                                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 mr-3">
+                            <div class="flex-grow">
+                                <span class="font-medium text-gray-800">${student.email}</span>
+                                <span class="text-sm text-gray-600 ml-3">${student.country}</span>
+                                ${student.period ? `<span class="text-xs text-gray-500 ml-2">(Period ${student.period})</span>` : ''}
+                            </div>
+                        </label>
+                    </div>
+                `).join('');
+                
+                // Create period breakdown
+                const periodGroups = {};
+                students.forEach(student => {
+                    const period = student.period || 'Unassigned';
+                    if (!periodGroups[period]) {
+                        periodGroups[period] = [];
+                    }
+                    periodGroups[period].push(student);
+                });
+                
+                // Sort periods
+                const sortedPeriods = Object.keys(periodGroups).sort((a, b) => {
+                    if (a === 'Unassigned') return 1;
+                    if (b === 'Unassigned') return -1;
+                    return parseInt(a) - parseInt(b);
+                });
+                
+                periodBreakdownEl.innerHTML = sortedPeriods.map(period => {
+                    const studentsInPeriod = periodGroups[period];
+                    return `
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                ${period === 'Unassigned' ? 'Unassigned' : `Period ${period}`} 
+                                (${studentsInPeriod.length} student${studentsInPeriod.length !== 1 ? 's' : ''})
+                            </h4>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                ${studentsInPeriod.map(s => `<div>${s.email} - ${s.country}</div>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Populate class period selector
+                const assignedPeriods = sortedPeriods.filter(p => p !== 'Unassigned');
+                classPeriodSelectEl.innerHTML = '<option value="">-- Select Period --</option>' +
+                    assignedPeriods.map(p => `<option value="${p}">Period ${p}</option>`).join('');
+                
+            } catch (error) {
+                console.error("Failed to load roster:", error);
+                rosterListEl.innerHTML = `<p class="text-red-500">Error loading roster: ${error.message}</p>`;
+            }
+        };
         
         async function notifyApprovers(warId, warDeclaration) {
              const approverRoles = ['Secretary of State', 'Minister of Domestic Tranquility'];
@@ -1001,11 +1100,20 @@
             });
 
             const playersColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`);
+            let playersFirstLoad = true;
             playersUnsubscribe = onSnapshot(playersColRef, (snapshot) => {
                 localPlayersState = {};
                 snapshot.forEach(doc => { localPlayersState[doc.id] = doc.data(); });
                 updateAllPlayersUI();
                 maybeTriggerRoleAssignment();
+                // after initial players load, ensure domestic UI is synced immediately
+                if (playersFirstLoad) {
+                    playersFirstLoad = false;
+                    // call immediate domestic updater so sliders/values show right away
+                    if (typeof updateDomesticSpendingImmediate === 'function') {
+                        updateDomesticSpendingImmediate();
+                    }
+                }
             });
 
             const countryDataColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/countryData`);
@@ -1129,8 +1237,34 @@
         let countdownInterval;
         function getTimerDisplay(timerEnds) {
             clearInterval(countdownInterval);
-            if (!timerEnds) return '00:00';
-            const endTime = timerEnds.toDate().getTime();
+
+            const toMillis = (t) => {
+                if (!t) return null;
+                if (typeof t.toDate === 'function') return t.toDate().getTime(); // Firestore Timestamp
+                if (t instanceof Date) return t.getTime();                        // JS Date
+                const parsed = new Date(t);
+                return isNaN(parsed.getTime()) ? null : parsed.getTime();         // string/number
+            };
+
+            // Prefer server-derived timerStartedAt + duration from game doc to avoid client clock skew
+            const endTime = (() => {
+                try {
+                    if (localGameState?.timerStartedAt && localGameState?.timerDurationMinutes) {
+                        const startMs = (typeof localGameState.timerStartedAt.toDate === 'function')
+                            ? localGameState.timerStartedAt.toDate().getTime()
+                            : new Date(localGameState.timerStartedAt).getTime();
+                        return startMs + (Number(localGameState.timerDurationMinutes) * 60000);
+                    }
+                } catch (e) {
+                    // ignore and fallback
+                }
+                // fallback to the original timerEnds value (backwards compatibility)
+                if (!timerEnds) return null;
+                return toMillis(timerEnds);
+            })();
+
+            if (!endTime || Number.isNaN(endTime)) return '00:00';
+
             const update = () => {
                 const now = Date.now();
                 const timeLeft = Math.max(0, endTime - now);
@@ -1138,10 +1272,12 @@
                 const seconds = Math.floor((timeLeft % 60000) / 1000);
                 const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
                 if (localGameState.phase === 'active') {
-                    document.getElementById('phaseText').textContent = `Active - ${display}`;
+                    const phaseTextEl = document.getElementById('phaseText');
+                    if (phaseTextEl) phaseTextEl.textContent = `Active - ${display}`;
                 }
-                if(timeLeft <= 0) clearInterval(countdownInterval);
+                if (timeLeft <= 0) clearInterval(countdownInterval);
             };
+
             update();
             countdownInterval = setInterval(update, 1000);
             return '';
@@ -1149,6 +1285,22 @@
 
         function updateAllPlayersUI() {
             const myData = localPlayersState[userId];
+            // Add this inside updateAllPlayersUI() for students
+            if (!isTeacher && myCountryName) {
+                const banner = document.getElementById('studentCountryBanner');
+                const theme = COUNTRY_THEMES[myCountryName];
+                if (banner && theme) {
+                    banner.style.backgroundImage = `url('${theme.banner}')`;
+                    banner.classList.remove('hidden');
+                    document.getElementById('bannerCountryName').textContent = myCountryName;
+                    document.getElementById('bannerEmblem').innerHTML = theme.emblem;
+                }
+                
+                document.getElementById('displayPlayerName').textContent = user.displayName || user.email;
+                document.getElementById('displayClassCode').textContent = currentClassCode;
+                // Enable student controls as soon as player data is present
+                if (myData) enableStudentControls();
+            }
             if (myData && !isTeacher) {
                 document.getElementById('countryBudget').textContent = (myData.dollars || 0).toLocaleString();
                 document.getElementById('roundIncome').textContent = (myData.income || 0).toLocaleString();
@@ -1338,17 +1490,40 @@
         }
 
         // ==== Domestic Policy System ====
-        window.updateDomesticSpending = function() {
+        // Simple debounce helper
+        function debounce(fn, wait) {
+            let timer = null;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn.apply(this, args), wait);
+            };
+        }
+
+        // Immediate updater used once after initial players load
+        window.updateDomesticSpendingImmediate = function() {
             const myData = localPlayersState[userId];
             if (!myData) return;
+
+            // enable sliders now that data is present
+            ['healthcareSlider','educationSlider','infrastructureSlider','militaryBudgetSlider'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.removeAttribute('disabled');
+            });
+            // enable purchase buttons that call purchaseUnits
+            document.querySelectorAll('button[onclick]').forEach(btn => {
+                try {
+                    const onclick = btn.getAttribute('onclick') || '';
+                    if (onclick.includes('purchaseUnits')) {
+                        btn.removeAttribute('disabled');
+                    }
+                } catch(e) {}
+            });
+
             const totalBudget = myData.dollars || 0;
-            
-            // Read CURRENT slider values
             const healthcare = parseInt(document.getElementById('healthcareSlider')?.value || 20);
             const education = parseInt(document.getElementById('educationSlider')?.value || 20);
             const infrastructure = parseInt(document.getElementById('infrastructureSlider')?.value || 20);
 
-            // Update the UI with those values...
             document.getElementById('healthcarePercent').textContent = `${healthcare}%`;
             document.getElementById('educationPercent').textContent = `${education}%`;
             document.getElementById('infrastructurePercent').textContent = `${infrastructure}%`;
@@ -1363,19 +1538,18 @@
 
             const warnings = [];
             const total = healthcare + education + infrastructure;
-            
             if (total < 15) warnings.push({ type: 'danger', msg: '💀 CATASTROPHIC: Revolution imminent!' });
             else if (total < 30) warnings.push({ type: 'danger', msg: '🚨 CRISIS: Total domestic spending critically low!' });
             else if (total < 45) warnings.push({ type: 'warning', msg: '⚠️ WARNING: Unrest growing' });
-            
+
             if (healthcare < 5) warnings.push({ type: 'danger', msg: '🏥 Healthcare system collapsed' });
             else if (healthcare < 10) warnings.push({ type: 'danger', msg: '🏥 Healthcare crisis imminent' });
             else if (healthcare < 15) warnings.push({ type: 'warning', msg: '🏥 Healthcare strained' });
-            
+
             if (education < 5) warnings.push({ type: 'danger', msg: '📚 Education system destroyed' });
             else if (education < 10) warnings.push({ type: 'danger', msg: '📚 Education collapsing' });
             else if (education < 15) warnings.push({ type: 'warning', msg: '📚 Education declining' });
-            
+
             if (infrastructure < 5) warnings.push({ type: 'danger', msg: '🛤️ Infrastructure failed' });
             else if (infrastructure < 10) warnings.push({ type: 'danger', msg: '🛤️ Infrastructure failing' });
             else if (infrastructure < 15) warnings.push({ type: 'warning', msg: '🛤️ Infrastructure deteriorating' });
@@ -1395,6 +1569,30 @@
             document.getElementById('happinessDisplay').textContent = happiness;
             document.getElementById('happinessBar').style.width = `${Math.min(100, happiness)}%`;
         };
+
+        // Enable controls for student interactions (called when student data is ready)
+        function enableStudentControls() {
+            ['armyQuantity-main','navyQuantity-main','armyQuantity-war','navyQuantity-war',
+             'healthcareSlider','educationSlider','infrastructureSlider','militaryBudgetSlider'
+            ].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.removeAttribute('disabled');
+            });
+            // Also enable purchase buttons that call purchaseUnits
+            document.querySelectorAll('button[onclick]').forEach(btn => {
+                try {
+                    const onclick = btn.getAttribute('onclick') || '';
+                    if (onclick.includes('purchaseUnits')) {
+                        btn.removeAttribute('disabled');
+                    }
+                } catch(e) {}
+            });
+        }
+
+        // Debounced version for UI event handlers
+        window.updateDomesticSpending = debounce(function() {
+            updateDomesticSpendingImmediate();
+        }, 150);
 
         window.saveDomesticBudget = async function() {
             const healthcare = parseInt(document.getElementById('healthcareSlider').value);
@@ -1422,7 +1620,7 @@
             
             const batch = writeBatch(db);
             const playersColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`);
-            const q = query(playersColRef, where("isTeacher", "!=", true));
+            const q = query(playersColRef, where("isTeacher", "==", false));
             const playerDocs = await getDocs(q);
 
             for (const playerDoc of playerDocs.docs) {
@@ -1725,6 +1923,11 @@
             } else {
                 // Original Student logic (using checkboxes)
                 const checkboxes = document.querySelectorAll('#roleAssignmentList input[type="checkbox"]');
+                if (checkboxes.length === 0 && !isTeacherEditingRoles) {
+                    console.error('No checkboxes found in role assignment modal (student flow)');
+                    showInfoModal("Save Failed", "<p>Role assignment UI not ready. Please try again.</p>");
+                    return;
+                }
                 const assignments = {}; // email -> array of roles
                 const roleCoverage = new Set(); // track which roles are assigned
                 
@@ -1931,6 +2134,11 @@
             updateWarDeclarationVisibility();
         }
 
+        // Compatibility wrapper used elsewhere in the code
+        function setupStudentTabs() {
+            setupStudentTabsWithWar();
+        }
+
         function updateWarDeclarationVisibility() {
             const myRoles = getMyRoles();
             const warInterface = document.getElementById('warDeclarationInterface');
@@ -1992,7 +2200,30 @@
         window.closeWarDeclarationModal = function() {
             document.getElementById('warDeclarationModal').classList.add('hidden');
         };
+        function populateAllianceModal() {
+            const container = document.getElementById('countryCheckboxes');
+            const myData = localPlayersState[userId] || {};
+            
+            const otherPlayers = Object.entries(localPlayersState)
+                .filter(([id, p]) => !p.isTeacher && p.country !== myCountryName);
+            
+            container.innerHTML = otherPlayers.map(([id, player]) => {
+                const isAllied = myData.alliances && myData.alliances[id];
+                const restricted = (ALLIANCE_RESTRICTIONS[myCountryName] || []).includes(player.country);
+                
+                return `
+                    <label class="flex items-center p-2 rounded hover:bg-gray-50 ${restricted ? 'opacity-50' : ''}">
+                        <input type="checkbox" value="${id}" ${isAllied ? 'checked' : ''} 
+                               ${restricted ? 'disabled' : ''}
+                               class="h-4 w-4 rounded border-gray-300 text-indigo-600">
+                        <span class="ml-2">${player.country} (${player.name})</span>
+                        ${restricted ? '<span class="ml-auto text-xs text-red-600">Historical Rivals</span>' : ''}
+                    </label>`;
+            }).join('');
+        }
+
         window.showAllianceModal = function() {
+            populateAllianceModal();
             document.getElementById('allianceModal').classList.remove('hidden');
         };
         window.closeAllianceModal = function() {
@@ -2108,26 +2339,653 @@
             }
         };
 
-        // Dummy functions for placeholders
-        window.downloadTemplate = () => { alert('Download template clicked'); };
-        window.uploadCSV = () => { alert('Upload CSV clicked'); };
-        window.addStudentToRoster = () => { alert('Add student clicked'); };
-        window.removeSelectedStudents = () => { alert('Remove selected clicked'); };
-        window.startSimulationDirectly = () => { alert('Start sim clicked'); };
-        window.clearAllRoster = () => { alert('Clear roster clicked'); };
-        window.planColonization = (key) => { alert(`Plan colonization for ${key}`); };
-        window.proposeAlliance = () => { alert('Propose alliance clicked'); };
-        window.startRound = () => { alert('Start round clicked'); };
-        window.resolveColonialChance = () => { alert('Resolve colonial chance clicked'); };
-        window.checkAlliances = () => { alert('Check alliances clicked'); };
-        window.nextRound = () => { alert('Next round clicked'); };
+        // Download CSV template
+        window.downloadTemplate = function() {
+            const csvContent = "Email,Country,Period\nstudent1@example.com,Tobermory,1\nstudent2@example.com,Metz,1";
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "roster_template.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        // Upload and parse CSV
+        window.uploadCSV = async function() {
+            const fileInput = document.getElementById('csvFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showInfoModal("No File Selected", "<p>Please select a CSV file to upload.</p>");
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const text = e.target.result;
+                    const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+                    
+                    // Skip header row
+                    const dataLines = lines.slice(1);
+                    
+                    if (dataLines.length === 0) {
+                        showInfoModal("Empty File", "<p>The CSV file contains no student data.</p>");
+                        return;
+                    }
+                    
+                    const batch = writeBatch(db);
+                    let successCount = 0;
+                    let errors = [];
+                    
+                    for (const line of dataLines) {
+                        const parts = line.split(',').map(p => p.trim());
+                        const email = parts[0];
+                        const country = parts[1];
+                        const period = parts[2] || '';
+                        
+                        if (!email || !country) {
+                            errors.push(`Skipped invalid row: ${line}`);
+                            continue;
+                        }
+                        
+                        // Validate country
+                        if (!STARTING_BUDGETS[country]) {
+                            errors.push(`Invalid country "${country}" for ${email}`);
+                            continue;
+                        }
+                        
+                        const rosterRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/roster`, email);
+                        batch.set(rosterRef, {
+                            email: email,
+                            country: country,
+                            period: period,
+                            addedAt: serverTimestamp()
+                        });
+                        successCount++;
+                    }
+                    
+                    await batch.commit();
+                    
+                    let message = `<p>Successfully added ${successCount} student(s) to the roster.</p>`;
+                    if (errors.length > 0) {
+                        message += `<p class="mt-3 text-sm text-red-600">Errors:</p><ul class="text-xs list-disc list-inside">`;
+                        errors.forEach(err => {
+                            message += `<li>${err}</li>`;
+                        });
+                        message += `</ul>`;
+                    }
+                    
+                    showInfoModal("CSV Upload Complete", message);
+                    await loadExistingRoster();
+                    fileInput.value = '';
+                    
+                } catch (error) {
+                    console.error("CSV parsing error:", error);
+                    showInfoModal("Upload Failed", `<p>Failed to parse CSV: ${error.message}</p>`);
+                }
+            };
+            
+            reader.readAsText(file);
+        };
+
+        // Add single student to roster
+        window.addStudentToRoster = async function() {
+            const email = document.getElementById('studentEmail').value.trim();
+            const country = document.getElementById('studentCountry').value;
+            const period = document.getElementById('studentPeriod').value;
+            
+            if (!email) {
+                showInfoModal("Missing Email", "<p>Please enter a student email address.</p>");
+                return;
+            }
+            
+            if (!country) {
+                showInfoModal("Missing Country", "<p>Please select a country for this student.</p>");
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                showInfoModal("Invalid Email", "<p>Please enter a valid email address.</p>");
+                return;
+            }
+            
+            try {
+                const rosterRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/roster`, email);
+                await setDoc(rosterRef, {
+                    email: email,
+                    country: country,
+                    period: period,
+                    addedAt: serverTimestamp()
+                });
+                
+                showInfoModal("Student Added", `<p>${email} has been added to ${country}.</p>`);
+                
+                // Clear inputs
+                document.getElementById('studentEmail').value = '';
+                document.getElementById('studentCountry').value = '';
+                document.getElementById('studentPeriod').value = '';
+                
+                await loadExistingRoster();
+                
+            } catch (error) {
+                console.error("Failed to add student:", error);
+                showInfoModal("Error", `<p>Failed to add student: ${error.message}</p>`);
+            }
+        };
+
+        // Remove selected students
+        window.removeSelectedStudents = async function() {
+            const checkboxes = document.querySelectorAll('#rosterList input[type="checkbox"]:checked');
+            
+            if (checkboxes.length === 0) {
+                showInfoModal("No Selection", "<p>Please select students to remove.</p>");
+                return;
+            }
+            
+            const confirmed = await showConfirmModal(
+                "Remove Students?",
+                `<p>Remove ${checkboxes.length} student(s) from the roster?</p>`
+            );
+            
+            if (!confirmed) return;
+            
+            try {
+                const batch = writeBatch(db);
+                
+                checkboxes.forEach(checkbox => {
+                    const email = checkbox.value;
+                    const rosterRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/roster`, email);
+                    batch.delete(rosterRef);
+                });
+                
+                await batch.commit();
+                showInfoModal("Students Removed", `<p>${checkboxes.length} student(s) removed from roster.</p>`);
+                await loadExistingRoster();
+                
+            } catch (error) {
+                console.error("Failed to remove students:", error);
+                showInfoModal("Error", `<p>Failed to remove students: ${error.message}</p>`);
+            }
+        };
+
+        // Start simulation with selected period
+        window.startSimulationDirectly = async function() {
+            const selectedPeriod = document.getElementById('classPeriodSelect').value;
+            
+            if (!selectedPeriod) {
+                showInfoModal("No Period Selected", "<p>Please select a class period to start.</p>");
+                return;
+            }
+            
+            const confirmed = await showConfirmModal(
+                "Start Simulation?",
+                `<p>Start the simulation for Period ${selectedPeriod}?</p>
+                 <p class="text-sm text-gray-600 mt-2">Students in this period will be initialized with their starting budgets and resources.</p>`
+            );
+            
+            if (!confirmed) return;
+            
+            try {
+                // Get all students in the selected period
+                const rosterColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/roster`);
+                const q = query(rosterColRef, where('period', '==', selectedPeriod));
+                const snapshot = await getDocs(q);
+                
+                if (snapshot.empty) {
+                    showInfoModal("No Students", `<p>No students found in Period ${selectedPeriod}.</p>`);
+                    return;
+                }
+                
+                const batch = writeBatch(db);
+                
+                // Initialize each student
+                snapshot.forEach(doc => {
+                    const studentData = doc.data();
+                    const country = studentData.country;
+                    
+                    // Note: We don't create player docs here - they're created when students join
+                    // Just ensure the country data exists
+                    const countryRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/countryData`, country);
+                    batch.set(countryRef, {
+                        pnp: 100,
+                        roleAssignments: {}
+                    }, { merge: true });
+                });
+                
+                // Set the simulation as active for this period
+                const gameDocRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}`);
+                batch.set(gameDocRef, {
+                    activePeriod: selectedPeriod,
+                    round: 1,
+                    phase: 'waiting'
+                }, { merge: true });
+                
+                await batch.commit();
+                
+                // Hide roster screen, show game
+                document.getElementById('rosterScreen').classList.add('hidden');
+                document.getElementById('gameContainer').classList.remove('hidden');
+                
+                setupFirestoreListeners();
+                
+                showInfoModal("Simulation Started", 
+                    `<p>Simulation started for Period ${selectedPeriod}!</p>
+                     <p class="text-sm text-gray-600 mt-2">Students can now join using class code: <strong>${currentClassCode}</strong></p>`);
+                
+            } catch (error) {
+                console.error("Failed to start simulation:", error);
+                showInfoModal("Error", `<p>Failed to start simulation: ${error.message}</p>`);
+            }
+        };
+
+        // Clear all roster entries
+        window.clearAllRoster = async function() {
+            const confirmed = await showConfirmModal(
+                "Clear Entire Roster?",
+                "<p class='text-red-600 font-semibold'>This will remove ALL students from the roster.</p><p class='mt-2'>This action cannot be undone.</p>"
+            );
+            
+            if (!confirmed) return;
+            
+            // Double confirmation for destructive action
+            const doubleConfirmed = await showConfirmModal(
+                "Are You Absolutely Sure?",
+                "<p>This will permanently delete all roster data.</p>"
+            );
+            
+            if (!doubleConfirmed) return;
+            
+            try {
+                const rosterColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/roster`);
+                const snapshot = await getDocs(rosterColRef);
+                
+                const batch = writeBatch(db);
+                snapshot.docs.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+                
+                await batch.commit();
+                
+                showInfoModal("Roster Cleared", "<p>All students have been removed from the roster.</p>");
+                await loadExistingRoster();
+                
+            } catch (error) {
+                console.error("Failed to clear roster:", error);
+                showInfoModal("Error", `<p>Failed to clear roster: ${error.message}</p>`);
+            }
+        };
+        window.planColonization = async function(key) {
+            const territory = COLONIAL_TERRITORIES[key];
+            const myData = localPlayersState[userId] || {};
+            
+            if ((myData.dollars || 0) < territory.cost) {
+                showInfoModal("Insufficient Funds", `<p>You need $${territory.cost.toLocaleString()} to attempt this colonization.</p>`);
+                return;
+            }
+            
+            const confirmed = await showConfirmModal(
+                "Plan Colonization?",
+                `<p>Pay $${territory.cost.toLocaleString()} now to attempt colonizing ${territory.name}?</p>
+                 <p class="text-sm text-gray-600 mt-2">Success is determined at end of round (50% chance)</p>`
+            );
+            
+            if (!confirmed) return;
+            
+            const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, userId);
+            
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const playerDoc = await transaction.get(playerRef);
+                    const player = playerDoc.data();
+                    
+                    if (player.dollars < territory.cost) {
+                        throw "Insufficient funds!";
+                    }
+                    
+                    transaction.update(playerRef, {
+                        dollars: player.dollars - territory.cost,
+                        [`colonialPlans.${key}`]: territory
+                    });
+                });
+                
+                showInfoModal("Colonization Planned", `<p>You have invested in attempting to colonize ${territory.name}. Results will be revealed at the end of the round.</p>`);
+                await createLog(`Invested $${territory.cost.toLocaleString()} to attempt colonizing ${territory.name}.`);
+            } catch (error) {
+                showInfoModal("Failed", `<p>${error.toString()}</p>`);
+            }
+        };
+        window.proposeAlliance = async function() {
+            const checkboxes = document.querySelectorAll('#countryCheckboxes input[type="checkbox"]:checked');
+            const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+
+            if (selectedIds.length === 0) {
+                showInfoModal("No Selection", "<p>Please select at least one country to ally with.</p>");
+                return;
+            }
+
+            // For each selected target, create a notification in their notifications collection
+            for (const targetId of selectedIds) {
+                const notifCol = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${targetId}/notifications`);
+                await addDoc(notifCol, {
+                    type: 'alliance_request',
+                    fromPlayerId: userId,
+                    fromCountry: localPlayersState[userId]?.country || 'Unknown',
+                    message: `${localPlayersState[userId]?.country || 'A nation'} has proposed an alliance with you.`,
+                    timestamp: serverTimestamp()
+                });
+            }
+
+            closeAllianceModal();
+            showInfoModal("Proposals Sent", "<p>Alliance proposals have been sent to selected nations.</p>");
+            await createLog(`Sent alliance proposals to ${selectedIds.length} nation(s).`);
+        };
+
+        window.acceptAllianceRequest = async function(notificationId, fromPlayerId) {
+            // Set alliance flag on both players
+            const myRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, userId);
+            const otherRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, fromPlayerId);
+
+            const batch = writeBatch(db);
+            batch.update(myRef, { [`alliances.${fromPlayerId}`]: true });
+            batch.update(otherRef, { [`alliances.${userId}`]: true });
+
+            // Remove the notification
+            const notifRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${userId}/notifications`, notificationId);
+            batch.delete(notifRef);
+
+            await batch.commit();
+
+            closeStudentNotificationModal();
+            showInfoModal("Alliance Formed", `<p>You are now allied with ${localPlayersState[fromPlayerId]?.country || 'a nation'}.</p>`);
+            await createLog(`Accepted alliance with ${localPlayersState[fromPlayerId]?.country || fromPlayerId}.`);
+        };
+
+        window.rejectAllianceRequest = async function(notificationId, fromPlayerId) {
+            const notifRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${userId}/notifications`, notificationId);
+            await deleteDoc(notifRef);
+            closeStudentNotificationModal();
+            showInfoModal("Alliance Rejected", `<p>You rejected the alliance proposal from ${localPlayersState[fromPlayerId]?.country || fromPlayerId}.</p>`);
+            await createLog(`Rejected alliance with ${localPlayersState[fromPlayerId]?.country || fromPlayerId}.`);
+        };
+        window.startRound = async function() {
+            const timerMinutes = parseInt(document.getElementById('timerMinutes').value) || 15;
+            const timerEnds = new Date(Date.now() + timerMinutes * 60000);
+            
+            const gameDocRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}`);
+            await updateDoc(gameDocRef, {
+                phase: 'active',
+                timerEnds: timerEnds
+            });
+            
+            // Reset military spending for all players
+            const playersColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`);
+            const snapshot = await getDocs(query(playersColRef, where("isTeacher", "==", false)));
+            const batch = writeBatch(db);
+            snapshot.docs.forEach(d => {
+                batch.update(d.ref, { militarySpendingThisRound: 0 });
+            });
+            await batch.commit();
+        };
+        window.resolveColonialChance = async function() {
+            showInfoModal("Processing...", "<p>Resolving colonial attempts...</p>");
+            
+            const playersColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`);
+            const snapshot = await getDocs(query(playersColRef, where("isTeacher", "==", false)));
+            
+            const batch = writeBatch(db);
+            let results = [];
+            
+            for (const playerDoc of snapshot.docs) {
+                const player = playerDoc.data();
+                const plans = player.colonialPlans || {};
+                
+                for (const [key, plan] of Object.entries(plans)) {
+                    const territory = COLONIAL_TERRITORIES[key];
+                    if (!territory) continue;
+                    const roll = Math.random() * 100;
+                    const success = roll < 50; // 50% chance
+                    
+                    if (success) {
+                        batch.update(playerDoc.ref, {
+                            [`colonies.${key}`]: territory,
+                            [`colonialPlans.${key}`]: null,
+                            income: (player.income || BASE_INCOME) + territory.income
+                        });
+                        results.push(`${player.country} successfully colonized ${territory.name}!`);
+                        
+                        const logColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${playerDoc.id}/log`);
+                        const logDocRef = doc(logColRef);
+                        batch.set(logDocRef, {
+                            message: `Successfully colonized ${territory.name}! (+${territory.income} income)`,
+                            timestamp: serverTimestamp()
+                        });
+                    } else {
+                        batch.update(playerDoc.ref, {
+                            [`colonialPlans.${key}`]: null
+                        });
+                        results.push(`${player.country} failed to colonize ${territory.name}.`);
+                        
+                        const logColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${playerDoc.id}/log`);
+                        const logDocRef = doc(logColRef);
+                        batch.set(logDocRef, {
+                            message: `Failed to colonize ${territory.name}. Funds lost.`,
+                            timestamp: serverTimestamp()
+                        });
+                    }
+                }
+            }
+            
+            await batch.commit();
+            closeInfoModal();
+            showInfoModal("Colonial Results", `<div class="space-y-2">${results.map(r => `<p>${r}</p>`).join('')}</div>`);
+        };
+        window.checkAlliances = async function() {
+            showInfoModal("Checking Alliances", "<p>Validating all alliances for historical accuracy...</p>");
+            
+            const playersColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`);
+            const snapshot = await getDocs(query(playersColRef, where("isTeacher", "==", false)));
+            
+            const batch = writeBatch(db);
+            let violations = [];
+            
+            snapshot.docs.forEach(playerDoc => {
+                const player = playerDoc.data();
+                const allies = Object.keys(player.alliances || {}).filter(id => player.alliances[id]);
+                
+                allies.forEach(allyId => {
+                    const ally = localPlayersState[allyId];
+                    if (ally) {
+                        const restricted = ALLIANCE_RESTRICTIONS[player.country] || [];
+                        if (restricted.includes(ally.country)) {
+                            violations.push(`${player.country} cannot ally with ${ally.country} (historical rivals)`);
+                            batch.update(playerDoc.ref, {
+                                [`alliances.${allyId}`]: false
+                            });
+                        }
+                    }
+                });
+            });
+            
+            await batch.commit();
+            closeInfoModal();
+            
+            if (violations.length > 0) {
+                showInfoModal("Alliance Violations", 
+                    `<div class="space-y-2">${violations.map(v => `<p class="text-red-600">${v}</p>`).join('')}</div>`);
+            } else {
+                showInfoModal("Alliances Valid", "<p>All alliances are historically acceptable.</p>");
+            }
+        };
+        window.nextRound = async function() {
+            const gameDocRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}`);
+            const currentRound = localGameState.round || 1;
+            await updateDoc(gameDocRef, {
+                round: currentRound + 1,
+                phase: 'waiting'
+            });
+            showInfoModal("Round Advanced", `<p>Now starting Round ${currentRound + 1}</p>`);
+        };
         window.showStudentDemoModal = () => { alert('Show student demo clicked'); };
         window.exitStudentDemo = () => { alert('Exit demo clicked'); };
-        window.showPnpPanel = () => { alert('Show PNP panel clicked'); };
-        window.closePnpPanel = () => { alert('Close PNP panel clicked'); };
-        window.exportResults = () => { alert('Export results clicked'); };
-        window.resetGame = () => { alert('Reset game clicked'); };
-        window.awardPnpToCountry = () => { alert('Award PNP clicked'); };
+        window.showPnpPanel = function() {
+            const select = document.getElementById('pnpCountry');
+            select.innerHTML = '<option value="">-- Select a Country --</option>';
+            Object.values(localPlayersState)
+                .filter(p => !p.isTeacher)
+                .forEach(p => {
+                    select.innerHTML += `<option value="${p.country}">${p.country}</option>`;
+                });
+            document.getElementById('pnpPanel').classList.remove('hidden');
+        };
+
+        window.closePnpPanel = function() {
+            document.getElementById('pnpPanel').classList.add('hidden');
+        };
+
+        window.handleReasonChange = function() {
+            const dropdown = document.getElementById('pnpReasonDropdown');
+            const reasonInput = document.getElementById('pnpReason');
+            if (!dropdown || !reasonInput) return;
+            if (dropdown.value === 'Custom') {
+                reasonInput.value = '';
+                reasonInput.focus();
+            } else if (dropdown.value) {
+                reasonInput.value = dropdown.value;
+            }
+        };
+
+        window.awardPnpToCountry = async function() {
+            const country = document.getElementById('pnpCountry').value;
+            const amount = parseInt(document.getElementById('pnpAmount').value);
+            const reason = document.getElementById('pnpReason').value;
+            
+            if (!country || !amount || !reason) {
+                showInfoModal("Missing Info", "<p>Please fill all fields.</p>");
+                return;
+            }
+            
+            // Find all players in that country
+            const countryPlayers = Object.entries(localPlayersState)
+                .filter(([id, p]) => p.country === country && !p.isTeacher);
+            
+            const batch = writeBatch(db);
+            
+            for (const [playerId, player] of countryPlayers) {
+                const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, playerId);
+                batch.update(playerRef, {
+                    pnp: (player.pnp || 100) + amount
+                });
+                
+                const logColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${playerId}/log`);
+                const logDocRef = doc(logColRef);
+                batch.set(logDocRef, {
+                    message: `PNP ${amount > 0 ? 'awarded' : 'deducted'}: ${amount} (${reason})`,
+                    timestamp: serverTimestamp()
+                });
+            }
+            
+            await batch.commit();
+            closePnpPanel();
+            showInfoModal("Success", `<p>Adjusted PNP for ${country} by ${amount}.</p>`);
+        };
+        window.exportResults = async function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text('The North - Game Results', 20, 20);
+            doc.setFontSize(12);
+            doc.text(`Class: ${currentClassCode}`, 20, 30);
+            doc.text(`Round: ${localGameState.round || 1}`, 20, 40);
+            
+            // Get all players sorted by score
+            const playersArray = Object.values(localPlayersState)
+                .filter(p => !p.isTeacher)
+                .map(p => {
+                    const basePnp = (localCountryData[p.country]?.pnp || 100) + (p.pnp - 100);
+                    const armyPnp = (p.army || 0) * 750;
+                    const navyPnp = (p.navy || 0) * 1000;
+                    const coloniesPnp = Object.values(p.colonies || {}).reduce((sum, c) => sum + (c.cost || 0), 0);
+                    return {
+                        country: p.country,
+                        name: p.name,
+                        score: basePnp + armyPnp + navyPnp + coloniesPnp,
+                        army: p.army || 0,
+                        navy: p.navy || 0,
+                        dollars: p.dollars || 0
+                    };
+                })
+                .sort((a, b) => b.score - a.score);
+            
+            // Create table
+            const tableData = playersArray.map((p, i) => [
+                i + 1,
+                p.country,
+                p.name,
+                p.score.toLocaleString(),
+                p.army,
+                p.navy,
+                '$' + p.dollars.toLocaleString()
+            ]);
+            
+            doc.autoTable({
+                head: [['Rank', 'Country', 'Player', 'Total PNP', 'Army', 'Navy', 'Budget']],
+                body: tableData,
+                startY: 50
+            });
+            
+            doc.save(`the-north-results-${currentClassCode}-round-${localGameState.round || 1}.pdf`);
+            showInfoModal("Export Complete", "<p>Results have been downloaded as PDF.</p>");
+        };
+        // Helper to delete all documents in a collection in chunks
+        async function deleteCollection(colRef, chunkSize = 250) {
+            const qSnap = await getDocs(colRef);
+            const docs = qSnap.docs;
+            for (let i = 0; i < docs.length; i += chunkSize) {
+                const batch = writeBatch(db);
+                for (const d of docs.slice(i, i + chunkSize)) batch.delete(d.ref);
+                await batch.commit();
+            }
+        }
+
+        window.resetGame = async function() {
+            const confirmed = await showConfirmModal(
+                "Reset Game?",
+                "<p>This will delete ALL game data (players, roster, country data, wars, logs). This cannot be undone. Proceed?</p>"
+            );
+            if (!confirmed) return;
+
+            const base = `apps/${APP_ID}/simulations/${currentClassCode}`;
+
+            try {
+                // Delete top-level subcollections
+                await deleteCollection(collection(db, `${base}/players`));
+                await deleteCollection(collection(db, `${base}/roster`));
+                await deleteCollection(collection(db, `${base}/countryData`));
+                await deleteCollection(collection(db, `${base}/warDeclarations`));
+                // activeWars or other collections
+                try { await deleteCollection(collection(db, `${base}/activeWars`)); } catch(e) {}
+
+                // Clean nested per-player collections if any (logs/notifications)
+                const playersSnap = await getDocs(collection(db, `${base}/players`));
+                for (const p of playersSnap.docs) {
+                    try { await deleteCollection(collection(db, `${base}/players/${p.id}/log`)); } catch(e) {}
+                    try { await deleteCollection(collection(db, `${base}/players/${p.id}/notifications`)); } catch(e) {}
+                }
+
+                // Finally delete the game doc
+                await deleteDoc(doc(db, `apps/${APP_ID}/simulations/${currentClassCode}`));
+                window.location.reload();
+            } catch (error) {
+                console.error('Reset failed:', error);
+                showInfoModal('Reset Failed', `<p>Could not reset game: ${error.message}</p>`);
+            }
+        };
+        
     </script>
 </body>
 </html>
