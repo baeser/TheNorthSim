@@ -11,34 +11,122 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Roboto', sans-serif; 
+        /* Base page styles */
+        body {
+            font-family: 'Roboto', sans-serif;
             background-color: #f3f0e9; /* Parchment-like color */
             background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill-opacity="0.05"><rect x="50" width="50" height="50" /><rect y="50" width="50" height="50" /></g></svg>');
+            margin: 0;
         }
+
         h1, h2, h3, h4, h5, h6 { font-family: 'Cinzel', serif; }
-        
-        .card { @apply bg-white/80 backdrop-blur-sm rounded-xl shadow-lg transition-all duration-300 border border-black/10 hover:shadow-2xl; }
-        
-        .btn { @apply px-6 py-2 rounded-lg font-bold text-white shadow-md transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 hover:-translate-y-0.5; }
-        .btn-primary { @apply bg-gradient-to-br from-indigo-600 to-indigo-800 hover:from-indigo-700 hover:to-indigo-900; }
-        .btn-secondary { @apply bg-gradient-to-br from-gray-600 to-gray-800 text-white hover:from-gray-700 hover:to-gray-900; }
-        .btn-danger { @apply bg-gradient-to-br from-red-600 to-red-800 hover:from-red-700 hover:to-red-900; }
-        .btn-success { @apply bg-gradient-to-br from-green-600 to-green-800 hover:from-green-700 hover:to-green-900; }
-        .btn-warning { @apply bg-gradient-to-br from-yellow-500 to-yellow-700 text-black hover:from-yellow-600 hover:to-yellow-800; }
 
-        .info-box { @apply bg-white/70 p-4 rounded-lg text-center shadow-md border border-black/10; }
-        .modal-backdrop { @apply fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50; }
-        
-        .tab-btn { @apply cursor-pointer py-4 px-6 border-b-4 font-semibold text-gray-500 border-transparent hover:text-gray-900 hover:border-gray-300 whitespace-nowrap transition-colors duration-200; }
-        .tab-btn.active { @apply border-indigo-700 text-indigo-800; }
-        .tab-panel { @apply hidden; }
-        .tab-panel.active { @apply block; }
+        /* Card (glass / elevated) */
+        .card {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(6px);
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05); /* shadow-lg */
+            border: 1px solid rgba(0,0,0,.1);
+            transition: box-shadow .3s ease, transform .3s ease; /* transition-all duration-300 */
+        }
+        .card:hover { box-shadow: 0 25px 30px -10px rgba(0,0,0,.25); }
 
+        /* Buttons */
+        .btn {
+            padding: .5rem 1.5rem; /* px-6 py-2 */
+            border-radius: .5rem; /* rounded-lg */
+            font-weight: 700; /* font-bold */
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,.15); /* shadow-md */
+            transition: transform .15s ease, filter .15s ease, opacity .2s ease; /* transition-all duration-200 ease-in-out */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            cursor: pointer;
+            border: none;
+        }
+        .btn:disabled { opacity: .5; cursor: not-allowed; }
+        .btn:hover { transform: translateY(-2px) scale(1.02); }
+
+        /* Button variants (gradients approximate Tailwind color palette) */
+        .btn-primary { background: linear-gradient(135deg, #4f46e5, #1e1b4b); }
+        .btn-secondary { background: linear-gradient(135deg, #4b5563, #111827); }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #7f1d1d); }
+        .btn-success { background: linear-gradient(135deg, #16a34a, #065f46); }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #92400e); color:#111; }
+
+        /* Info box */
+        .info-box {
+            background: rgba(255,255,255,.7);
+            padding: 1rem;
+            border-radius: .5rem;
+            text-align: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,.05);
+            border: 1px solid rgba(0,0,0,.1);
+        }
+
+        /* Modal backdrop */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        /* Tabs */
+        .tab-btn {
+            cursor: pointer;
+            padding: 1rem 1.5rem; /* py-4 px-6 */
+            border-bottom: 4px solid transparent;
+            font-weight: 600;
+            color: #6b7280; /* gray-500 */
+            white-space: nowrap;
+            transition: color .2s ease, border-color .2s ease;
+        }
+        .tab-btn:hover { color: #111827; border-color: #e5e7eb; }
+        .tab-btn.active { color: #3730a3; border-color: #4338ca; } /* indigo */
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* Banner heading override */
         #studentCountryBanner h1 {
             font-family: 'Cinzel Decorative', cursive;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
         }
+
+        /* Toast notifications */
+        #toastContainer {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+            z-index: 60;
+        }
+        .toast {
+            padding: .75rem 1rem;
+            border-radius: .5rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+            color: #111827;
+            background: #ffffff;
+            border-left: 6px solid #6366f1; /* indigo */
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity .2s ease, transform .2s ease;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.info { border-left-color: #6366f1; }
+        .toast.success { border-left-color: #16a34a; }
+        .toast.warning { border-left-color: #f59e0b; }
+        .toast.error { border-left-color: #ef4444; }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -430,10 +518,18 @@
                                 <span class="text-gray-600">minutes</span>
                             </div>
                         </div>
+                        <div class="text-center p-3 rounded-lg bg-indigo-50 border border-indigo-200">
+                            <label for="mobilizationMinutes" class="font-semibold text-indigo-800">Mobilization Length</label>
+                            <div class="flex justify-center items-center gap-2 mt-1">
+                                <input type="number" id="mobilizationMinutes" value="15" min="5" max="60" class="w-20 text-center border-gray-300 rounded-md">
+                                <span class="text-gray-600">minutes for mobilization</span>
+                            </div>
+                        </div>
                         <button id="startRoundBtn" onclick="startRound()" class="btn btn-success w-full">1. Start Round</button>
                         <button id="endRoundBtn" onclick="endRound()" class="btn btn-warning w-full">2. End Round & Lock Actions</button>
                         <button id="colonialChanceBtn" onclick="resolveColonialChance()" class="btn btn-primary w-full">3. Resolve Colonial Chance</button>
                         <button id="checkAlliancesBtn" onclick="checkAlliances()" class="btn btn-primary w-full">4. Check Alliances</button>
+                        <button onclick="showTeacherWarManagement()" class="btn btn-secondary w-full">Manage Active Wars</button>
                         <button id="nextRoundBtn" onclick="nextRound()" class="btn btn-success w-full bg-purple-600 hover:bg-purple-700">5. Advance to Next Round</button>
                         
                         <hr class="my-3">
@@ -499,6 +595,13 @@
             </button>
         </div>
     </div>
+
+        <!-- Mobilization Modal -->
+        <div id="mobilizationModal" class="modal-backdrop hidden">
+            <div class="card p-6 w-full max-w-3xl m-4 max-h-[90vh] overflow-y-auto">
+                <div id="mobilizationContent"></div>
+            </div>
+        </div>
 
     <div id="allianceModal" class="modal-backdrop hidden">
         <div class="card p-6 w-full max-w-lg m-4">
@@ -730,6 +833,8 @@
             
             document.getElementById('signInBtn').onclick = signInWithGoogle;
             document.getElementById('joinClassBtn').onclick = joinSimulation;
+            // Hour selection modal buttons
+            document.getElementById('startWithHourBtn').onclick = startSimulationWithHour;
             document.getElementById('confirmCancelBtn').onclick = () => closeConfirmModal(false);
             document.getElementById('confirmOkBtn').onclick = () => closeConfirmModal(true);
 
@@ -774,6 +879,762 @@
                 }
             });
         });
+
+        // =============== Military Purchases ===============
+        const UNIT_COSTS = { army: 750, navy: 1000 };
+
+        function getMilitaryBudgetNumbers(player) {
+            const me = player || (localPlayersState ? localPlayersState[userId] : null);
+            const pct = Number(me?.militaryBudgetPercentage ?? Number(qs('#militaryBudgetSlider')?.value || 0));
+            const dollars = Number(me?.dollars || 0);
+            const pool = Math.floor(dollars * pct / 100);
+            const spent = Number(me?.militarySpendingThisRound || 0);
+            const remaining = Math.max(0, pool - spent);
+            return { pct, dollars, pool, spent, remaining };
+        }
+
+        function renderWarBudgets() {
+            const me = localPlayersState ? localPlayersState[userId] : null;
+            const { pool, remaining } = getMilitaryBudgetNumbers(me);
+            const ids = ['warTotalBudget', 'warTotalBudget-war'];
+            const rids = ['warRemainingBudget', 'warRemainingBudget-war'];
+            ids.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = `$${pool.toLocaleString()}`; });
+            rids.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = `$${remaining.toLocaleString()}`; });
+        }
+
+        function renderTopStatsFromPlayer(p) {
+            if (!p) return;
+            const budgetEl = document.getElementById('countryBudget');
+            const armyEl = document.getElementById('armyUnits');
+            const navyEl = document.getElementById('navyUnits');
+            if (budgetEl) budgetEl.textContent = Number(p.dollars||0).toLocaleString();
+            if (armyEl) armyEl.textContent = String(p.army || 0);
+            if (navyEl) navyEl.textContent = String(p.navy || 0);
+            // Treasury card mirrors
+            const tTot = document.getElementById('treasuryTotalBudget');
+            if (tTot) tTot.textContent = `$${Number(p.dollars||0).toLocaleString()}`;
+            const { pool } = getMilitaryBudgetNumbers(p);
+            const tMil = document.getElementById('treasuryMilitaryBudget');
+            if (tMil) tMil.textContent = `$${pool.toLocaleString()}`;
+            renderWarBudgets();
+        }
+
+        // Called by slider oninput
+        window.setMilitaryBudget = async function(value) {
+            try {
+                const me = localPlayersState ? localPlayersState[userId] : null;
+                const pct = Number(value);
+                // Update label immediately
+                const lbl = document.getElementById('militaryBudgetPercentageDisplay');
+                if (lbl) lbl.textContent = `${pct}%`;
+                // Write to Firestore (debounced-ish by quick guard)
+                const { playerRef } = getSimRefs();
+                await updateDoc(playerRef(userId), { militaryBudgetPercentage: pct });
+                // Re-render budgets using updated percent
+                renderTopStatsFromPlayer({ ...me, militaryBudgetPercentage: pct });
+            } catch (err) {
+                console.error('setMilitaryBudget error', err);
+                toast(`Failed to set military budget: ${err.message}`, 'error');
+            }
+        }
+
+        window.purchaseUnits = async function(kind, context) {
+            try {
+                if (!['army','navy'].includes(kind)) throw new Error('Unknown unit kind');
+                const qtyInputId = `${kind}Quantity-${context}`;
+                const qtyEl = reqEl(qtyInputId);
+                const qty = Math.max(1, Math.floor(Number(qtyEl.value || 1)));
+                const costPer = UNIT_COSTS[kind];
+                const totalCost = qty * costPer;
+
+                const me = localPlayersState ? localPlayersState[userId] : null;
+                if (!me) { toast('Player not ready yet.', 'warning'); return; }
+
+                const { remaining } = getMilitaryBudgetNumbers(me);
+                if (totalCost > remaining) {
+                    toast(`Not enough remaining military funds. Need $${totalCost.toLocaleString()}, have $${remaining.toLocaleString()}.`, 'warning');
+                    return;
+                }
+                const newDollars = Math.max(0, Number(me.dollars || 0) - totalCost);
+                const newArmy = kind === 'army' ? Number(me.army || 0) + qty : Number(me.army || 0);
+                const newNavy = kind === 'navy' ? Number(me.navy || 0) + qty : Number(me.navy || 0);
+                const newSpent = Number(me.militarySpendingThisRound || 0) + totalCost;
+
+                const { playerRef } = getSimRefs();
+                await updateDoc(playerRef(userId), {
+                    dollars: newDollars,
+                    army: newArmy,
+                    navy: newNavy,
+                    militarySpendingThisRound: newSpent
+                });
+
+                // Local optimistic UI update
+                if (localPlayersState && localPlayersState[userId]) {
+                    localPlayersState[userId] = { ...localPlayersState[userId], dollars: newDollars, army: newArmy, navy: newNavy, militarySpendingThisRound: newSpent };
+                }
+                renderTopStatsFromPlayer(localPlayersState[userId]);
+                renderWarBudgets();
+                qtyEl.value = 1;
+                toast(`${qty} ${kind === 'army' ? 'Army regiment' : 'Naval fleet'}${qty>1?'s':''} purchased for $${totalCost.toLocaleString()}.`, 'success');
+            } catch (err) {
+                console.error('purchaseUnits error', err);
+                toast(`Purchase failed: ${err.message}`, 'error');
+            }
+        }
+
+        // Enable purchase inputs once player is loaded
+        function enablePlayerControlsIfReady() {
+            const me = localPlayersState ? localPlayersState[userId] : null;
+            if (!me) return;
+            ['armyQuantity-main','navyQuantity-main','armyQuantity-war','navyQuantity-war'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.removeAttribute('disabled');
+            });
+            ['militaryBudgetSlider','healthcareSlider','educationSlider','infrastructureSlider'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.removeAttribute('disabled');
+            });
+            // Sync slider UI with stored percent if present
+            const pct = Number(me.militaryBudgetPercentage ?? 25);
+            const slider = document.getElementById('militaryBudgetSlider');
+            const lbl = document.getElementById('militaryBudgetPercentageDisplay');
+            if (slider) slider.value = String(pct);
+            if (lbl) lbl.textContent = `${pct}%`;
+            renderTopStatsFromPlayer(me);
+        }
+        // Expose to window so other init code can call after snapshots
+        Object.assign(window, { enablePlayerControlsIfReady, renderWarBudgets, renderTopStatsFromPlayer });
+
+        // =============== Alliances ===============
+        // Helper: return array of [playerId, playerData] for a given country
+        function getCountryPlayers(countryName) {
+            if (!countryName) return [];
+            return Object.entries(localPlayersState || {}).filter(([,p]) => (p && p.country) === countryName);
+        }
+
+        // Helper: send a notification to a single player id
+        async function sendNotification(toPlayerId, payload) {
+            const { basePath } = getSimRefs();
+            const notifCol = collection(db, `${basePath}/players/${toPlayerId}/notifications`);
+            await addDoc(notifCol, { ...payload, createdAt: serverTimestamp() });
+        }
+
+        // Helper: delete a single notification by id for the current user
+        async function deleteMyNotificationById(notificationId) {
+            const { basePath } = getSimRefs();
+            const refPath = `${basePath}/players/${userId}/notifications/${notificationId}`;
+            await deleteDoc(doc(db, refPath));
+        }
+
+        function renderMyAlliancesList() {
+            const container = document.getElementById('myAlliances');
+            if (!container) return;
+            const myCountry = myCountryName;
+            const alliances = safeGet(localCountryData, myCountry, 'alliances') || {};
+            const keys = Object.keys(alliances);
+            if (!keys.length) {
+                container.innerHTML = '<p class="text-gray-500">No alliances yet.</p>';
+                return;
+            }
+            container.innerHTML = keys.sort().map(k => {
+                const status = alliances[k];
+                const badge = status === 'accepted' ? '<span class="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">accepted</span>' : '<span class="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">pending</span>';
+                return `<div class="flex items-center justify-between p-2 bg-gray-50 rounded">`+
+                       `<div><span class="font-medium">${k}</span>${badge}</div>`+
+                       `</div>`;
+            }).join('');
+        }
+
+        // Open the alliance modal and populate checkboxes
+        window.showAllianceModal = function() {
+            try {
+                const modal = document.getElementById('allianceModal');
+                const list = document.getElementById('countryCheckboxes');
+                const myCountry = myCountryName;
+                if (!myCountry) { toast('Join a country first.', 'warning'); return; }
+
+                const myAlliances = safeGet(localCountryData, myCountry, 'alliances') || {};
+                const restricted = new Set(ALLIANCE_RESTRICTIONS[myCountry] || []);
+                const allCountries = Object.keys(STARTING_BUDGETS);
+
+                list.innerHTML = '';
+                for (const c of allCountries) {
+                    if (c === myCountry) continue;
+                    const status = myAlliances[c]; // undefined | 'pending' | 'accepted'
+                    const isRestricted = restricted.has(c);
+                    const checked = status === 'accepted' || status === 'pending';
+                    const disabledAttr = isRestricted ? 'disabled' : '';
+                    const note = isRestricted ? `<span class="ml-2 text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded">historical rivalry</span>`
+                                              : status === 'accepted' ? `<span class="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">accepted</span>`
+                                              : status === 'pending' ? `<span class="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">pending</span>`
+                                              : '';
+                    const row = document.createElement('label');
+                    row.className = 'flex items-center justify-between p-2 bg-white rounded border';
+                    row.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" value="${c}" ${checked ? 'checked' : ''} ${disabledAttr} class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                            <span class="font-medium text-gray-800">${c}</span>
+                        </div>
+                        <div>${note}</div>
+                    `;
+                    list.appendChild(row);
+                }
+                modal.classList.remove('hidden');
+            } catch (err) {
+                console.error('showAllianceModal error', err);
+                toast(`Failed to open alliances: ${err.message}`, 'error');
+            }
+        };
+
+        window.closeAllianceModal = function() {
+            const modal = document.getElementById('allianceModal');
+            modal?.classList.add('hidden');
+        }
+
+        // Propose alliances based on selected checkboxes
+        window.proposeAlliance = async function() {
+            try {
+                const myCountry = myCountryName;
+                if (!myCountry) { toast('Join a country first.', 'warning'); return; }
+                const list = document.getElementById('countryCheckboxes');
+                const checks = Array.from(list.querySelectorAll('input[type="checkbox"]'));
+                const selected = checks.filter(c => c.checked && !c.disabled).map(c => c.value);
+
+                const { countryRef } = getSimRefs();
+                const myData = localCountryData[myCountry] || {};
+                const currentAlliances = { ...(myData.alliances || {}) };
+                const toNewlyPropose = selected.filter(c => !currentAlliances[c]);
+
+                if (!toNewlyPropose.length) {
+                    toast('No new alliances selected. Already up to date.', 'info');
+                    return;
+                }
+
+                const batch = writeBatch(db);
+                for (const target of toNewlyPropose) {
+                    // Set pending on both countries
+                    const theirs = localCountryData[target] || {};
+                    const myRef = countryRef(myCountry);
+                    const theirRef = countryRef(target);
+                    const newMine = { ...(myData.alliances || {}), [target]: 'pending' };
+                    const newTheirs = { ...(theirs.alliances || {}), [myCountry]: 'pending' };
+                    batch.set(myRef, { alliances: newMine }, { merge: true });
+                    batch.set(theirRef, { alliances: newTheirs }, { merge: true });
+                }
+                await batch.commit();
+
+                // Notify all players of each target country
+                for (const target of toNewlyPropose) {
+                    for (const [pid] of getCountryPlayers(target)) {
+                        await sendNotification(pid, {
+                            type: 'alliance_request',
+                            fromPlayerId: userId,
+                            fromCountry: myCountry,
+                            message: `${myCountry} proposes an alliance with ${target}.`
+                        });
+                    }
+                }
+
+                toast(`Sent alliance request${toNewlyPropose.length>1?'s':''} to ${toNewlyPropose.join(', ')}.`, 'success');
+                renderMyAlliancesList();
+                closeAllianceModal();
+            } catch (err) {
+                console.error('proposeAlliance error', err);
+                toast(`Failed to propose alliances: ${err.message}`, 'error');
+            }
+        }
+
+        // Accept an alliance request from a notification
+        window.acceptAllianceRequest = async function(notificationId, fromPlayerId) {
+            try {
+                const myCountry = myCountryName;
+                const fromPlayer = (localPlayersState || {})[fromPlayerId];
+                const otherCountry = fromPlayer?.country;
+                if (!myCountry || !otherCountry) { toast('Could not resolve countries.', 'error'); return; }
+
+                const { countryRef } = getSimRefs();
+                const batch = writeBatch(db);
+                const mineRef = countryRef(myCountry);
+                const theirRef = countryRef(otherCountry);
+                const myAll = { ...(safeGet(localCountryData, myCountry, 'alliances') || {}), [otherCountry]: 'accepted' };
+                const theirAll = { ...(safeGet(localCountryData, otherCountry, 'alliances') || {}), [myCountry]: 'accepted' };
+                batch.set(mineRef, { alliances: myAll }, { merge: true });
+                batch.set(theirRef, { alliances: theirAll }, { merge: true });
+                await batch.commit();
+
+                // Clean up only this notification
+                await deleteMyNotificationById(notificationId);
+
+                // Notify the proposer country players
+                for (const [pid] of getCountryPlayers(otherCountry)) {
+                    await sendNotification(pid, {
+                        type: 'info',
+                        message: `${myCountry} accepted your alliance proposal.`
+                    });
+                }
+
+                toast(`Alliance with ${otherCountry} accepted.`, 'success');
+                renderMyAlliancesList();
+                closeStudentNotificationModal();
+            } catch (err) {
+                console.error('acceptAllianceRequest error', err);
+                toast(`Failed to accept alliance: ${err.message}`, 'error');
+            }
+        }
+
+        // Reject an alliance request from a notification
+        window.rejectAllianceRequest = async function(notificationId, fromPlayerId) {
+            try {
+                const myCountry = myCountryName;
+                const fromPlayer = (localPlayersState || {})[fromPlayerId];
+                const otherCountry = fromPlayer?.country;
+                if (!myCountry || !otherCountry) { toast('Could not resolve countries.', 'error'); return; }
+
+                const { countryRef } = getSimRefs();
+                const mineRef = countryRef(myCountry);
+                const theirRef = countryRef(otherCountry);
+
+                // Mark as rejected on my side (and remove from theirs to avoid confusion)
+                const myAll = { ...(safeGet(localCountryData, myCountry, 'alliances') || {}) };
+                const theirAll = { ...(safeGet(localCountryData, otherCountry, 'alliances') || {}) };
+                myAll[otherCountry] = 'rejected';
+                delete theirAll[myCountry];
+                await setDoc(mineRef, { alliances: myAll }, { merge: true });
+                await setDoc(theirRef, { alliances: theirAll }, { merge: true });
+
+                // Clean up only this notification
+                await deleteMyNotificationById(notificationId);
+
+                // Notify proposer
+                for (const [pid] of getCountryPlayers(otherCountry)) {
+                    await sendNotification(pid, { type: 'info', message: `${myCountry} rejected your alliance proposal.` });
+                }
+
+                toast(`Alliance with ${otherCountry} rejected.`, 'warning');
+                renderMyAlliancesList();
+                closeStudentNotificationModal();
+            } catch (err) {
+                console.error('rejectAllianceRequest error', err);
+                toast(`Failed to reject alliance: ${err.message}`, 'error');
+            }
+        }
+
+        // Keep alliances list fresh whenever country data changes elsewhere
+        Object.assign(window, { renderMyAlliancesList });
+
+        // =============== War System ===============
+        const WAR_APPROVER_ROLES = ['Secretary of State', 'Minister of Domestic Tranquility'];
+        const WAR_DECLARE_ROLE = 'Secretary of War';
+
+        function getMyRoles() {
+            const me = localPlayersState ? localPlayersState[userId] : null;
+            if (!me) return [];
+            if (Array.isArray(me.roles)) return me.roles;
+            if (typeof me.role === 'string' && me.role) return [me.role];
+            return [];
+        }
+        function userHasRole(roleName) {
+            return getMyRoles().some(r => r === roleName);
+        }
+        function listNonAlliedCountries(myCountry) {
+            const alliances = safeGet(localCountryData, myCountry, 'alliances') || {};
+            const allies = new Set(Object.keys(alliances).filter(k => alliances[k] === 'accepted'));
+            return Object.keys(STARTING_BUDGETS).filter(c => c !== myCountry && !allies.has(c));
+        }
+
+        // --- Modal open/close ---
+        window.showWarDeclarationModal = function () {
+            try {
+                const simRound = Number(localGameState.round || 1);
+                if (simRound < 4) { toast('War declarations unlock in Round 4.', 'warning'); return; }
+                if (!userHasRole(WAR_DECLARE_ROLE)) { toast('Only the Secretary of War may declare war.', 'warning'); return; }
+                if (!myCountryName) { toast('Join a country first.', 'warning'); return; }
+
+                const list = reqEl('enemyAlliancesList');
+                list.innerHTML = '';
+                const enemies = listNonAlliedCountries(myCountryName);
+                if (!enemies.length) {
+                    list.innerHTML = '<p class="text-gray-500">No eligible enemy countries (you are allied with everyone!).</p>';
+                } else {
+                    enemies.forEach(c => {
+                        const row = document.createElement('label');
+                        row.className = 'flex items-center justify-between p-2 bg-white rounded border';
+                        row.innerHTML = `
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" value="${c}" class="h-4 w-4 text-red-600 border-gray-300 rounded">
+                                <span class="font-medium text-gray-800">${c}</span>
+                            </div>`;
+                        list.appendChild(row);
+                    });
+                }
+                reqEl('warJustification').value = '';
+                reqEl('warDeclarationModal').classList.remove('hidden');
+            } catch (err) {
+                console.error('showWarDeclarationModal error', err);
+                toast(`Failed to open war modal: ${err.message}`, 'error');
+            }
+        };
+        window.closeWarDeclarationModal = function () {
+            reqEl('warDeclarationModal').classList.add('hidden');
+        };
+
+        // --- Submit war declaration ---
+        window.submitWarDeclaration = async function () {
+            try {
+                const targets = Array.from(reqEl('enemyAlliancesList').querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value);
+                if (!targets.length) { toast('Select at least one enemy country.', 'warning'); return; }
+                const justification = reqEl('warJustification').value.trim();
+                const { warDeclarationsColRef } = getSimRefs();
+
+                const payload = {
+                    declaringCountry: myCountryName,
+                    targets,
+                    justification: justification || null,
+                    approvals: { state: false, minister: false },
+                    status: 'pending',
+                    createdBy: userId,
+                    createdAt: serverTimestamp()
+                };
+
+                // =============== Role Summary Panel ===============
+                window.renderRoleSummaryPanel = function() {
+                    try {
+                        const container = reqEl('teacherRoleSummary');
+                        if (!container) return;
+                        container.innerHTML = '<div class="text-gray-500">Loading role summary…</div>';
+
+                        if (!localPlayersState || Object.keys(localPlayersState).length === 0) {
+                            container.innerHTML = '<div class="text-gray-400 italic">No player data loaded.</div>';
+                            return;
+                        }
+
+                        // Group players by country
+                        const byCountry = {};
+                        for (const [pid, pdata] of Object.entries(localPlayersState)) {
+                            const c = pdata.country || 'Unassigned';
+                            if (!byCountry[c]) byCountry[c] = [];
+                            byCountry[c].push({ id: pid, ...pdata });
+                        }
+
+                        const sortedCountries = Object.keys(byCountry).sort();
+                        let html = '';
+
+                        sortedCountries.forEach(country => {
+                            const players = byCountry[country];
+                            html += `
+                                <div class="bg-white border border-gray-300 rounded-lg p-4 mb-3">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <h3 class="font-semibold text-lg text-gray-800">${country}</h3>
+                                        <button
+                                            class="text-sm text-blue-600 hover:underline"
+                                            onclick="showRoleAssignmentModal('${country}')"
+                                        >Edit Roles</button>
+                                    </div>
+                                    <table class="w-full text-sm border-t border-gray-200">
+                                        <thead>
+                                            <tr class="text-gray-600">
+                                                <th class="text-left py-1">Name</th>
+                                                <th class="text-left py-1">Email</th>
+                                                <th class="text-left py-1">Role</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${players
+                                                .map(
+                                                    p => `
+                                                        <tr class="border-t">
+                                                            <td class="py-1">${p.displayName || '(No name)'}</td>
+                                                            <td class="py-1 text-gray-500">${p.email || ''}</td>
+                                                            <td class="py-1 font-medium">${p.role || '<span class="text-gray-400 italic">Unassigned</span>'}</td>
+                                                        </tr>`
+                                                )
+                                                .join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
+                        });
+
+                        container.innerHTML = html;
+                    } catch (err) {
+                        console.error('renderRoleSummaryPanel error', err);
+                        toast(`Failed to render role summary: ${err.message}`, 'error');
+                    }
+                };
+
+                // Optional helper to refresh automatically when data changes
+                window.refreshRoleSummaryOnUpdate = function() {
+                    try {
+                        if (typeof setupFirestoreListeners === 'function') {
+                            // attach once localPlayersState updates
+                            const original = setupFirestoreListeners;
+                            window.setupFirestoreListeners = function() {
+                                original();
+                                // Give Firestore listener a moment to sync before rendering
+                                setTimeout(renderRoleSummaryPanel, 1200);
+                            };
+                        }
+                    } catch (err) {
+                        console.error('refreshRoleSummaryOnUpdate error', err);
+                    }
+                };
+                            // =============== PNP Panel (9) ===============
+                            window.showPNPPanel = async function(countryName) {
+                                try {
+                                    const modal = reqEl('pnpPanelModal');
+                                    const body = reqEl('pnpPanelBody');
+                                    body.innerHTML = '<div class="text-gray-500">Loading PNP data...</div>';
+
+                                    const { countryDocRef } = getSimRefs(countryName);
+                                    const snap = await getDoc(countryDocRef);
+                                    const data = snap.exists() ? snap.data() : {};
+
+                                    // Base categories (tweak as needed)
+                                    const categories = [
+                                        { key: 'food', label: 'Food' },
+                                        { key: 'energy', label: 'Energy' },
+                                        { key: 'rawMaterials', label: 'Raw Materials' },
+                                        { key: 'consumerGoods', label: 'Consumer Goods' },
+                                    ];
+
+                                    body.innerHTML = `
+                                        <h3 class="font-semibold text-lg mb-3 text-gray-800">Production, Needs & Purchases for ${countryName}</h3>
+                                        <div class="grid grid-cols-3 gap-4 text-sm font-medium text-gray-600 border-b pb-2 mb-2">
+                                            <div>Category</div><div>Produced</div><div>Needed</div>
+                                        </div>
+                                        <div id="pnpInputs" class="space-y-2">
+                                            ${categories.map(c => `
+                                                <div class="grid grid-cols-3 gap-4 items-center border-b pb-2">
+                                                    <div class="font-medium">${c.label}</div>
+                                                    <input type="number" id="prod-${c.key}" value="${data.production?.[c.key] ?? 0}" class="pnp-input border px-2 py-1 rounded text-right" min="0">
+                                                    <input type="number" id="need-${c.key}" value="${data.needs?.[c.key] ?? 0}" class="pnp-input border px-2 py-1 rounded text-right" min="0">
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                        <div class="mt-4 flex justify-end">
+                                            <button onclick="savePNPData('${countryName}')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save</button>
+                                        </div>
+                                        <div id="pnpSummary" class="mt-4 text-sm text-gray-700 hidden"></div>
+                                    `;
+
+                                    modal.classList.remove('hidden');
+                                } catch (err) {
+                                    console.error('showPNPPanel error', err);
+                                    toast(`Failed to open PNP Panel: ${err.message}`, 'error');
+                                }
+                            };
+
+                            // Close modal
+                            window.closePNPPanel = function() {
+                                reqEl('pnpPanelModal').classList.add('hidden');
+                            };
+
+                            // Save PNP data back to Firestore
+                            window.savePNPData = async function(countryName) {
+                                try {
+                                    const { countryDocRef } = getSimRefs(countryName);
+                                    const inputs = Array.from(document.querySelectorAll('#pnpInputs .pnp-input'));
+                                    const production = {};
+                                    const needs = {};
+
+                                    inputs.forEach(inp => {
+                                        const [type, key] = inp.id.split('-');
+                                        const val = parseFloat(inp.value) || 0;
+                                        if (type === 'prod') production[key] = val;
+                                        if (type === 'need') needs[key] = val;
+                                    });
+
+                                    // Compute surpluses/deficits
+                                    const surplus = {};
+                                    Object.keys(production).forEach(k => {
+                                        surplus[k] = production[k] - (needs[k] ?? 0);
+                                    });
+
+                                    await updateDoc(countryDocRef, {
+                                        production,
+                                        needs,
+                                        surplus,
+                                        lastUpdatedBy: user?.uid || null,
+                                        updatedAt: serverTimestamp()
+                                    });
+
+                                    renderPNPSummary(production, needs, surplus);
+                                    toast('PNP data saved successfully!', 'success');
+                                } catch (err) {
+                                    console.error('savePNPData error', err);
+                                    toast(`Failed to save PNP data: ${err.message}`, 'error');
+                                }
+                            };
+
+                            // Show read-only summary mode (after save or for teacher view)
+                            window.renderPNPSummary = function(production, needs, surplus) {
+                                const sumDiv = reqEl('pnpSummary');
+                                if (!sumDiv) return;
+                                sumDiv.classList.remove('hidden');
+
+                                const rows = Object.keys(production).map(k => {
+                                    const diff = surplus[k];
+                                    const color = diff > 0 ? 'text-green-600' : diff < 0 ? 'text-red-600' : 'text-gray-700';
+                                    const label = diff > 0 ? 'Surplus' : diff < 0 ? 'Deficit' : 'Balanced';
+                                    return `
+                                        <tr>
+                                            <td class="px-2 py-1">${k}</td>
+                                            <td class="px-2 py-1 text-right">${production[k]}</td>
+                                            <td class="px-2 py-1 text-right">${needs[k]}</td>
+                                            <td class="px-2 py-1 text-right ${color}">${diff}</td>
+                                            <td class="px-2 py-1 text-xs text-gray-500">${label}</td>
+                                        </tr>
+                                    `;
+                                }).join('');
+
+                                sumDiv.innerHTML = `
+                                    <h4 class="font-semibold mb-2">Summary</h4>
+                                    <table class="w-full text-sm border-t border-gray-200">
+                                        <thead class="text-gray-600">
+                                            <tr><th>Category</th><th>Produced</th><th>Needed</th><th>Net</th><th>Status</th></tr>
+                                        </thead>
+                                        <tbody>${rows}</tbody>
+                                    </table>
+                                `;
+                            };
+                const ref = await addDoc(warDeclarationsColRef, payload);
+
+                // Notify approvers (State + Minister) in my country
+                for (const [pid, pdata] of Object.entries(localPlayersState || {})) {
+                    if (!pdata || pdata.country !== myCountryName) continue;
+                    const roles = Array.isArray(pdata.roles) ? pdata.roles : (pdata.role ? [pdata.role] : []);
+                    if (roles.some(r => WAR_APPROVER_ROLES.includes(r))) {
+                        await sendNotification(pid, {
+                            type: 'war_approval_request',
+                            warId: ref.id,
+                            fromCountry: myCountryName,
+                            targets,
+                            message: `${myCountryName} seeks approval to declare war on ${targets.join(', ')}.`
+                        });
+                    }
+                }
+
+                toast('War declaration submitted for approval.', 'success');
+                reqEl('warDeclarationModal').classList.add('hidden');
+                loadPendingWarDeclarations();
+                loadWarApprovals();
+            } catch (err) {
+                console.error('submitWarDeclaration error', err);
+                toast(`Failed to submit: ${err.message}`, 'error');
+            }
+        };
+
+        // --- Pending list for declarer ---
+        window.loadPendingWarDeclarations = async function () {
+            try {
+                const container = reqEl('pendingWarList');
+                container.innerHTML = '';
+                const { warDeclarationsColRef } = getSimRefs();
+                const snap = await getDocs(query(warDeclarationsColRef,
+                    where('declaringCountry', '==', myCountryName),
+                    where('status', '==', 'pending')
+                ));
+                if (snap.empty) { qs('#pendingWarDeclarations')?.classList.add('hidden'); return; }
+                qs('#pendingWarDeclarations')?.classList.remove('hidden');
+
+                snap.forEach(d => {
+                    const data = d.data();
+                    const row = document.createElement('div');
+                    row.className = 'p-2 bg-yellow-50 border border-yellow-200 rounded';
+                    row.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div><span class="font-medium">${data.declaringCountry}</span> → ${data.targets.join(', ')}</div>
+                            <span class="text-xs bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded">awaiting approvals</span>
+                        </div>`;
+                    container.appendChild(row);
+                });
+            } catch (err) {
+                console.error('loadPendingWarDeclarations error', err);
+            }
+        };
+
+        // --- Approval queues for State/Minister ---
+        window.loadWarApprovals = async function () {
+            try {
+                const myRoles = getMyRoles();
+                const needApproval = myRoles.some(r => WAR_APPROVER_ROLES.includes(r));
+                const allianceSection = document.getElementById('allianceWarApprovalSection');
+                const ministerSection = document.getElementById('ministerWarApprovalSection');
+                if (allianceSection) allianceSection.classList.add('hidden');
+                if (ministerSection) ministerSection.classList.add('hidden');
+                if (!needApproval) return;
+
+                const { warDeclarationsColRef } = getSimRefs();
+                const snap = await getDocs(query(warDeclarationsColRef,
+                    where('declaringCountry', '==', myCountryName),
+                    where('status', '==', 'pending')
+                ));
+                if (snap.empty) return;
+
+                const blocks = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    const youAre = myRoles.find(r => WAR_APPROVER_ROLES.includes(r));
+                    const approved = youAre?.includes('State') ? data.approvals?.state : data.approvals?.minister;
+                    blocks.push(`
+                        <div class="p-3 bg-white rounded border flex items-center justify-between">
+                            <div>
+                                <div class="font-semibold">${data.declaringCountry} → ${data.targets.join(', ')}</div>
+                                <div class="text-xs text-gray-500">Justification: ${data.justification || '—'}</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="btn btn-success" ${approved ? 'disabled' : ''} onclick="approveWar('${d.id}')">Approve</button>
+                                <button class="btn btn-danger" onclick="rejectWar('${d.id}')">Reject</button>
+                            </div>
+                        </div>`);
+                });
+                const html = `<h4 class="text-lg font-semibold mb-2">War Declarations Requiring Your Approval</h4>${blocks.join('')}`;
+
+                if (myRoles.includes('Secretary of State') && allianceSection) {
+                    allianceSection.innerHTML = html; allianceSection.classList.remove('hidden');
+                }
+                if (myRoles.includes('Minister of Domestic Tranquility') && ministerSection) {
+                    ministerSection.innerHTML = html; ministerSection.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error('loadWarApprovals error', err);
+            }
+        };
+
+        // --- Approve / Reject ---
+        window.approveWar = async function (warId) {
+            try {
+                const myRoles = getMyRoles();
+                const isState = myRoles.includes('Secretary of State');
+                const isMinister = myRoles.includes('Minister of Domestic Tranquility');
+                if (!isState && !isMinister) { toast('You are not an approver.', 'warning'); return; }
+
+                const { warDeclarationsColRef } = getSimRefs();
+                const ref = doc(warDeclarationsColRef, warId);
+
+                await runTransaction(db, async (tx) => {
+                    const snap = await tx.get(ref);
+                    if (!snap.exists()) throw new Error('Declaration missing');
+                    const data = snap.data();
+                    const approvals = { ...(data.approvals || {}) };
+                    if (isState) approvals.state = true;
+                    if (isMinister) approvals.minister = true;
+                    let status = data.status;
+                    if (approvals.state && approvals.minister) status = 'approved';
+                    tx.update(ref, { approvals, status });
+                });
+
+                const final = (await getDoc(ref)).data();
+                if (final.status === 'approved') {
+                    // START MOBILIZATION instead of immediate war notifications
+                    await startMobilizationPhase(warId);
+                } else {
+                    toast('Approval recorded.', 'success');
+                }
+                loadWarApprovals();
+            } catch (err) {
+                console.error('approveWar error', err);
+                toast(`Failed to approve: ${err.message}`, 'error');
+            }
+        };
 
         function updateConnectionStatus(connected, message) {
             const statusEl = document.getElementById('connectionStatus');
@@ -821,6 +1682,83 @@
                 confirmResolve = null;
             }
         }
+
+        // ========= Core Helpers =========
+        // Safe nested getter: safeGet(obj, 'a', 'b', 'c') -> obj?.a?.b?.c
+        function safeGet(obj, ...pathParts) {
+            let cur = obj;
+            for (const key of pathParts) {
+                if (cur == null) return undefined;
+                cur = cur[key];
+            }
+            return cur;
+        }
+
+        // Required element by id; throws with clear message if missing
+        function reqEl(id) {
+            const el = document.getElementById(id);
+            if (!el) { throw new Error(`Required DOM element #${id} not found`); }
+            return el;
+        }
+
+        // Optional querySelector helper on a root (defaults to document), returns null if not found
+        function qs(selector, root = document) { return root.querySelector(selector); }
+
+        // Returns common Firestore references for the current simulation
+        function getSimRefs() {
+            if (!db) throw new Error('Firestore not initialized');
+            if (!currentClassCode) throw new Error('No active class code set');
+            const basePath = `apps/${APP_ID}/simulations/${currentClassCode}`;
+            const simRef = doc(db, `apps/${APP_ID}/simulations`, currentClassCode);
+            const playersColRef = collection(db, `${basePath}/players`);
+            const rosterColRef = collection(db, `${basePath}/roster`);
+            const countryDataColRef = collection(db, `${basePath}/countryData`);
+            const warDeclarationsColRef = collection(db, `${basePath}/warDeclarations`);
+            const notificationsColRef = userId ? collection(db, `${basePath}/players/${userId}/notifications`) : null;
+            const logsColRef = userId ? collection(db, `${basePath}/players/${userId}/log`) : null;
+            // Convenience builders
+            const playerRef = (pid = userId) => doc(db, `${basePath}/players`, pid);
+            const countryRef = (countryName) => doc(db, `${basePath}/countryData`, countryName);
+            return { simRef, playersColRef, rosterColRef, countryDataColRef, warDeclarationsColRef, notificationsColRef, logsColRef, playerRef, countryRef, basePath };
+        }
+
+        // Promise-based confirm wrapper
+        async function confirmAction(title, bodyHtml) {
+            const ok = await showConfirmModal(title, bodyHtml);
+            return !!ok;
+        }
+
+        // Lightweight toast notifications (non-blocking)
+        function ensureToastContainer() {
+            let c = document.getElementById('toastContainer');
+            if (!c) {
+                c = document.createElement('div');
+                c.id = 'toastContainer';
+                document.body.appendChild(c);
+            }
+            return c;
+        }
+        function toast(message, type = 'info', timeoutMs = 3000) {
+            const container = ensureToastContainer();
+            const div = document.createElement('div');
+            div.className = `toast ${type}`;
+            div.innerHTML = message;
+            container.appendChild(div);
+            // animate in
+            requestAnimationFrame(() => div.classList.add('show'));
+            // auto dismiss
+            const remove = () => {
+                div.classList.remove('show');
+                setTimeout(() => div.remove(), 200);
+            };
+            const t = setTimeout(remove, timeoutMs);
+            // allow click to dismiss early
+            div.addEventListener('click', () => { clearTimeout(t); remove(); });
+            return div;
+        }
+
+        // Expose helpers to window for easier debugging/usage from inline handlers
+        Object.assign(window, { safeGet, reqEl, qs, getSimRefs, confirmAction, toast });
         
         function showStudentNotificationModal(notificationData, notificationId) {
             const modal = document.getElementById('studentNotificationModal');
@@ -950,6 +1888,586 @@
                 rosterListEl.innerHTML = `<p class="text-red-500">Error loading roster: ${error.message}</p>`;
             }
         };
+
+        // =============== Roster / CSV ===============
+        function normalizeEmail(email) {
+            return (email || '').trim().toLowerCase();
+        }
+        function normalizeCountry(raw) {
+            if (!raw) return '';
+            const m = String(raw).trim().toLowerCase();
+            const map = Object.keys(STARTING_BUDGETS).reduce((acc, k) => {
+                acc[k.toLowerCase()] = k; return acc;
+            }, {});
+            return map[m] || '';
+        }
+        function parseCSV(text) {
+            // Minimal CSV parser supporting commas inside quotes
+            const rows = [];
+            let i = 0, field = '', row = [], inQuotes = false;
+            const pushField = () => { row.push(field); field = ''; };
+            const pushRow = () => { rows.push(row); row = []; };
+            while (i < text.length) {
+                const ch = text[i];
+                if (inQuotes) {
+                    if (ch === '"') {
+                        if (text[i+1] === '"') { field += '"'; i++; } else { inQuotes = false; }
+                    } else { field += ch; }
+                } else {
+                    if (ch === '"') { inQuotes = true; }
+                    else if (ch === ',') { pushField(); }
+                    else if (ch === '\n' || ch === '\r') {
+                        // handle CRLF/CR
+                        if (ch === '\r' && text[i+1] === '\n') i++;
+                        pushField();
+                        // skip empty trailing line
+                        if (row.length > 1 || (row.length === 1 && row[0].trim() !== '')) pushRow();
+                    } else { field += ch; }
+                }
+                i++;
+            }
+            // last field/row
+            if (field.length || row.length) { pushField(); pushRow(); }
+            return rows;
+        }
+
+        async function uploadCSV() {
+            try {
+                const input = reqEl('csvFile');
+                if (!input.files || !input.files[0]) {
+                    toast('Select a CSV file first.', 'warning');
+                    return;
+                }
+                const file = input.files[0];
+                const text = await file.text();
+                const rows = parseCSV(text);
+                if (!rows.length) { toast('CSV appears empty.', 'warning'); return; }
+                // Detect header
+                let startIdx = 0;
+                const header = rows[0].map(h => h.trim().toLowerCase());
+                const isHeader = header.includes('email') || header.includes('country');
+                if (isHeader) startIdx = 1;
+
+                const { rosterColRef } = getSimRefs();
+                const toWrite = [];
+                for (let r = startIdx; r < rows.length; r++) {
+                    const [emailRaw, countryRaw, sectionRaw] = rows[r];
+                    const email = normalizeEmail(emailRaw);
+                    const country = normalizeCountry(countryRaw);
+                    const period = (sectionRaw || '').toString().trim();
+                    if (!email) continue; // skip blanks
+                    if (!country) {
+                        console.warn('Skipping row due to invalid country:', rows[r]);
+                        continue;
+                    }
+                    toWrite.push({ id: email, data: { country, period: period || null } });
+                }
+                if (!toWrite.length) { toast('No valid rows found to import.', 'warning'); return; }
+
+                // Firestore batch in chunks (limit 500 ops)
+                let processed = 0;
+                while (processed < toWrite.length) {
+                    const chunk = toWrite.slice(processed, processed + 400);
+                    const batch = writeBatch(db);
+                    for (const item of chunk) {
+                        const docRef = doc(rosterColRef, item.id);
+                        batch.set(docRef, item.data, { merge: true });
+                    }
+                    await batch.commit();
+                    processed += chunk.length;
+                }
+                toast(`Imported ${toWrite.length} student${toWrite.length !== 1 ? 's' : ''}.`, 'success');
+                await loadExistingRoster();
+                reqEl('csvFile').value = '';
+            } catch (err) {
+                console.error('uploadCSV error', err);
+                toast(`CSV upload failed: ${err.message}`, 'error');
+            }
+        }
+
+        function downloadTemplate() {
+            const header = 'Email,Country,Section\n';
+            const example = [
+                'student1@example.com,Tobermory,2',
+                'student2@example.com,Grenoble,3',
+                'student3@example.com,Omsk,'
+            ].join('\n');
+            const csv = header + example + '\n';
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'roster_template.csv';
+            document.body.appendChild(a); a.click(); a.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        async function addStudentToRoster() {
+            const email = normalizeEmail(reqEl('studentEmail').value);
+            const country = normalizeCountry(reqEl('studentCountry').value);
+            const period = (reqEl('studentPeriod').value || '').trim();
+            if (!email) { toast('Enter a student email.', 'warning'); return; }
+            if (!country) { toast('Select a valid country.', 'warning'); return; }
+            try {
+                const { rosterColRef } = getSimRefs();
+                const ref = doc(rosterColRef, email);
+                await setDoc(ref, { country, period: period || null }, { merge: true });
+                toast('Student added to roster.', 'success');
+                reqEl('studentEmail').value = '';
+                reqEl('studentCountry').value = '';
+                reqEl('studentPeriod').value = '';
+                await loadExistingRoster();
+            } catch (err) {
+                console.error('addStudentToRoster error', err);
+                toast(`Failed to add: ${err.message}`, 'error');
+            }
+        }
+
+        async function removeSelectedStudents() {
+            const checks = Array.from(reqEl('rosterList').querySelectorAll('input[type="checkbox"]:checked'));
+            if (checks.length === 0) { toast('Select at least one student to remove.', 'warning'); return; }
+            const ok = await confirmAction('Remove selected?', `<p>You are about to remove <strong>${checks.length}</strong> student(s) from the roster.</p>`);
+            if (!ok) return;
+            try {
+                const { rosterColRef } = getSimRefs();
+                const batch = writeBatch(db);
+                checks.forEach(ch => batch.delete(doc(rosterColRef, ch.value)));
+                await batch.commit();
+                toast('Selected students removed.', 'success');
+                await loadExistingRoster();
+            } catch (err) {
+                console.error('removeSelectedStudents error', err);
+                toast(`Failed to remove: ${err.message}`, 'error');
+            }
+        }
+
+        async function clearAllRoster() {
+            const ok = await confirmAction('Clear entire roster?', '<p>This will remove <em>all</em> students from this class roster.</p>');
+            if (!ok) return;
+            try {
+                const { rosterColRef } = getSimRefs();
+                const snapshot = await getDocs(rosterColRef);
+                if (snapshot.empty) { toast('Roster already empty.', 'info'); return; }
+                let processed = 0;
+                const docs = snapshot.docs;
+                while (processed < docs.length) {
+                    const chunk = docs.slice(processed, processed + 400);
+                    const batch = writeBatch(db);
+                    chunk.forEach(d => batch.delete(d.ref));
+                    await batch.commit();
+                    processed += chunk.length;
+                }
+                toast('Roster cleared.', 'success');
+                await loadExistingRoster();
+            } catch (err) {
+                console.error('clearAllRoster error', err);
+                toast(`Failed to clear roster: ${err.message}`, 'error');
+            }
+        }
+
+        async function startSimulationDirectly() {
+            try {
+                const period = (reqEl('classPeriodSelect').value || '').trim();
+                if (!period) { toast('Select a class period to start.', 'warning'); return; }
+                const { simRef } = getSimRefs();
+                await setDoc(simRef, {
+                    currentPeriod: period,
+                    round: 1,
+                    phase: 'waiting',
+                    timerStartedAt: null,
+                    timerDurationMinutes: null,
+                    timerEnds: null
+                }, { merge: true });
+                toast(`Simulation started for Period ${period}.`, 'success');
+                // Show main game container for teacher view and begin listeners
+                document.getElementById('rosterScreen').classList.add('hidden');
+                document.getElementById('gameContainer').classList.remove('hidden');
+                document.getElementById('teacherPanel').classList.remove('hidden');
+                reqEl('displayClassCode').textContent = currentClassCode;
+                reqEl('displayPlayerName').textContent = user?.displayName || user?.email || 'Teacher';
+                setupFirestoreListeners();
+            } catch (err) {
+                console.error('startSimulationDirectly error', err);
+                toast(`Failed to start: ${err.message}`, 'error');
+            }
+        }
+
+        // =============== Teacher Controls ===============
+        // Utility: batch iterate a collection and run a mutator over docs
+        async function forEachDocInBatches(colRef, handler, batchSize = 400) {
+
+        // =============== Domestic Spending & Flag ===============
+        function getMyPlayer() {
+            return localPlayersState ? localPlayersState[userId] : null;
+        }
+
+        function readDomesticSliders() {
+            const healthcare = Number(reqEl('healthcareSlider').value || 0);
+            const education = Number(reqEl('educationSlider').value || 0);
+            const infrastructure = Number(reqEl('infrastructureSlider').value || 0);
+            return { healthcare, education, infrastructure };
+        }
+
+        function updateDomesticUIFromSliders() {
+            const me = getMyPlayer();
+            const { healthcare, education, infrastructure } = readDomesticSliders();
+            const totalDomesticPct = healthcare + education + infrastructure;
+            const milPct = Number((qs('#militaryBudgetSlider')?.value) || 0);
+            const totalBudget = Number(me?.dollars || 0);
+
+            // Update percent labels
+            reqEl('healthcarePercent').textContent = `${healthcare}%`;
+            reqEl('educationPercent').textContent = `${education}%`;
+            reqEl('infrastructurePercent').textContent = `${infrastructure}%`;
+
+            // Compute $ values
+            const hc$ = Math.round(totalBudget * healthcare / 100);
+            const ed$ = Math.round(totalBudget * education / 100);
+            const inf$ = Math.round(totalBudget * infrastructure / 100);
+            reqEl('healthcareDollars').textContent = `($${hc$.toLocaleString()})`;
+            reqEl('educationDollars').textContent = `($${ed$.toLocaleString()})`;
+            reqEl('infrastructureDollars').textContent = `($${inf$.toLocaleString()})`;
+
+            // Warnings
+            const warnEl = reqEl('domesticWarnings');
+            warnEl.innerHTML = '';
+            const pushWarn = (msg) => warnEl.insertAdjacentHTML('beforeend', `<div class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md p-2">${msg}</div>`);
+
+            if (totalDomesticPct > 100) pushWarn('Domestic allocations exceed 100%. Reduce sliders.');
+            const totalAll = totalDomesticPct + milPct;
+            if (totalAll > 100) pushWarn(`Domestic (${totalDomesticPct}%) + Military (${milPct}%) = ${totalAll}% (>100%). Reduce allocations.`);
+
+            // Enable/disable Save button when invalid
+            const saveBtn = qs('#ministerCardTemplate button.btn-success');
+            if (saveBtn) saveBtn.disabled = (totalDomesticPct > 100 || totalAll > 100);
+        }
+
+        window.updateDomesticSpending = function() {
+            try { updateDomesticUIFromSliders(); } catch (e) { console.warn(e); }
+        }
+
+        window.saveDomesticBudget = async function() {
+            try {
+                const me = getMyPlayer();
+                if (!me) { toast('Player not ready yet.', 'warning'); return; }
+                const { playerRef } = getSimRefs();
+                const { healthcare, education, infrastructure } = readDomesticSliders();
+                const milPct = Number((qs('#militaryBudgetSlider')?.value) || 0);
+                const totalDomesticPct = healthcare + education + infrastructure;
+                const totalAll = totalDomesticPct + milPct;
+                if (totalDomesticPct > 100 || totalAll > 100) {
+                    toast('Adjust sliders so Domestic + Military ≤ 100%.', 'warning');
+                    return;
+                }
+                // Simple happiness heuristic
+                let happinessIndex = Number(me.happinessIndex ?? 100);
+                const target = 60 + healthcare * 0.3 + education * 0.25 + infrastructure * 0.15 - Math.max(0, totalAll - 100) * 0.5;
+                happinessIndex = Math.max(0, Math.min(100, Math.round(target)));
+
+                await updateDoc(playerRef(userId), {
+                    domesticSpending: { healthcare, education, infrastructure },
+                    happinessIndex
+                });
+
+                // Reflect in UI
+                const topH = qs('#happinessTopDisplay');
+                const bar = qs('#happinessBar');
+                if (topH) topH.textContent = String(happinessIndex);
+                if (bar) bar.style.width = `${happinessIndex}%`;
+
+                toast('Domestic budget saved.', 'success');
+            } catch (err) {
+                console.error('saveDomesticBudget error', err);
+                toast(`Failed to save budget: ${err.message}`, 'error');
+            }
+        }
+
+        window.uploadFlag = async function() {
+            try {
+                const me = getMyPlayer();
+                if (!me) { toast('Player not ready yet.', 'warning'); return; }
+                const country = me.country || myCountryName;
+                if (!country) { toast('No country detected for this player.', 'warning'); return; }
+                const fileInput = reqEl('flagUploader');
+                const file = fileInput.files && fileInput.files[0];
+                if (!file) { toast('Choose an image first.', 'warning'); return; }
+                if (file.size > 1_000_000) { toast('Image is larger than 1MB. Please select a smaller image.', 'warning'); return; }
+
+                // Read file as data URL and upload to Firebase Storage
+                const reader = new FileReader();
+                const dataUrl = await new Promise((res, rej) => {
+                    reader.onerror = () => rej(new Error('Failed to read image'));
+                    reader.onload = () => res(reader.result);
+                    reader.readAsDataURL(file);
+                });
+
+                const { basePath, countryRef } = getSimRefs();
+                const path = `${basePath}/flags/${country}.jpg`;
+                const storageRef = ref(storage, path);
+                await uploadString(storageRef, dataUrl, 'data_url');
+                const url = await getDownloadURL(storageRef);
+
+                await setDoc(countryRef(country), { flagUrl: url }, { merge: true });
+
+                // Update previews
+                const prev = qs('#flagPreview');
+                if (prev) prev.src = url;
+                const banner = qs('#studentCountryBanner');
+                if (banner) {
+                    const emblem = qs('#bannerEmblem');
+                    if (emblem) emblem.innerHTML = `<img src="${url}" alt="Flag" class="w-full h-full object-cover rounded-md">`;
+                }
+
+                toast('Flag uploaded.', 'success');
+            } catch (err) {
+                console.error('uploadFlag error', err);
+                toast(`Flag upload failed: ${err.message}`, 'error');
+            }
+        }
+
+        // Initialize domestic UI once sliders are present
+        document.addEventListener('DOMContentLoaded', () => {
+            ['healthcareSlider','educationSlider','infrastructureSlider'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', () => window.updateDomesticSpending());
+            });
+        });
+            const snap = await getDocs(colRef);
+            const docs = snap.docs;
+            let i = 0;
+            while (i < docs.length) {
+                const chunk = docs.slice(i, i + batchSize);
+                const batch = writeBatch(db);
+                for (const d of chunk) { await handler(d, batch); }
+                await batch.commit();
+                i += chunk.length;
+            }
+            return docs.length;
+        }
+
+        // 7) Start Round: set timer + reset per-round spend
+        window.startRound = async function() {
+            try {
+                const minutes = parseInt(reqEl('timerMinutes').value, 10) || 15;
+                const { simRef, playersColRef } = getSimRefs();
+
+                await updateDoc(simRef, {
+                    phase: 'active',
+                    timerStartedAt: serverTimestamp(),
+                    timerDurationMinutes: minutes,
+                    timerEnds: new Date(Date.now() + minutes * 60000)
+                });
+
+                // Reset per-round spending counters for all non-teacher players
+                await forEachDocInBatches(playersColRef, async (d, batch) => {
+                    const data = d.data();
+                    if (!data.isTeacher) {
+                        batch.update(d.ref, { militarySpendingThisRound: 0 });
+                    }
+                });
+                toast('Round started. Timer running.', 'success');
+            } catch (err) {
+                console.error('startRound error', err);
+                toast(`Failed to start round: ${err.message}`, 'error');
+            }
+        }
+
+        // 8) End Round: move to review/locked state
+        window.endRound = async function() {
+            try {
+                const { simRef } = getSimRefs();
+                await updateDoc(simRef, { phase: 'review' });
+                toast('Round ended. Actions locked for review.', 'info');
+            } catch (err) {
+                console.error('endRound error', err);
+                toast(`Failed to end round: ${err.message}`, 'error');
+            }
+        }
+
+        // Helper: add an entry to a player's log collection
+        async function appendPlayerLog(playerId, message) {
+            try {
+                const { basePath } = getSimRefs();
+                const logsCol = collection(db, `${basePath}/players/${playerId}/log`);
+                await addDoc(logsCol, { message, ts: serverTimestamp() });
+            } catch (e) {
+                console.warn('appendPlayerLog warning:', e?.message);
+            }
+        }
+
+        // 9) Resolve Colonial Chance (minimal working version)
+        // Expects each player doc may have: colonialPlans: [{ territoryKey, invest }]
+        window.resolveColonialChance = async function() {
+            try {
+                const { playersColRef } = getSimRefs();
+                const snap = await getDocs(playersColRef);
+                let resolutions = 0;
+                const batch = writeBatch(db);
+                snap.forEach(d => {
+                    const p = d.data();
+                    const plans = Array.isArray(p.colonialPlans) ? p.colonialPlans : [];
+                    if (!plans.length) return;
+
+                    let dollars = Number(p.dollars || 0);
+                    let colonies = Array.isArray(p.colonies) ? p.colonies.slice() : [];
+
+                    for (const plan of plans) {
+                        const t = COLONIAL_TERRITORIES[plan.territoryKey];
+                        if (!t) continue;
+                        const cost = Number(t.cost || 0);
+                        if (dollars < cost) { continue; }
+                        dollars -= cost;
+                        // Simple 50/50 success chance; you can tune per territory later
+                        const success = Math.random() < 0.5;
+                        if (success) {
+                            colonies.push({ key: plan.territoryKey, name: t.name, income: t.income, acquiredAt: Date.now() });
+                        }
+                        resolutions++;
+                    }
+                    // Clear plans and write back updated money/colonies
+                    batch.update(d.ref, { dollars, colonies, colonialPlans: [] });
+                });
+                if (resolutions === 0) { toast('No colonial investments to resolve.', 'info'); return; }
+                await batch.commit();
+                toast(`Colonial outcomes resolved for ${resolutions} plan${resolutions!==1?'s':''}.`, 'success');
+            } catch (err) {
+                console.error('resolveColonialChance error', err);
+                toast(`Failed to resolve colonial chance: ${err.message}`, 'error');
+            }
+        }
+
+        // 10) Check Alliances for conflicts (advisory)
+        window.checkAlliances = async function() {
+            try {
+                const { countryDataColRef } = getSimRefs();
+                const cSnap = await getDocs(countryDataColRef);
+                if (cSnap.empty) { toast('No country data to check.', 'info'); return; }
+                let warnings = 0;
+                cSnap.forEach(cd => {
+                    const country = cd.id;
+                    const allies = Object.keys(cd.data().alliances || {});
+                    const restricted = ALLIANCE_RESTRICTIONS[country] || [];
+                    for (const a of allies) {
+                        if (restricted.includes(a)) warnings++;
+                    }
+                });
+                if (warnings > 0) {
+                    toast(`Alliance check found ${warnings} potential violation${warnings!==1?'s':''}.`, 'warning');
+                } else {
+                    toast('Alliances look valid.', 'success');
+                }
+            } catch (err) {
+                console.error('checkAlliances error', err);
+                toast(`Failed to check alliances: ${err.message}`, 'error');
+            }
+        }
+
+        // Helper: compute per-round income (minimal): base + sum of colony incomes
+        function computeIncomeForPlayer(p) {
+            const base = Number(BASE_INCOME || 0);
+            const colonies = Array.isArray(p.colonies) ? p.colonies : [];
+            const colonyIncome = colonies.reduce((s, c) => s + Number(c.income || 0), 0);
+            return base + colonyIncome;
+        }
+
+        // 11) Advance to Next Round: apply income, reset per-round fields
+        window.nextRound = async function() {
+            try {
+                const { simRef, playersColRef } = getSimRefs();
+                // Load current round
+                const simSnap = await getDoc(simRef);
+                const curRound = Number(simSnap.exists() ? (simSnap.data().round || 1) : 1);
+
+                // Apply income + reset round fields
+                await forEachDocInBatches(playersColRef, async (d, batch) => {
+                    const p = d.data();
+                    if (p.isTeacher) return;
+                    const income = computeIncomeForPlayer(p);
+                    const newDollars = Number(p.dollars || 0) + income * 1000; // scale into currency units
+                    batch.update(d.ref, {
+                        dollars: newDollars,
+                        militarySpendingThisRound: 0
+                    });
+                });
+
+                await updateDoc(simRef, { round: curRound + 1, phase: 'waiting', timerStartedAt: null, timerDurationMinutes: null, timerEnds: null });
+                toast(`Advanced to Round ${curRound + 1}.`, 'success');
+            } catch (err) {
+                console.error('nextRound error', err);
+                toast(`Failed to advance round: ${err.message}`, 'error');
+            }
+        }
+
+        // 12) Export Results (PDF)
+        window.exportResults = async function() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const docPdf = new jsPDF();
+                const { playersColRef } = getSimRefs();
+                const snap = await getDocs(playersColRef);
+                const rows = [];
+                snap.forEach(d => {
+                    const p = d.data();
+                    if (p.isTeacher) return;
+                    rows.push([
+                        p.country || '-',
+                        p.displayName || p.email || d.id,
+                        String(p.dollars ?? 0),
+                        String(p.army || 0),
+                        String(p.navy || 0),
+                        (Array.isArray(p.colonies) ? p.colonies.length : 0)
+                    ]);
+                });
+                rows.sort((a,b) => a[0].localeCompare(b[0]));
+                docPdf.text('The North – Simulation Results', 14, 16);
+                docPdf.autoTable({
+                    head: [['Country','Player','$','Army','Navy','# Colonies']],
+                    body: rows,
+                    startY: 22,
+                    styles: { fontSize: 10 }
+                });
+                docPdf.save('north_sim_results.pdf');
+                toast('Exported PDF.', 'success');
+            } catch (err) {
+                console.error('exportResults error', err);
+                toast(`Failed to export: ${err.message}`, 'error');
+            }
+        }
+
+        // 13) Reset Game (soft reset)
+        window.resetGame = async function() {
+            const ok = await confirmAction('Reset full game?', '<p>This will reset round, phase, and player budgets/round-spend. War declarations will be cleared.</p>');
+            if (!ok) return;
+            try {
+                const { simRef, playersColRef, warDeclarationsColRef } = getSimRefs();
+                // Reset sim
+                await setDoc(simRef, { round: 1, phase: 'waiting', timerStartedAt: null, timerDurationMinutes: null, timerEnds: null }, { merge: true });
+                // Reset players (keep identities/roles)
+                await forEachDocInBatches(playersColRef, async (d, batch) => {
+                    const p = d.data();
+                    if (p.isTeacher) return;
+                    const startBudget = STARTING_BUDGETS[p.country] ?? 0;
+                    batch.update(d.ref, {
+                        dollars: startBudget,
+                        army: 0,
+                        navy: 0,
+                        colonies: [],
+                        colonialPlans: [],
+                        militarySpendingThisRound: 0
+                    });
+                });
+                // Clear war declarations
+                const warSnap = await getDocs(warDeclarationsColRef);
+                if (!warSnap.empty) {
+                    const batch = writeBatch(db);
+                    warSnap.forEach(w => batch.delete(w.ref));
+                    await batch.commit();
+                }
+                toast('Game reset complete.', 'success');
+            } catch (err) {
+                console.error('resetGame error', err);
+                toast(`Failed to reset: ${err.message}`, 'error');
+            }
+        }
         
         async function notifyApprovers(warId, warDeclaration) {
              const approverRoles = ['Secretary of State', 'Minister of Domestic Tranquility'];
@@ -1109,6 +2627,10 @@
                 // after initial players load, ensure domestic UI is synced immediately
                 if (playersFirstLoad) {
                     playersFirstLoad = false;
+                    // Only enable controls if the current player is in a valid ready state
+                    if (typeof enablePlayerControlsIfReady === 'function') {
+                        enablePlayerControlsIfReady();
+                    }
                     // call immediate domestic updater so sliders/values show right away
                     if (typeof updateDomesticSpendingImmediate === 'function') {
                         updateDomesticSpendingImmediate();
@@ -1143,7 +2665,18 @@
                 notificationUnsubscribe = onSnapshot(query(notificationColRef), (snapshot) => {
                     snapshot.docChanges().forEach((change) => {
                         if (change.type === "added") {
-                            showStudentNotificationModal(change.doc.data(), change.doc.id);
+                            const data = change.doc.data();
+                            // If mobilization is required, automatically open mobilization UI for Secretaries of War
+                            if (data && data.type === 'mobilization_required') {
+                                try {
+                                    showMobilizationPanel(data.warId);
+                                } catch (e) {
+                                    console.error('Failed to open mobilization panel:', e);
+                                    showStudentNotificationModal(data, change.doc.id);
+                                }
+                            } else {
+                                showStudentNotificationModal(data, change.doc.id);
+                            }
                         }
                     });
                 });
@@ -1236,6 +2769,7 @@
         
         let countdownInterval;
         function getTimerDisplay(timerEnds) {
+            // Ensure only one interval runs
             clearInterval(countdownInterval);
 
             const toMillis = (t) => {
@@ -1265,22 +2799,40 @@
 
             if (!endTime || Number.isNaN(endTime)) return '00:00';
 
+            const formatDisplay = (msLeft) => {
+                const minutes = Math.floor(msLeft / 60000);
+                const seconds = Math.floor((msLeft % 60000) / 1000);
+                return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            };
+
             const update = () => {
                 const now = Date.now();
                 const timeLeft = Math.max(0, endTime - now);
-                const minutes = Math.floor(timeLeft / 60000);
-                const seconds = Math.floor((timeLeft % 60000) / 1000);
-                const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                if (localGameState.phase === 'active') {
-                    const phaseTextEl = document.getElementById('phaseText');
-                    if (phaseTextEl) phaseTextEl.textContent = `Active - ${display}`;
+                const display = formatDisplay(timeLeft);
+
+                const phaseTextEl = document.getElementById('phaseText');
+                if (phaseTextEl) {
+                    // Always set the full string so the UI never shows a truncated value
+                    // When the phase isn't active we still update the display part so it stays in sync
+                    if (localGameState.phase === 'active') {
+                        phaseTextEl.textContent = `Active - ${display}`;
+                    } else {
+                        phaseTextEl.textContent = display;
+                    }
                 }
-                if (timeLeft <= 0) clearInterval(countdownInterval);
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                }
             };
 
+            // Run one immediate update and then start the interval
             update();
             countdownInterval = setInterval(update, 1000);
-            return '';
+
+            // Return an initial MM:SS string so callers (updateGameUI) can build their label immediately
+            const initialDisplay = formatDisplay(Math.max(0, endTime - Date.now()));
+            return initialDisplay;
         }
 
         function updateAllPlayersUI() {
@@ -1374,6 +2926,9 @@
             const coloniesPnp = Object.values(player.colonies || {}).reduce((sum, colony) => sum + (colony.cost || 0), 0);
             return (player.pnp || 0) + armyPnp + navyPnp + coloniesPnp;
         }
+
+        // Make available globally for late-bound callers (eg. finalizeBattleResults)
+        window.calculateTotalPnp = calculateTotalPnp;
 
         function updateLeaderboard() {
             const playersArray = Object.values(localPlayersState).filter(p => !p.isTeacher);
@@ -1504,20 +3059,8 @@
             const myData = localPlayersState[userId];
             if (!myData) return;
 
-            // enable sliders now that data is present
-            ['healthcareSlider','educationSlider','infrastructureSlider','militaryBudgetSlider'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.removeAttribute('disabled');
-            });
-            // enable purchase buttons that call purchaseUnits
-            document.querySelectorAll('button[onclick]').forEach(btn => {
-                try {
-                    const onclick = btn.getAttribute('onclick') || '';
-                    if (onclick.includes('purchaseUnits')) {
-                        btn.removeAttribute('disabled');
-                    }
-                } catch(e) {}
-            });
+            // Ensure controls are enabled only if player data is valid
+            if (typeof enablePlayerControlsIfReady === 'function') enablePlayerControlsIfReady();
 
             const totalBudget = myData.dollars || 0;
             const healthcare = parseInt(document.getElementById('healthcareSlider')?.value || 20);
@@ -1572,21 +3115,36 @@
 
         // Enable controls for student interactions (called when student data is ready)
         function enableStudentControls() {
-            ['armyQuantity-main','navyQuantity-main','armyQuantity-war','navyQuantity-war',
-             'healthcareSlider','educationSlider','infrastructureSlider','militaryBudgetSlider'
-            ].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.removeAttribute('disabled');
-            });
-            // Also enable purchase buttons that call purchaseUnits
-            document.querySelectorAll('button[onclick]').forEach(btn => {
-                try {
-                    const onclick = btn.getAttribute('onclick') || '';
-                    if (onclick.includes('purchaseUnits')) {
-                        btn.removeAttribute('disabled');
-                    }
-                } catch(e) {}
-            });
+            // Delegate to readiness check so enabling only happens when player is in a valid state
+            if (typeof enablePlayerControlsIfReady === 'function') enablePlayerControlsIfReady();
+        }
+
+        // Enable player controls only when the current player exists and has the expected fields
+        function enablePlayerControlsIfReady() {
+            try {
+                const me = localPlayersState[userId];
+                if (!me) return;
+
+                // Basic validation: must have dollars and income fields (indicates initialized player)
+                if (typeof me.dollars !== 'number' || typeof me.income !== 'number') return;
+
+                ['armyQuantity-main','navyQuantity-main','armyQuantity-war','navyQuantity-war'].forEach(id => {
+                    const el = document.getElementById(id); if (el) el.removeAttribute('disabled');
+                });
+                ['healthcareSlider','educationSlider','infrastructureSlider','militaryBudgetSlider'].forEach(id => {
+                    const el = document.getElementById(id); if (el) el.removeAttribute('disabled');
+                });
+
+                // Enable purchase buttons that call purchaseUnits
+                document.querySelectorAll('button[onclick]').forEach(btn => {
+                    try {
+                        const onclick = btn.getAttribute('onclick') || '';
+                        if (onclick.includes('purchaseUnits')) {
+                            btn.removeAttribute('disabled');
+                        }
+                    } catch(e) {}
+                });
+            } catch (e) { console.error('enablePlayerControlsIfReady failed:', e); }
         }
 
         // Debounced version for UI event handlers
@@ -1833,173 +3391,107 @@
             showRoleAssignmentModal(teammates);
         }
 
-        function showRoleAssignmentModal(teammates) {
-            const modal = document.getElementById('roleAssignmentModal');
-            const countryNameEl = document.getElementById('roleAssignCountryName');
-            const listEl = document.getElementById('roleAssignmentList');
-            
-            countryNameEl.innerHTML = `Round 1 setup: assign a role to each teammate on <span class="font-semibold">${myCountryName}</span>.`;
-            
-            listEl.innerHTML = `
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                    <p class="text-sm text-blue-800">
-                        <strong>Note:</strong> If your team has fewer than ${STUDENT_ROLES.length} members, 
-                        students can take multiple roles. Check multiple boxes per person.
-                    </p>
-                </div>
-                ${teammates.map(teammate => `
-                    <div class="bg-white p-4 rounded-lg border border-gray-200">
-                        <div class="font-semibold text-gray-800 mb-2">${teammate.name}</div>
-                        <div class="text-sm text-gray-500 mb-3">${teammate.email}</div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            ${STUDENT_ROLES.map(role => `
-                                <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer">
-                                    <input type="checkbox" 
-                                           value="${role.name}" 
-                                           data-player-id="${teammate.id}" 
-                                           data-email="${teammate.email}"
-                                           class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                                    <span class="ml-2 text-sm text-gray-700">${role.name}</span>
-                                </label>
-                            `).join('')}
-                        </div>
-                    </div>
-                `).join('')}
-            `;
-            
-            modal.classList.remove('hidden');
-        }
-        
-        window.closeRoleAssignmentModal = function() {
-            document.getElementById('roleAssignmentModal').classList.add('hidden');
-            isTeacherEditingRoles = false; // Reset the flag
-        }
+                // =============== Role Assignment (8) ===============
+                window.showRoleAssignmentModal = async function(countryName) {
+                    try {
+                        const modal = reqEl('roleAssignmentModal');
+                        const list = reqEl('roleAssignmentList');
+                        list.innerHTML = '<p class="text-gray-500">Loading teammates…</p>';
 
-        window.saveRoleAssignments = async function() {
-            if (isTeacherEditingRoles) {
-                // Teacher logic (using selects)
-                const selects = document.querySelectorAll('#roleAssignmentList select');
-                const assignments = {};
+                        const { playersColRef } = getSimRefs();
+                        const qSnap = await getDocs(query(playersColRef, where('country', '==', countryName)));
+                        if (qSnap.empty) {
+                            list.innerHTML = '<p class="text-gray-500">No players found for this country.</p>';
+                            modal.classList.remove('hidden');
+                            return;
+                        }
 
-                selects.forEach(select => {
-                    const email = select.dataset.email;
-                    const role = select.value;
-                    if (email) {
-                        assignments[email] = role ? [role] : []; // Store as array, even if single or empty
+                        // Build role assignment rows
+                        const availableRoles = STUDENT_ROLES.map(r => r.name);
+                        list.innerHTML = '';
+                        qSnap.forEach(docSnap => {
+                            const pdata = docSnap.data();
+                            const currentRole = pdata.role || '';
+                            const playerId = docSnap.id;
+                            const row = document.createElement('div');
+                            row.className = 'flex items-center justify-between bg-white p-3 rounded-lg border';
+
+                            const selectOptions = ['<option value="">-- Select Role --</option>']
+                                .concat(
+                                    availableRoles.map(r => `<option value="${r}" ${r === currentRole ? 'selected' : ''}>${r}</option>`)
+                                )
+                                .join('');
+
+                            row.innerHTML = `
+                                <div class="flex flex-col">
+                                    <span class="font-medium text-gray-800">${pdata.displayName || pdata.email}</span>
+                                    <span class="text-xs text-gray-500">${pdata.email || ''}</span>
+                                </div>
+                                <select class="border border-gray-300 rounded-md px-2 py-1 role-select" data-player-id="${playerId}">
+                                    ${selectOptions}
+                                </select>
+                            `;
+                            list.appendChild(row);
+                        });
+
+                        reqEl('roleAssignCountryName').textContent = `Assign roles for ${countryName}`;
+                        modal.classList.remove('hidden');
+                    } catch (err) {
+                        console.error('showRoleAssignmentModal error', err);
+                        toast(`Failed to open role assignment: ${err.message}`, 'error');
                     }
-                });
+                };
 
-                try {
-                    const batch = writeBatch(db);
-                    const countryName = document.getElementById('teacherCountrySelect').value;
-                    const countryRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/countryData`, countryName);
-                    
-                    const roleAssignmentsForDb = {};
-                    Object.entries(assignments).forEach(([email, roles]) => {
-                        roleAssignmentsForDb[email] = roles;
-                    });
-                    batch.set(countryRef, { roleAssignments: roleAssignmentsForDb }, { merge: true });
+                // Close modal without saving
+                window.closeRoleAssignmentModal = function() {
+                    reqEl('roleAssignmentModal').classList.add('hidden');
+                };
 
-                    selects.forEach(select => {
-                        const playerId = select.dataset.playerId;
-                        const roles = assignments[select.dataset.email] || [];
-                        if (playerId) {
-                            const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, playerId);
-                            batch.update(playerRef, {
-                                roles: roles,
-                                role: roles[0] || null
-                            });
+                // Collect and save role assignments (writes to Firestore)
+                window.saveRoleAssignments = async function() {
+                    try {
+                        const selects = Array.from(document.querySelectorAll('#roleAssignmentList .role-select'));
+                        const assignments = selects.map(sel => ({
+                            playerId: sel.dataset.playerId,
+                            role: sel.value
+                        }));
+
+                        // Validate that each required role appears only once
+                        const uniqueRoles = new Set();
+                        for (const a of assignments) {
+                            if (!a.role) continue;
+                            if (uniqueRoles.has(a.role)) {
+                                toast(`Duplicate role detected: ${a.role}`, 'warning');
+                                return;
+                            }
+                            uniqueRoles.add(a.role);
                         }
-                    });
 
-                    await batch.commit();
-                    closeRoleAssignmentModal();
-                    showInfoModal("Roles Updated", `<p>Roles for ${countryName} have been updated.</p>`);
-                } catch (error) {
-                    console.error("Failed to save teacher role edits:", error);
-                    showInfoModal("Save Failed", `<p>Could not save role edits: ${error.message}</p>`);
-                }
+                        const { playersColRef } = getSimRefs();
+                        const batch = writeBatch(db);
+                        assignments.forEach(({ playerId, role }) => {
+                            const ref = doc(playersColRef, playerId);
+                            batch.update(ref, { role });
+                        });
+                        await batch.commit();
 
-            } else {
-                // Original Student logic (using checkboxes)
-                const checkboxes = document.querySelectorAll('#roleAssignmentList input[type="checkbox"]');
-                if (checkboxes.length === 0 && !isTeacherEditingRoles) {
-                    console.error('No checkboxes found in role assignment modal (student flow)');
-                    showInfoModal("Save Failed", "<p>Role assignment UI not ready. Please try again.</p>");
-                    return;
-                }
-                const assignments = {}; // email -> array of roles
-                const roleCoverage = new Set(); // track which roles are assigned
-                
-                checkboxes.forEach(checkbox => {
-                    if (checkbox.checked) {
-                        const email = checkbox.dataset.email;
-                        const role = checkbox.value;
-                        
-                        if (!assignments[email]) {
-                            assignments[email] = [];
+                        // Update local state if present
+                        for (const { playerId, role } of assignments) {
+                            if (localPlayersState && localPlayersState[playerId]) {
+                                localPlayersState[playerId].role = role;
+                            }
                         }
-                        assignments[email].push(role);
-                        roleCoverage.add(role);
+
+                        toast('Roles successfully saved and synced!', 'success');
+                        closeRoleAssignmentModal();
+
+                        // Optionally re-render country rosters or student cards if applicable
+                        if (typeof refreshRosterDisplay === 'function') refreshRosterDisplay();
+                    } catch (err) {
+                        console.error('saveRoleAssignments error', err);
+                        toast(`Failed to save roles: ${err.message}`, 'error');
                     }
-                });
-                
-                const teammates = [...new Set(Array.from(checkboxes).map(cb => cb.dataset.email))];
-                const unassignedStudents = teammates.filter(email => !assignments[email] || assignments[email].length === 0);
-                
-                if (unassignedStudents.length > 0) {
-                    showInfoModal("Unassigned Students", 
-                        `<p>The following students have no roles assigned:</p>
-                         <ul class="list-disc list-inside mt-2">
-                             ${unassignedStudents.map(email => `<li>${email}</li>`).join('')}
-                         </ul>
-                         <p class="mt-2">Please assign at least one role to each student.</p>`);
-                    return;
-                }
-                
-                const criticalRoles = ['Secretary of the Treasury', 'Secretary of War', 'Secretary of State', 'Minister of Domestic Tranquility'];
-                const missingCritical = criticalRoles.filter(role => !roleCoverage.has(role));
-                
-                if (missingCritical.length > 0) {
-                    const body = `<p>Warning: The following important roles are not assigned:</p>
-                                  <ul class="list-disc list-inside mt-2 text-left">${missingCritical.map(r => `<li>${r}</li>`).join('')}</ul>
-                                  <p class="mt-2">These roles have key gameplay functions. Do you want to continue anyway?</p>`;
-                    const proceed = await showConfirmModal("Missing Critical Roles", body);
-                    if (!proceed) return;
-                }
-                
-                try {
-                    const batch = writeBatch(db);
-                    
-                    const countryRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/countryData`, myCountryName);
-                    batch.set(countryRef, { roleAssignments: assignments }, { merge: true });
-                    
-                    Object.entries(assignments).forEach(([email, roles]) => {
-                        const playerId = Array.from(checkboxes).find(cb => cb.dataset.email === email)?.dataset.playerId;
-                        if (playerId) {
-                            const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, playerId);
-                            batch.update(playerRef, { 
-                                roles: roles,
-                                role: roles[0] || null
-                            });
-                        }
-                    });
-                    
-                    await batch.commit();
-                    
-                    closeRoleAssignmentModal();
-                    showInfoModal("Roles Assigned", 
-                        `<p>Team roles have been successfully assigned!</p>
-                         <p class="text-sm text-gray-600 mt-2">Students with multiple roles will see all their role tabs.</p>`);
-                    
-                    setupStudentTabs();
-                    
-                } catch (error) {
-                    console.error("Failed to save role assignments:", error);
-                    showInfoModal("Save Failed", `<p>Could not save role assignments: ${error.message}</p>`);
-                }
-            }
-        };
+                };
 
         window.showTeacherRoleEditor = async function() {
             isTeacherEditingRoles = true;
@@ -2986,6 +4478,647 @@
             }
         };
         
+                // =============== Hour Selection (7) ===============
+                // Opens the modal and lists available class hours based on roster docs
+                window.showHourSelection = async function() {
+                    try {
+                        const modal = reqEl('hourSelectionModal');
+                        const list = reqEl('availableHours');
+                        list.innerHTML = '<div class="text-gray-500">Loading hours…</div>';
+
+                        const { rosterColRef } = getSimRefs();
+                        const snap = await getDocs(rosterColRef);
+
+                        const counts = new Map();
+                        snap.forEach(d => {
+                            const p = (d.data().period ?? '').toString().trim();
+                            if (!p) return; // ignore unassigned
+                            counts.set(p, (counts.get(p) || 0) + 1);
+                        });
+
+                        // Build hours 1..12; show counts if present; selectable if count>0
+                        const hours = Array.from({ length: 12 }, (_, i) => String(i + 1));
+                        list.innerHTML = '';
+                        hours.forEach(h => {
+                            const c = counts.get(h) || 0;
+                            const disabled = c === 0 ? 'disabled' : '';
+                            const note = c === 0
+                                ? '<span class="text-xs text-gray-400">(no roster)</span>'
+                                : `<span class="text-xs text-gray-600">(${c} students)</span>`;
+                            const row = document.createElement('label');
+                            row.className = `flex items-center justify-between p-3 rounded-lg border bg-white ${c===0 ? 'opacity-50' : ''}`;
+                            row.innerHTML = `
+                                <div class="flex items-center gap-3">
+                                    <input type="radio" name="selectedHour" value="${h}" class="h-4 w-4 text-indigo-600" ${disabled} onchange="hourSelectionChanged()">
+                                    <span class="font-medium">Period ${h}</span>
+                                </div>
+                                ${note}
+                            `;
+                            list.appendChild(row);
+                        });
+
+                        // reset button state
+                        const btn = reqEl('startWithHourBtn');
+                        btn.disabled = true;
+
+                        modal.classList.remove('hidden');
+                    } catch (err) {
+                        console.error('showHourSelection error', err);
+                        toast(`Failed to load hours: ${err.message}`, 'error');
+                    }
+                };
+
+                // Handle radio change; enable start button
+                window.hourSelectionChanged = function() {
+                    const btn = reqEl('startWithHourBtn');
+                    const chosen = document.querySelector('input[name="selectedHour"]:checked');
+                    btn.disabled = !chosen;
+                };
+
+                // Close modal without changes
+                window.closeHourSelection = function() {
+                    reqEl('hourSelectionModal').classList.add('hidden');
+                };
+
+                // Start the simulation for the selected hour (period)
+                window.startSimulationWithHour = async function() {
+                    try {
+                        const chosen = document.querySelector('input[name="selectedHour"]:checked');
+                        if (!chosen) { toast('Select a class period first.', 'warning'); return; }
+                        const period = chosen.value;
+                        const { simRef } = getSimRefs();
+
+                        await setDoc(simRef, {
+                            currentPeriod: period,
+                            round: 1,
+                            phase: 'waiting',
+                            timerStartedAt: null,
+                            timerDurationMinutes: null,
+                            timerEnds: null
+                        }, { merge: true });
+
+                        // Reflect in UI similarly to startSimulationDirectly
+                        toast(`Simulation set to Period ${period}.`, 'success');
+                        reqEl('hourSelectionModal').classList.add('hidden');
+
+                        // If we are on the roster screen, transition to game/teacher view
+                        const roster = document.getElementById('rosterScreen');
+                        if (roster && !roster.classList.contains('hidden')) {
+                            roster.classList.add('hidden');
+                            document.getElementById('gameContainer').classList.remove('hidden');
+                            document.getElementById('teacherPanel').classList.remove('hidden');
+                            reqEl('displayClassCode').textContent = currentClassCode;
+                            reqEl('displayPlayerName').textContent = user?.displayName || user?.email || 'Teacher';
+                            setupFirestoreListeners?.();
+                        }
+                    } catch (err) {
+                        console.error('startSimulationWithHour error', err);
+                        toast(`Failed to start for selected hour: ${err.message}`, 'error');
+                    }
+                };
+
+                // Optional convenience: open hour selection if roster dropdown empty
+                window.maybeShowHourSelection = function() {
+                    const sel = document.getElementById('classPeriodSelect');
+                    if (!sel) return;
+                    const hasOptions = sel.querySelectorAll('option').length > 1; // beyond placeholder
+                    if (!hasOptions) showHourSelection();
+                };
+        
+                // =============== MOBILIZATION SYSTEM ===============
+
+                // When war is approved, transition to mobilization
+                async function startMobilizationPhase(warId) {
+                    try {
+                        const { warDeclarationsColRef } = getSimRefs();
+                        const warRef = doc(warDeclarationsColRef, warId);
+                        const warSnap = await getDoc(warRef);
+                        const warData = warSnap.data();
+                
+                        // Determine all nations involved
+                        const attackers = [warData.declaringCountry];
+                        const defenders = warData.targets || [];
+                
+                        // Get allies for each side
+                        const attackingAlliance = await getAllianceMembers(warData.declaringCountry);
+                        const defendingAlliance = new Set();
+                        for (const target of defenders) {
+                            const allies = await getAllianceMembers(target);
+                            allies.forEach(a => defendingAlliance.add(a));
+                        }
+                
+                        // Read configurable mobilization minutes from teacher panel; fall back to 15
+                        let configuredMinutes = 15;
+                        try {
+                            const el = document.getElementById('mobilizationMinutes');
+                            const v = parseInt(el?.value);
+                            if (!isNaN(v) && v >= 1) configuredMinutes = v;
+                        } catch (e) { /* ignore */ }
+
+                        const mobilizationDeadline = new Date(Date.now() + configuredMinutes * 60000);
+                
+                        await updateDoc(warRef, {
+                            status: 'mobilizing',
+                            alliances: {
+                                attacking: Array.from(attackingAlliance),
+                                defending: Array.from(defendingAlliance)
+                            },
+                            mobilizationDeadline,
+                            mobilizations: {}
+                        });
+                
+                        // Notify all Secretaries of War
+                        const allNations = [...attackingAlliance, ...defendingAlliance];
+                        for (const country of allNations) {
+                            const players = getCountryPlayers(country);
+                            for (const [pid, pdata] of players) {
+                                const roles = Array.isArray(pdata.roles) ? pdata.roles : (pdata.role ? [pdata.role] : []);
+                                if (roles.includes('Secretary of War')) {
+                                        await sendNotification(pid, {
+                                        type: 'mobilization_required',
+                                        warId,
+                                        message: `WAR! Mobilize your forces immediately. You have ${configuredMinutes} minutes.`
+                                    });
+                                }
+                            }
+                        }
+                
+                        toast('Mobilization phase started. All nations must commit forces.', 'success');
+                    } catch (err) {
+                        console.error('startMobilizationPhase error', err);
+                        toast(`Failed to start mobilization: ${err.message}`, 'error');
+                    }
+                }
+
+                // Get all allied nations for a country
+                async function getAllianceMembers(countryName) {
+                    const members = new Set([countryName]);
+                    const alliances = safeGet(localCountryData, countryName, 'alliances') || {};
+            
+                    for (const [ally, status] of Object.entries(alliances)) {
+                        if (status === 'accepted') {
+                            members.add(ally);
+                            // Recursively get their allies too
+                            const theirAlliances = safeGet(localCountryData, ally, 'alliances') || {};
+                            for (const [secondOrder, secondStatus] of Object.entries(theirAlliances)) {
+                                if (secondStatus === 'accepted') members.add(secondOrder);
+                            }
+                        }
+                    }
+            
+                    return members;
+                }
+
+                // Show mobilization panel for Secretary of War
+                window.showMobilizationPanel = async function(warId) {
+                    try {
+                        const { warDeclarationsColRef } = getSimRefs();
+                        const warRef = doc(warDeclarationsColRef, warId);
+                        const warSnap = await getDoc(warRef);
+                        const warData = warSnap.data();
+                
+                        const me = localPlayersState[userId];
+                        const myCountry = me.country;
+                        const myAlliance = (warData.alliances?.attacking || []).includes(myCountry) ? 'attacking' : 'defending';
+                        const allyCountries = warData.alliances?.[myAlliance] || [];
+                
+                        // Get current mobilization if exists
+                        const currentMob = warData.mobilizations?.[myCountry] || {
+                            army: [0, 0, 0],
+                            navy: [0, 0, 0],
+                            submitted: false
+                        };
+                
+                        const modal = reqEl('mobilizationModal');
+                        const content = reqEl('mobilizationContent');
+                
+                        // Build ally summary
+                        let allyHTML = '<div class="bg-blue-50 p-4 rounded-lg mb-4"><h4 class="font-semibold mb-2">Your Alliance Forces:</h4><div class="space-y-1">';
+                        for (const country of allyCountries) {
+                            const countryPlayers = Object.values(localPlayersState).filter(p => p.country === country);
+                            const totalArmy = countryPlayers.reduce((sum, p) => sum + (p.army || 0), 0);
+                            const totalNavy = countryPlayers.reduce((sum, p) => sum + (p.navy || 0), 0);
+                            const mob = warData.mobilizations?.[country];
+                            const status = mob?.submitted ? '✓ Ready' : '⏳ Pending';
+                            allyHTML += `<div class="text-sm"><strong>${country}:</strong> ${totalArmy} Army, ${totalNavy} Navy <span class="text-xs">${status}</span></div>`;
+                        }
+                        allyHTML += '</div></div>';
+                
+                        const myArmy = me.army || 0;
+                        const myNavy = me.navy || 0;
+                
+                        content.innerHTML = `
+                            <h3 class="text-2xl font-bold text-red-800 mb-4">⚔️ MOBILIZATION ORDERS</h3>
+                    
+                            ${allyHTML}
+                    
+                            <div class="bg-red-50 border-2 border-red-300 rounded-lg p-4 mb-4">
+                                <p class="font-semibold text-red-800">ALL units must be committed to battle!</p>
+                                <p class="text-sm text-red-700">Victory requires winning 4 of 6 battles. Losing battles means losing those units permanently.</p>
+                            </div>
+                    
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="bg-gray-100 p-3 rounded">
+                                    <div class="text-sm text-gray-600">Your Army Units</div>
+                                    <div class="text-2xl font-bold">${myArmy}</div>
+                                </div>
+                                <div class="bg-gray-100 p-3 rounded">
+                                    <div class="text-sm text-gray-600">Your Navy Units</div>
+                                    <div class="text-2xl font-bold">${myNavy}</div>
+                                </div>
+                            </div>
+                    
+                            <div class="space-y-4">
+                                <div class="mb-3 text-sm text-gray-700">
+                                    Mobilization deadline: <span id="mobilizationCountdown">--:--</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-2">Army Battles (${myArmy} total)</h4>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div>
+                                            <label class="text-xs">Battle 1</label>
+                                            <input type="number" id="armyBattle1" min="0" max="${myArmy}" value="${currentMob.army[0]}" 
+                                                   class="w-full px-2 py-1 border rounded" onchange="validateMobilization()">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs">Battle 2</label>
+                                            <input type="number" id="armyBattle2" min="0" max="${myArmy}" value="${currentMob.army[1]}" 
+                                                   class="w-full px-2 py-1 border rounded" onchange="validateMobilization()">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs">Battle 3</label>
+                                            <input type="number" id="armyBattle3" min="0" max="${myArmy}" value="${currentMob.army[2]}" 
+                                                   class="w-full px-2 py-1 border rounded" onchange="validateMobilization()">
+                                        </div>
+                                    </div>
+                                    <div id="armyTotal" class="text-sm mt-1"></div>
+                                </div>
+                        
+                                <div>
+                                    <h4 class="font-semibold mb-2">Naval Battles (${myNavy} total)</h4>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div>
+                                            <label class="text-xs">Battle 1</label>
+                                            <input type="number" id="navyBattle1" min="0" max="${myNavy}" value="${currentMob.navy[0]}" 
+                                                   class="w-full px-2 py-1 border rounded" onchange="validateMobilization()">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs">Battle 2</label>
+                                            <input type="number" id="navyBattle2" min="0" max="${myNavy}" value="${currentMob.navy[1]}" 
+                                                   class="w-full px-2 py-1 border rounded" onchange="validateMobilization()">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs">Battle 3</label>
+                                            <input type="number" id="navyBattle3" min="0" max="${myNavy}" value="${currentMob.navy[2]}" 
+                                                   class="w-full px-2 py-1 border rounded" onchange="validateMobilization()">
+                                        </div>
+                                    </div>
+                                    <div id="navyTotal" class="text-sm mt-1"></div>
+                                </div>
+                            </div>
+                    
+                            <div class="mt-6 flex justify-end gap-3">
+                                <button class="btn btn-secondary" onclick="closeMobilizationModal()">Cancel</button>
+                                <button id="submitMobBtn" class="btn btn-danger" onclick="submitMobilization('${warId}')" disabled>
+                                    Submit Mobilization
+                                </button>
+                            </div>
+                        `;
+                
+                        modal.classList.remove('hidden');
+                        validateMobilization(); // Initial validation
+
+                        // Start countdown timer for mobilization modal
+                        try {
+                            // clear previous if any
+                            if (window._mobilizationCountdownInterval) clearInterval(window._mobilizationCountdownInterval);
+                            const updateCountdown = () => {
+                                const warRefLocal = warRef;
+                                getDoc(warRefLocal).then(snap => {
+                                    const w = snap.data();
+                                    const deadline = w?.mobilizationDeadline ? new Date(w.mobilizationDeadline.seconds ? w.mobilizationDeadline.seconds * 1000 : w.mobilizationDeadline) : null;
+                                    const el = reqEl('mobilizationCountdown');
+                                    if (!deadline || !el) return;
+                                    const ms = deadline - Date.now();
+                                    if (ms <= 0) {
+                                        el.textContent = '00:00';
+                                        clearInterval(window._mobilizationCountdownInterval);
+                                        return;
+                                    }
+                                    const mins = Math.floor(ms / 60000);
+                                    const secs = Math.floor((ms % 60000) / 1000);
+                                    el.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+                                }).catch(()=>{});
+                            };
+                            updateCountdown();
+                            window._mobilizationCountdownInterval = setInterval(updateCountdown, 1000);
+                        } catch (e) { /* ignore */ }
+                
+                    } catch (err) {
+                        console.error('showMobilizationPanel error', err);
+                        toast(`Failed to show mobilization: ${err.message}`, 'error');
+                    }
+                };
+
+                window.validateMobilization = function() {
+                    const me = localPlayersState[userId];
+                    const myArmy = me.army || 0;
+                    const myNavy = me.navy || 0;
+            
+                    const army1 = parseInt(reqEl('armyBattle1').value) || 0;
+                    const army2 = parseInt(reqEl('armyBattle2').value) || 0;
+                    const army3 = parseInt(reqEl('armyBattle3').value) || 0;
+                    const armySum = army1 + army2 + army3;
+            
+                    const navy1 = parseInt(reqEl('navyBattle1').value) || 0;
+                    const navy2 = parseInt(reqEl('navyBattle2').value) || 0;
+                    const navy3 = parseInt(reqEl('navyBattle3').value) || 0;
+                    const navySum = navy1 + navy2 + navy3;
+            
+                    const armyTotalEl = reqEl('armyTotal');
+                    const navyTotalEl = reqEl('navyTotal');
+                    const submitBtn = reqEl('submitMobBtn');
+            
+                    const armyValid = armySum === myArmy;
+                    const navyValid = navySum === myNavy;
+            
+                    armyTotalEl.textContent = armyValid 
+                        ? `✓ Total: ${armySum}/${myArmy}` 
+                        : `✗ Total: ${armySum}/${myArmy} (must equal ${myArmy})`;
+                    armyTotalEl.className = armyValid ? 'text-sm text-green-600 font-semibold' : 'text-sm text-red-600 font-semibold';
+            
+                    navyTotalEl.textContent = navyValid 
+                        ? `✓ Total: ${navySum}/${myNavy}` 
+                        : `✗ Total: ${navySum}/${myNavy} (must equal ${myNavy})`;
+                    navyTotalEl.className = navyValid ? 'text-sm text-green-600 font-semibold' : 'text-sm text-red-600 font-semibold';
+            
+                    submitBtn.disabled = !(armyValid && navyValid);
+                };
+
+                window.submitMobilization = async function(warId) {
+                    try {
+                        const me = localPlayersState[userId];
+                        const myCountry = me.country;
+                
+                        const mobilization = {
+                            army: [
+                                parseInt(reqEl('armyBattle1').value) || 0,
+                                parseInt(reqEl('armyBattle2').value) || 0,
+                                parseInt(reqEl('armyBattle3').value) || 0
+                            ],
+                            navy: [
+                                parseInt(reqEl('navyBattle1').value) || 0,
+                                parseInt(reqEl('navyBattle2').value) || 0,
+                                parseInt(reqEl('navyBattle3').value) || 0
+                            ],
+                            submitted: true,
+                            submittedAt: serverTimestamp(),
+                            submittedBy: userId
+                        };
+                
+                        const { warDeclarationsColRef } = getSimRefs();
+                        const warRef = doc(warDeclarationsColRef, warId);
+                
+                        await updateDoc(warRef, {
+                            [`mobilizations.${myCountry}`]: mobilization
+                        });
+                
+                        toast('Mobilization submitted. Good luck in battle!', 'success');
+                        closeMobilizationModal();
+                
+                    } catch (err) {
+                        console.error('submitMobilization error', err);
+                        toast(`Failed to submit: ${err.message}`, 'error');
+                    }
+                };
+
+                window.closeMobilizationModal = function() {
+                    reqEl('mobilizationModal')?.classList.add('hidden');
+                };
+
+                // ================= TEACHER WAR MANAGEMENT =================
+                window.showTeacherWarManagement = async function() {
+                    try {
+                        const { warDeclarationsColRef } = getSimRefs();
+                        const mobilizingWars = await getDocs(query(warDeclarationsColRef, where('status', 'in', ['mobilizing', 'in_battle'])));
+                
+                        if (mobilizingWars.empty) {
+                            showInfoModal('No Active Wars', '<p>No wars currently in progress.</p>');
+                            return;
+                        }
+                
+                        let html = '<div class="space-y-4">';
+                
+                        mobilizingWars.forEach(warDoc => {
+                            const war = warDoc.data();
+                            const allSubmitted = Object.values(war.mobilizations || {}).every(m => m.submitted);
+                    
+                            html += `
+                                <div class="border-2 border-red-300 rounded-lg p-4 bg-red-50">
+                                    <h4 class="font-bold text-lg mb-2">
+                                        ${war.alliances.attacking.join(', ')} vs ${war.alliances.defending.join(', ')}
+                                    </h4>
+                                    <div class="text-sm mb-3">
+                                        Status: <span class="font-semibold">${war.status}</span>
+                                    </div>
+                            
+                                    ${war.status === 'mobilizing' ? `
+                                        <div class="bg-white p-3 rounded mb-2 max-h-48 overflow-y-auto">
+                                            <h5 class="font-semibold text-sm mb-1">Mobilizations:</h5>
+                                            ${Object.entries(war.mobilizations || {}).map(([country, mob]) => `
+                                                <div class="text-xs border-b pb-1 mb-1">
+                                                    <strong>${country}</strong> ${mob.submitted ? '✓' : '⏳'}
+                                                    ${mob.submitted ? `<br/>Army: [${mob.army.join(', ')}] | Navy: [${mob.navy.join(', ')}]` : ''}
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                        ${allSubmitted ? `
+                                            <button onclick="beginPhysicalBattle('${warDoc.id}')" class="btn btn-danger w-full">
+                                                Begin Physical Battle
+                                            </button>
+                                        ` : '<p class="text-sm text-gray-600">Waiting for all mobilizations...</p>'}
+                                    ` : ''}
+                            
+                                    ${war.status === 'in_battle' ? `
+                                        <button onclick="enterBattleResults('${warDoc.id}')" class="btn btn-warning w-full">
+                                            Enter Battle Results
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            `;
+                        });
+                
+                        html += '</div>';
+                        showInfoModal('Active Wars', html);
+                
+                    } catch (err) {
+                        console.error('showTeacherWarManagement error', err);
+                        toast(`Failed to load wars: ${err.message}`, 'error');
+                    }
+                };
+
+                window.beginPhysicalBattle = async function(warId) {
+                    try {
+                        const { warDeclarationsColRef } = getSimRefs();
+                        await updateDoc(doc(warDeclarationsColRef, warId), {
+                            status: 'in_battle',
+                            battleStartedAt: serverTimestamp()
+                        });
+                
+                        toast('Battle status updated. Conduct physical battle now.', 'success');
+                        closeInfoModal();
+                    } catch (err) {
+                        console.error('beginPhysicalBattle error', err);
+                        toast(`Failed: ${err.message}`, 'error');
+                    }
+                };
+
+                window.enterBattleResults = async function(warId) {
+                    const { warDeclarationsColRef } = getSimRefs();
+                    const warSnap = await getDoc(doc(warDeclarationsColRef, warId));
+                    const war = warSnap.data();
+            
+                    const html = `
+                        <h3 class="text-xl font-bold mb-4">Enter Battle Results</h3>
+                        <div class="space-y-3">
+                            ${['Army Battle 1', 'Army Battle 2', 'Army Battle 3', 'Naval Battle 1', 'Naval Battle 2', 'Naval Battle 3'].map((name, i) => `
+                                <div class="border p-3 rounded">
+                                    <div class="font-semibold mb-2">${name}</div>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="battle${i}" value="attacking" class="mr-2">
+                                        Attacking Alliance Won
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="battle${i}" value="defending" class="mr-2">
+                                        Defending Alliance Won
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button onclick="finalizeBattleResults('${warId}')" class="btn btn-success w-full mt-4">
+                            Finalize War Results
+                        </button>
+                    `;
+            
+                    showInfoModal('Battle Results', html);
+                };
+
+                window.finalizeBattleResults = async function(warId) {
+                    try {
+                        const results = [];
+                        for (let i = 0; i < 6; i++) {
+                            const winner = document.querySelector(`input[name="battle${i}"]:checked`)?.value;
+                            if (!winner) {
+                                toast(`Please select winner for battle ${i+1}`, 'warning');
+                                return;
+                            }
+                            results.push(winner);
+                        }
+                
+                        const attackingWins = results.filter(r => r === 'attacking').length;
+                        const defendingWins = results.filter(r => r === 'defending').length;
+                        const winningAlliance = attackingWins >= 4 ? 'attacking' : 'defending';
+                
+                        const { warDeclarationsColRef, playersColRef } = getSimRefs();
+                        const warRef = doc(warDeclarationsColRef, warId);
+                        const warSnap = await getDoc(warRef);
+                        const war = warSnap.data();
+                
+                        // Deduct ALL units from all participants (they all committed everything)
+                        const batch = writeBatch(db);
+                        const allCountries = [...war.alliances.attacking, ...war.alliances.defending];
+                
+                        for (const country of allCountries) {
+                            const countryPlayers = Object.values(localPlayersState).filter(p => p.country === country);
+                            for (const player of countryPlayers) {
+                                const pRef = doc(playersColRef, Object.keys(localPlayersState).find(k => localPlayersState[k] === player));
+                                batch.update(pRef, {
+                                    army: 0,
+                                    navy: 0
+                                });
+                            }
+                        }
+                
+                        // Determine game winner (highest PNP on winning side)
+                        let highestPNP = 0;
+                        let gameWinner = null;
+                        const winningCountries = war.alliances[winningAlliance];
+                
+                        for (const country of winningCountries) {
+                            const countryPlayers = Object.values(localPlayersState).filter(p => p.country === country);
+                            for (const player of countryPlayers) {
+                                const pnp = calculateTotalPnp(player);
+                                if (pnp > highestPNP) {
+                                    highestPNP = pnp;
+                                    gameWinner = country;
+                                }
+                            }
+                        }
+                
+                        batch.update(warRef, {
+                            status: 'concluded',
+                            battleResults: results,
+                            winningAlliance,
+                            gameWinner,
+                            concludedAt: serverTimestamp()
+                        });
+                
+                        await batch.commit();
+                
+                        showInfoModal('WAR CONCLUDED', `
+                            <div class="text-center space-y-4">
+                                <h3 class="text-3xl font-bold text-red-800">VICTORY!</h3>
+                                <p class="text-xl">${winningAlliance === 'attacking' ? 'Attacking' : 'Defending'} Alliance Wins</p>
+                                <p class="text-2xl font-bold text-indigo-800">
+                                    GAME WINNER: ${gameWinner}
+                                </p>
+                                <p class="text-sm text-gray-600">
+                                    Score: ${highestPNP.toLocaleString()} PNP
+                                </p>
+                                <p class="text-sm text-gray-500 mt-4">
+                                    All units from all nations have been lost in the war.
+                                </p>
+                            </div>
+                        `);
+                
+                    } catch (err) {
+                        console.error('finalizeBattleResults error', err);
+                        toast(`Failed to finalize: ${err.message}`, 'error');
+                    }
+                };
+        
     </script>
+    <script>
+        // Embedded war declaration object (readable by other scripts as window.warDeclarations)
+        // Status flow: pending → approved → mobilizing → in_battle → concluded
+        window.warDeclarations = {
+            status: 'mobilizing',
+            alliances: {
+                attacking: ['Tobermory', 'Grenoble'],
+                defending: ['Metz', 'Klagenfurt', 'Tivoli']
+            },
+            mobilizations: {
+                Tobermory: { army: [10, 10, 10], navy: [5, 5, 5], submitted: true },
+                Grenoble: { army: [8, 8, 9], navy: [4, 4, 4], submitted: false }
+                // add other nations here as needed
+            },
+            // ISO 8601 timestamp for mobilization deadline
+            mobilizationDeadline: '2025-10-13T00:00:00Z',
+            battleResults: {
+                armyBattle1: { winner: 'attacking', attackSurvivors: 15, defendSurvivors: 0 },
+                armyBattle2: null,
+                armyBattle3: null,
+                navyBattle1: null,
+                navyBattle2: null,
+                navyBattle3: null
+            },
+            winningAlliance: null, // 'attacking' or 'defending'
+            gameWinner: null // country name of highest PNP on winning side
+        };
+    </script>
+
+    <!-- Mobilization Modal -->
+
+
 </body>
 </html>
