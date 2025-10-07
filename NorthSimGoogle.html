@@ -14,8 +14,9 @@
         /* Base page styles */
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f3f0e9; /* Parchment-like color */
-            background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill-opacity="0.05"><rect x="50" width="50" height="50" /><rect y="50" width="50" height="50" /></g></svg>');
+            background-color: #8B1538; /* Dexter maroon */
+            /* Remove or comment out the background-image line */
+            /* background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill-opacity="0.05"><rect x="50" width="50" height="50" /><rect y="50" width="50" height="50" /></g></svg>'); */
             margin: 0;
         }
 
@@ -133,7 +134,7 @@
 
     <div id="connectionStatus" class="fixed top-4 right-4 text-white text-sm font-bold py-1 px-3 rounded-full z-50 bg-yellow-500">Connecting...</div>
 
-    <div id="loginScreen" class="fixed inset-0 bg-cover bg-center z-40 flex items-center justify-center p-4" style="background-image: url('https://placehold.co/1920x1080/2c3e50/ecf0f1?text=The+North');">
+    <div id="loginScreen" class="fixed inset-0 bg-cover bg-center z-40 flex items-center justify-center p-4" style="background: linear-gradient(135deg, #8B1538, #6B0F2A);">
         <div class="bg-white bg-opacity-90 p-8 rounded-2xl shadow-2xl w-full max-w-md text-center backdrop-blur-sm">
             <h2 class="text-3xl font-bold text-gray-800 mb-2">Welcome to The North</h2>
             <p class="text-gray-600 mb-6">A game of national pride and international power.</p>
@@ -173,13 +174,13 @@
                         <input type="email" id="studentEmail" placeholder="Student email address" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <select id="studentCountry" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <option value="">-- Select Country --</option>
-                            <option value="Tobermory">Tobermory ($100,000)</option>
-                            <option value="Metz">Metz ($100,000)</option>
-                            <option value="Omsk">Omsk ($75,000)</option>
-                            <option value="Grenoble">Grenoble ($60,000)</option>
-                            <option value="Klagenfurt">Klagenfurt ($50,000)</option>
-                            <option value="Tivoli">Tivoli ($40,000)</option>
-                            <option value="Razgrad">Razgrad ($25,000)</option>
+                            <option value="Tobermory">Tobermory</option>
+                            <option value="Metz">Metz</option>
+                            <option value="Omsk">Omsk</option>
+                            <option value="Grenoble">Grenoble</option>
+                            <option value="Klagenfurt">Klagenfurt</option>
+                            <option value="Tivoli">Tivoli</option>
+                            <option value="Razgrad">Razgrad</option>
                         </select>
                         <select id="studentPeriod" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <option value="">-- Select Period --</option>
@@ -189,12 +190,6 @@
                             <option value="4">Period 4</option>
                             <option value="5">Period 5</option>
                             <option value="6">Period 6</option>
-                            <option value="7">Period 7</option>
-                            <option value="8">Period 8</option>
-                            <option value="9">Period 9</option>
-                            <option value="10">Period 10</option>
-                            <option value="11">Period 11</option>
-                            <option value="12">Period 12</option>
                         </select>
                         <button onclick="addStudentToRoster()" class="btn btn-primary">Add Student</button>
                     </div>
@@ -299,16 +294,35 @@
                                     <div class="text-sm text-red-800 font-semibold">Allocated Military Budget</div>
                                     <div id="treasuryMilitaryBudget" class="text-2xl font-bold text-red-900">$0</div>
                                 </div>
+                                <div class="info-box bg-yellow-100 p-4">
+                                    <div class="text-sm text-yellow-800 font-semibold">Colonial Income / Round</div>
+                                    <div id="treasuryColonialIncome" class="text-2xl font-bold text-yellow-900">$0</div>
+                                </div>
                             </div>
-                            <div class="mt-6">
-                                <label for="militaryBudgetSlider" class="block font-medium text-gray-700">Military Budget Allocation: <span id="militaryBudgetPercentageDisplay" class="font-bold text-indigo-600">25%</span></label>
-                                <input type="range" id="militaryBudgetSlider" min="0" max="100" value="25" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="setMilitaryBudget(this.value)">
-                            </div>
+                                                        <div class="mt-6">
+                                                                <label for="militaryBudgetSlider" class="block font-medium text-gray-700">Military Budget Allocation: <span id="militaryBudgetPercentageDisplay" class="font-bold text-indigo-600">25%</span></label>
+                                                                <input type="range" id="militaryBudgetSlider" min="0" max="100" value="25" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="setMilitaryBudget(this.value)">
+
+                                                                <div class="mt-4">
+                                                                    <button id="lockMilitaryBudgetBtn" class="btn btn-primary w-full" onclick="lockMilitaryBudget()">
+                                                                        Lock Military Budget & Notify Secretary of War
+                                                                    </button>
+                                                                    <p id="militaryBudgetLockNote" class="text-xs text-gray-600 mt-2 hidden">
+                                                                        Military budget locked for this round. Secretary of War has been notified.
+                                                                    </p>
+                                                                </div>
+                                                        </div>
                         </div>
                         <div class="card p-6">
                             <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Colonial Investment Planning</h3>
                             <p class="text-sm text-gray-600 mb-4">Pay now to attempt colonization. Results are revealed by the teacher at the end of the round.</p>
                             <div id="colonialPlanning" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                </div>
+                                <div class="mt-4">
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-2">Your Colonies</h4>
+                                    <div id="myColoniesDisplay" class="space-y-2">
+                                        <p class="text-gray-500">No colonies yet.</p>
+                                    </div>
                                 </div>
                         </div>
                     </div>
@@ -446,7 +460,7 @@
                                 <!-- War approval content will be injected here -->
                             </div>
                             <h3 class="text-xl font-bold text-gray-800 mb-2">Minister of Domestic Tranquility</h3>
-                            <p class="text-gray-600 mb-4">Your duty is to manage national morale (PNP) and symbols of national pride.</p>
+                            <p class="text-gray-600 mb-4">Your duty is to manage national morale and pride. This is shown as the Happiness Index.</p>
                              <div class="bg-blue-50 p-4 rounded-lg mb-4">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="font-semibold">Happiness Index:</span>
@@ -526,6 +540,10 @@
                             </div>
                         </div>
                         <button id="startRoundBtn" onclick="startRound()" class="btn btn-success w-full">1. Start Round</button>
+                        <!-- Add AFTER the "Start Round" button -->
+                        <button onclick="initializeBudgetsForCurrentPeriod()" class="btn btn-primary w-full bg-purple-600 hover:bg-purple-700">
+                            Initialize Player Budgets
+                        </button>
                         <button id="endRoundBtn" onclick="endRound()" class="btn btn-warning w-full">2. End Round & Lock Actions</button>
                         <button id="colonialChanceBtn" onclick="resolveColonialChance()" class="btn btn-primary w-full">3. Resolve Colonial Chance</button>
                         <button id="checkAlliancesBtn" onclick="checkAlliances()" class="btn btn-primary w-full">4. Check Alliances</button>
@@ -757,13 +775,21 @@
             messagingSenderId: "610595088129",
             appId: "1:610595088129:web:838554a99867882a219d00"
         };
+
+                // ==== Utility safety helpers (economy + DOM) ====
+                function clamp(min, val, max){
+                    val = Number(val);
+                    if (!isFinite(val)) return min;
+                    return Math.max(min, Math.min(max, val));
+                }
+                function toNumber(v, fallback=0){
+                    const n = Number(v);
+                    return isFinite(n) ? n : fallback;
+                }
+                // qs helper defined later with an optional root parameter
         
         const BASE_INCOME = 25;
-        const STARTING_BUDGETS = {
-            'Tobermory': 100000, 'Grenoble': 60000, 'Omsk': 75000, 'Metz': 100000,
-            'Klagenfurt': 50000, 'Tivoli': 40000, 'Razgrad': 25000
-        };
-        const COLONIAL_TERRITORIES = {
+    const COLONIAL_TERRITORIES = {
             'baw': { name: 'Baw', cost: 10000, income: 18, description: 'Gold mines, fish' },
             'rangoon': { name: 'Rangoon', cost: 20000, income: 15, description: 'Trade routes, forests' },
             'bauru': { name: 'Bauru', cost: 5000, income: 12, description: 'Sugar, cotton, coffee' },
@@ -777,6 +803,17 @@
             'Metz': ['Tobermory', 'Omsk', 'Grenoble', 'Razgrad'], 'Klagenfurt': ['Tobermory', 'Omsk', 'Grenoble', 'Razgrad'],
             'Razgrad': ['Metz', 'Klagenfurt', 'Tivoli']
         };
+        // Helper to provide default starting budgets and country list (replaces removed STARTING_BUDGETS constant)
+        function getDefaultStartingBudget(country) {
+            const map = {
+                'Tobermory': 100000, 'Grenoble': 60000, 'Omsk': 75000, 'Metz': 100000,
+                'Klagenfurt': 50000, 'Tivoli': 40000, 'Razgrad': 25000
+            };
+            return map[country] ?? null;
+        }
+        function getAllStartingCountries() {
+            return ['Tobermory','Grenoble','Omsk','Metz','Klagenfurt','Tivoli','Razgrad'];
+        }
         const STUDENT_ROLES = [
             { name: 'Secretary of the Treasury', contentId: 'treasuryCardTemplate' },
             { name: 'Secretary of War', contentId: 'militaryCardTemplate' },
@@ -789,40 +826,40 @@
         ];
         const COUNTRY_THEMES = {
             'Tobermory': {
-                banner: 'https://placehold.co/1200x200/0a3d62/ffffff?text=+',
-                color: 'text-white',
-                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><circle cx="50" cy="60" r="15" fill="#f9ca24"/></g></svg>`
-            },
-            'Metz': {
-                banner: 'https://placehold.co/1200x200/4a1818/ffffff?text=+',
-                color: 'text-white',
-                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><path d="M30 40 L70 80 M70 40 L30 80" stroke-width="8"/></g></svg>`
-            },
-            'Omsk': {
-                banner: 'https://placehold.co/1200x200/222f3e/ffffff?text=+',
-                color: 'text-white',
-                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><polygon points="50,40 65,70 35,70" fill="#c8d6e5"/></g></svg>`
-            },
-            'Grenoble': {
-                banner: 'https://placehold.co/1200x200/1e3a8a/ffffff?text=+',
-                color: 'text-white',
-                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><path d="M50 40 L50 80 M30 60 L70 60" stroke-width="8"/></g></svg>`
-            },
-            'Klagenfurt': {
-                banner: 'https://placehold.co/1200x200/8c7ae6/ffffff?text=+',
-                color: 'text-white',
-                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><circle cx="50" cy="60" r="10" /><circle cx="35" cy="60" r="10"/><circle cx="65" cy="60" r="10"/></g></svg>`
-            },
-            'Tivoli': {
-                banner: 'https://placehold.co/1200x200/009432/ffffff?text=+',
-                color: 'text-white',
-                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><rect x="35" y="45" width="30" height="30" fill="#f1c40f"/></g></svg>`
-            },
-            'Razgrad': {
-                banner: 'https://placehold.co/1200x200/d35400/ffffff?text=+',
-                color: 'text-white',
-                emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><polygon points="50,40 70,75 30,75" stroke-width="8"/></g></svg>`
-            }
+                    banner: 'linear-gradient(135deg, #0a3d62, #1e5a8e)',
+                    color: 'text-white',
+                    emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><circle cx="50" cy="60" r="15" fill="#f9ca24"/></g></svg>`
+                },
+                'Metz': {
+                    banner: 'linear-gradient(135deg, #4a1818, #7a1f1f)',
+                    color: 'text-white',
+                    emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><path d="M30 40 L70 80 M70 40 L30 80" stroke-width="8"/></g></svg>`
+                },
+                'Omsk': {
+                    banner: 'linear-gradient(135deg, #222f3e, #1a2230)',
+                    color: 'text-white',
+                    emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><polygon points="50,40 65,70 35,70" fill="#c8d6e5"/></g></svg>`
+                },
+                'Grenoble': {
+                    banner: 'linear-gradient(135deg, #1e3a8a, #12306b)',
+                    color: 'text-white',
+                    emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><path d="M50 40 L50 80 M30 60 L70 60" stroke-width="8"/></g></svg>`
+                },
+                'Klagenfurt': {
+                    banner: 'linear-gradient(135deg, #8c7ae6, #6b57d1)',
+                    color: 'text-white',
+                    emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><circle cx="50" cy="60" r="10" /><circle cx="35" cy="60" r="10"/><circle cx="65" cy="60" r="10"/></g></svg>`
+                },
+                'Tivoli': {
+                    banner: 'linear-gradient(135deg, #009432, #00692a)',
+                    color: 'text-white',
+                    emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><rect x="35" y="45" width="30" height="30" fill="#f1c40f"/></g></svg>`
+                },
+                'Razgrad': {
+                    banner: 'linear-gradient(135deg, #d35400, #c84b00)',
+                    color: 'text-white',
+                    emblem: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-width="4" stroke="#e0e0e0" fill="none"><path d="M10 30 A 40 40 0 0 1 90 30" /><path d="M10 30 L10 90 A 40 40 0 0 0 50 90 A 40 40 0 0 0 90 90 L90 30" /><polygon points="50,40 70,75 30,75" stroke-width="8"/></g></svg>`
+                }
         };
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -865,7 +902,8 @@
             onAuthStateChanged(auth, async (currentUser) => {
                 user = currentUser;
                 if (user) {
-                    userId = user.uid;
+                        // Use email as the key since player documents are stored by email
+                        userId = user.email;
                     const displayName = user.displayName || user.email || 'User';
                     updateConnectionStatus(true, `Signed in as ${displayName}`);
                     document.getElementById('loginScreen').classList.add('hidden');
@@ -880,18 +918,61 @@
             });
         });
 
+        // Teacher-only function to initialize game rules in Firestore
+        async function initializeGameRules() {
+            if (!isTeacher) {
+                console.error('Only teachers can initialize game rules');
+                return;
+            }
+            
+            try {
+                const gameRulesRef = doc(db, `apps/${APP_ID}/gameRules/budgets`);
+                
+                // These values never leave the teacher's browser during setup
+                const SECRET_BUDGETS = {
+                    'Tobermory': 100000,
+                    'Metz': 100000, 
+                    'Omsk': 75000,
+                    'Grenoble': 60000,
+                    'Klagenfurt': 50000,
+                    'Tivoli': 40000,
+                    'Razgrad': 25000
+                };
+                
+                await setDoc(gameRulesRef, {
+                    startingBudgets: SECRET_BUDGETS,
+                    lastUpdated: serverTimestamp(),
+                    updatedBy: user.email
+                });
+                
+                console.log('Game rules initialized successfully');
+                return true;
+            } catch (err) {
+                console.error('Failed to initialize game rules:', err);
+                return false;
+            }
+        }
+
         // =============== Military Purchases ===============
         const UNIT_COSTS = { army: 750, navy: 1000 };
 
-        function getMilitaryBudgetNumbers(player) {
-            const me = player || (localPlayersState ? localPlayersState[userId] : null);
-            const pct = Number(me?.militaryBudgetPercentage ?? Number(qs('#militaryBudgetSlider')?.value || 0));
-            const dollars = Number(me?.dollars || 0);
-            const pool = Math.floor(dollars * pct / 100);
-            const spent = Number(me?.militarySpendingThisRound || 0);
-            const remaining = Math.max(0, pool - spent);
-            return { pct, dollars, pool, spent, remaining };
-        }
+                function getMilitaryBudgetNumbers(player) {
+                    const me = player || (localPlayersState ? localPlayersState[userId] : null);
+                    if (!me) return { pct: 0, dollars: 0, pool: 0, spent: 0, remaining: 0 };
+
+                    const sliderEl = document.getElementById('militaryBudgetSlider');
+                    const rawPct = (me && isFinite(Number(me.militaryBudgetPercentage)))
+                        ? Number(me.militaryBudgetPercentage)
+                        : toNumber(sliderEl?.value, 25);
+                    const pct = clamp(0, rawPct, 100);
+
+                    const dollars = toNumber(me?.dollars, 0);
+                    const pool = Math.floor(dollars * pct / 100);
+                    const spent = toNumber(me?.militarySpendingThisRound, 0);
+                    const remaining = Math.max(0, pool - spent);
+
+                    return { pct, dollars, pool, spent, remaining };
+                }
 
         function renderWarBudgets() {
             const me = localPlayersState ? localPlayersState[userId] : null;
@@ -916,6 +997,18 @@
             const { pool } = getMilitaryBudgetNumbers(p);
             const tMil = document.getElementById('treasuryMilitaryBudget');
             if (tMil) tMil.textContent = `$${pool.toLocaleString()}`;
+            // Colonial income total (support array or object shapes)
+            const colonialIncomeEl = document.getElementById('treasuryColonialIncome');
+            try {
+                const coloniesRaw = p.colonies || [];
+                let colonies = [];
+                if (Array.isArray(coloniesRaw)) colonies = coloniesRaw;
+                else if (typeof coloniesRaw === 'object' && coloniesRaw !== null) colonies = Object.values(coloniesRaw);
+                const totalColIncome = colonies.reduce((s, c) => s + (Number(c.income || 0)), 0);
+                if (colonialIncomeEl) colonialIncomeEl.textContent = `$${Number(totalColIncome).toLocaleString()}`;
+            } catch (e) {
+                if (colonialIncomeEl) colonialIncomeEl.textContent = `$0`;
+            }
             renderWarBudgets();
         }
 
@@ -938,6 +1031,94 @@
             }
         }
 
+// ===== Military budget lock state (country-level) =====
+function isMilitaryBudgetLockedForMyCountry(){
+    const c = myCountryName;
+    if (!c) return false;
+    return Boolean(safeGet(localCountryData, c, 'militaryBudgetLocked'));
+}
+
+function renderTreasuryLockState(){
+    const locked = isMilitaryBudgetLockedForMyCountry();
+    const slider = document.getElementById('militaryBudgetSlider');
+    const btn = document.getElementById('lockMilitaryBudgetBtn');
+    const note = document.getElementById('militaryBudgetLockNote');
+    if (slider) slider.toggleAttribute('disabled', locked);
+    if (btn) {
+        btn.toggleAttribute('disabled', locked);
+        btn.textContent = locked
+            ? 'Military Budget Locked'
+            : 'Lock Military Budget & Notify Secretary of War';
+    }
+    if (note) note.classList.toggle('hidden', !locked);
+}
+
+// Prevent changing allocation after lock
+const _origSetMilitaryBudget = window.setMilitaryBudget;
+window.setMilitaryBudget = async function(value){
+    if (isMilitaryBudgetLockedForMyCountry()) {
+        toast('Military budget is locked for this round by Treasury.', 'warning');
+        renderTreasuryLockState();
+        return;
+    }
+    return _origSetMilitaryBudget.call(this, value);
+};
+
+// Notify all players with role 'Secretary of War' in my country
+async function notifyWarSecretaries(message){
+    try {
+        const myC = myCountryName;
+        if (!myC) return;
+        const warRole = 'Secretary of War';
+        const entries = Object.entries(localPlayersState || {});
+            const targets = entries.filter(([,p]) => {
+                if (!p || p.country !== myC) return false;
+                if (p.role === warRole) return true;
+                if (Array.isArray(p.roles) && p.roles.includes(warRole)) return true;
+                if (p.assignedRole === warRole) return true;
+                return false;
+            });
+        for (const [pid] of targets) {
+            await sendNotification(pid, { type: 'info', message });
+        }
+    } catch(e){ console.error('notifyWarSecretaries error', e); }
+}
+
+// Treasury action: lock allocation & alert War to begin purchasing
+window.lockMilitaryBudget = async function(){
+    try {
+        if (!myCountryName) { toast('Join a country first.', 'warning'); return; }
+        if (isMilitaryBudgetLockedForMyCountry()) { renderTreasuryLockState(); return; }
+
+        const me = localPlayersState ? localPlayersState[userId] : null;
+        if (!me) { toast('Player not ready yet.', 'warning'); return; }
+
+        const { playerRef, countryRef } = getSimRefs();
+        // Ensure the current slider value is saved to the player
+        const pctLabel = Number(document.getElementById('militaryBudgetSlider')?.value ?? me.militaryBudgetPercentage ?? 25);
+        await updateDoc(playerRef(userId), { militaryBudgetPercentage: pctLabel });
+
+        // Lock at the country level so ALL teammates see the same state
+        await updateDoc(countryRef(myCountryName), {
+            militaryBudgetLocked: true,
+            militaryBudgetLockedAt: serverTimestamp(),
+            militaryBudgetPct: pctLabel
+        });
+
+        renderTreasuryLockState();
+        toast('Military budget locked. Secretary of War has been notified.', 'success');
+
+        // Send teammate notification(s)
+        await notifyWarSecretaries('Treasury has locked the military budget. You may now purchase units within the allocated funds.');
+
+        // Refresh budget tiles
+        renderWarBudgets();
+    } catch(err){
+        console.error('lockMilitaryBudget error', err);
+        toast(`Failed to lock budget: ${err.message}`, 'error');
+    }
+};
+
         window.purchaseUnits = async function(kind, context) {
             try {
                 if (!['army','navy'].includes(kind)) throw new Error('Unknown unit kind');
@@ -950,11 +1131,12 @@
                 const me = localPlayersState ? localPlayersState[userId] : null;
                 if (!me) { toast('Player not ready yet.', 'warning'); return; }
 
-                const { remaining } = getMilitaryBudgetNumbers(me);
-                if (totalCost > remaining) {
-                    toast(`Not enough remaining military funds. Need $${totalCost.toLocaleString()}, have $${remaining.toLocaleString()}.`, 'warning');
-                    return;
-                }
+                                const { remaining } = getMilitaryBudgetNumbers(me);
+                                // Defensive: require a valid remaining pool and enough funds
+                                if (!isFinite(remaining) || remaining <= 0 || totalCost > remaining) {
+                                    toast(`Not enough remaining military funds. Need $${totalCost.toLocaleString()}, have $${isFinite(remaining) ? remaining.toLocaleString() : '0'}.`, 'warning');
+                                    return;
+                                }
                 const newDollars = Math.max(0, Number(me.dollars || 0) - totalCost);
                 const newArmy = kind === 'army' ? Number(me.army || 0) + qty : Number(me.army || 0);
                 const newNavy = kind === 'navy' ? Number(me.navy || 0) + qty : Number(me.navy || 0);
@@ -982,23 +1164,98 @@
             }
         }
 
-        // Enable purchase inputs once player is loaded
-        function enablePlayerControlsIfReady() {
-            const me = localPlayersState ? localPlayersState[userId] : null;
-            if (!me) return;
-            ['armyQuantity-main','navyQuantity-main','armyQuantity-war','navyQuantity-war'].forEach(id => {
-                const el = document.getElementById(id); if (el) el.removeAttribute('disabled');
-            });
-            ['militaryBudgetSlider','healthcareSlider','educationSlider','infrastructureSlider'].forEach(id => {
-                const el = document.getElementById(id); if (el) el.removeAttribute('disabled');
-            });
-            // Sync slider UI with stored percent if present
-            const pct = Number(me.militaryBudgetPercentage ?? 25);
-            const slider = document.getElementById('militaryBudgetSlider');
-            const lbl = document.getElementById('militaryBudgetPercentageDisplay');
-            if (slider) slider.value = String(pct);
-            if (lbl) lbl.textContent = `${pct}%`;
-            renderTopStatsFromPlayer(me);
+                // Ensure basic economic/player numeric fields exist before enabling controls
+                async function ensurePlayerEconomyInitialized() {
+                    try {
+                        const me = localPlayersState ? localPlayersState[userId] : null;
+                        if (!me) return;
+
+                        const needsIncome  = !isFinite(Number(me.income));
+                        const needsMBP     = !isFinite(Number(me.militaryBudgetPercentage));
+                        
+                        // CHANGED: Don't set dollars here - handled by teacher initialization
+                        if (needsIncome || needsMBP || !isFinite(Number(me.militarySpendingThisRound))) {
+                            const payload = {};
+                            if (needsIncome)  payload.income  = BASE_INCOME;
+                            if (needsMBP)     payload.militaryBudgetPercentage = 25;
+                            if (me.army == null) payload.army = 0;
+                            if (me.navy == null) payload.navy = 0;
+                            if (!isFinite(Number(me.militarySpendingThisRound))) payload.militarySpendingThisRound = 0;
+
+                            const { playerRef } = getSimRefs();
+                            await updateDoc(playerRef(userId), payload);
+
+                            localPlayersState[userId] = { ...me, ...payload };
+                        }
+                    } catch (e) {
+                        console.error('ensurePlayerEconomyInitialized failed:', e);
+                    }
+                }
+
+                // Enable player controls once player data is loaded and validated
+                async function enablePlayerControlsIfReady() {
+            try {
+                let me = localPlayersState ? localPlayersState[userId] : null;
+                if (!me) {
+                    console.log('enablePlayerControlsIfReady: No player data yet');
+                    return;
+                }
+
+                // Ensure numeric economy fields exist before enabling controls. This may write defaults to Firestore.
+                await ensurePlayerEconomyInitialized();
+
+                // Refresh local cache reference in case the initializer updated the player document.
+                me = localPlayersState ? localPlayersState[userId] : me;
+
+                // Basic validation: must have numeric dollars and income fields (indicates initialized player)
+                if (!isFinite(Number(me.dollars)) || !isFinite(Number(me.income))) {
+                    console.log('Player economy not initialized yet; waiting for snapshot write...');
+                    return;
+                }
+
+                console.log('enablePlayerControlsIfReady: Enabling controls', {
+                    dollars: me.dollars,
+                    income: me.income,
+                    country: me.country
+                });
+
+                // Enable quantity inputs
+                ['armyQuantity-main','navyQuantity-main','armyQuantity-war','navyQuantity-war'].forEach(id => {
+                    const el = document.getElementById(id); 
+                    if (el) el.removeAttribute('disabled');
+                });
+
+                // Enable sliders
+                ['healthcareSlider','educationSlider','infrastructureSlider','militaryBudgetSlider'].forEach(id => {
+                    const el = document.getElementById(id); 
+                    if (el) el.removeAttribute('disabled');
+                });
+
+                // Sync slider UI with stored percent if present
+                const pct = Number(me.militaryBudgetPercentage ?? 25);
+                const slider = document.getElementById('militaryBudgetSlider');
+                const lbl = document.getElementById('militaryBudgetPercentageDisplay');
+                if (slider) slider.value = String(pct);
+                if (lbl) lbl.textContent = `${pct}%`;
+                
+                // Reflect lock state on Treasury UI (disables slider/button if locked)
+                try { renderTreasuryLockState(); } catch (e) { /* ignore if not ready */ }
+
+                // Enable purchase buttons
+                document.querySelectorAll('button[onclick]').forEach(btn => {
+                    try {
+                        const onclick = btn.getAttribute('onclick') || '';
+                        if (onclick.includes('purchaseUnits')) {
+                            btn.removeAttribute('disabled');
+                        }
+                    } catch(e) {}
+                });
+
+                // Re-render top stats now that controls are enabled
+                renderTopStatsFromPlayer(me);
+            } catch (e) {
+                console.error('enablePlayerControlsIfReady failed:', e);
+            }
         }
         // Expose to window so other init code can call after snapshots
         Object.assign(window, { enablePlayerControlsIfReady, renderWarBudgets, renderTopStatsFromPlayer });
@@ -1053,7 +1310,7 @@
 
                 const myAlliances = safeGet(localCountryData, myCountry, 'alliances') || {};
                 const restricted = new Set(ALLIANCE_RESTRICTIONS[myCountry] || []);
-                const allCountries = Object.keys(STARTING_BUDGETS);
+                const allCountries = getAllStartingCountries();
 
                 list.innerHTML = '';
                 for (const c of allCountries) {
@@ -1237,7 +1494,7 @@
         function listNonAlliedCountries(myCountry) {
             const alliances = safeGet(localCountryData, myCountry, 'alliances') || {};
             const allies = new Set(Object.keys(alliances).filter(k => alliances[k] === 'accepted'));
-            return Object.keys(STARTING_BUDGETS).filter(c => c !== myCountry && !allies.has(c));
+            return getAllStartingCountries().filter(c => c !== myCountry && !allies.has(c));
         }
 
         // --- Modal open/close ---
@@ -1379,8 +1636,10 @@
                             // =============== PNP Panel (9) ===============
                             window.showPNPPanel = async function(countryName) {
                                 try {
-                                    const modal = reqEl('pnpPanelModal');
-                                    const body = reqEl('pnpPanelBody');
+                                    // Use the actual modal id (#pnpPanel) and find the internal body container.
+                                    const modal = reqEl('pnpPanel');
+                                    const body = modal.querySelector('#pnpPanelBody') || modal.querySelector('.space-y-6');
+                                    if (!body) throw new Error('PNP panel body element not found');
                                     body.innerHTML = '<div class="text-gray-500">Loading PNP data...</div>';
 
                                     const { countryDocRef } = getSimRefs(countryName);
@@ -1424,7 +1683,8 @@
 
                             // Close modal
                             window.closePNPPanel = function() {
-                                reqEl('pnpPanelModal').classList.add('hidden');
+                                // Hide the panel container
+                                reqEl('pnpPanel').classList.add('hidden');
                             };
 
                             // Save PNP data back to Firestore
@@ -1636,6 +1896,63 @@
             }
         };
 
+        // --- Reject war declaration ---
+        window.rejectWar = async function (warId) {
+            try {
+                const { warDeclarationsColRef } = getSimRefs();
+                const warRef = doc(warDeclarationsColRef, warId);
+
+                // Read the declaration before removing so we can notify parties
+                const warSnap = await getDoc(warRef);
+                if (!warSnap.exists()) {
+                    toast('War declaration not found.', 'warning');
+                    await loadWarApprovals();
+                    return;
+                }
+
+                const warData = warSnap.data() || {};
+
+                // Remove the declaration
+                await deleteDoc(warRef);
+
+                // Notify the declaring country's players that their declaration was rejected
+                const declaringCountry = warData.declaringCountry;
+                if (declaringCountry) {
+                    const players = getCountryPlayers(declaringCountry);
+                    for (const [pid] of players) {
+                        try {
+                            await sendNotification(pid, {
+                                type: 'info',
+                                message: `Your war declaration was rejected by your ministers.`
+                            });
+                        } catch (e) {
+                            console.warn('Failed to notify player', pid, e?.message || e);
+                        }
+                    }
+                }
+
+                // Also notify the original creator if available
+                if (warData.createdBy && warData.createdBy !== userId) {
+                    try {
+                        await sendNotification(warData.createdBy, {
+                            type: 'info',
+                            message: `Your war declaration (from ${declaringCountry || 'your country'}) was rejected by the approvers.`
+                        });
+                    } catch (e) {
+                        console.warn('Failed to notify creator', warData.createdBy, e?.message || e);
+                    }
+                }
+
+                toast('War declaration rejected.', 'success');
+                // Refresh approval lists and pending lists
+                try { await loadWarApprovals(); } catch (e) {}
+                try { await loadPendingWarDeclarations(); } catch (e) {}
+            } catch (err) {
+                console.error('rejectWar error', err);
+                toast(`Failed to reject: ${err.message}`, 'error');
+            }
+        };
+
         function updateConnectionStatus(connected, message) {
             const statusEl = document.getElementById('connectionStatus');
             if (statusEl) {
@@ -1786,20 +2103,60 @@
                 modal.querySelector('.card').classList.remove('scale-95', 'opacity-0');
                 modal.querySelector('.card').classList.add('scale-100', 'opacity-100');
             }, 10);
+            // Remember which notification this modal corresponds to so closing can delete it
+            try { modal.dataset.notificationId = notificationId || ''; } catch (e) {}
         }
 
-        window.closeStudentNotificationModal = async function() {
-            const modal = document.getElementById('studentNotificationModal');
-            modal.classList.add('hidden');
-            
-            // Delete the notification after viewing
-            const notificationColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${userId}/notifications`);
-            const q = query(notificationColRef);
-            const snapshot = await getDocs(q);
-            const batch = writeBatch(db);
-            snapshot.docs.forEach(doc => batch.delete(doc.ref));
-            await batch.commit();
+        function showMobilizationNotification(warId, notificationId) {
+            const modal = reqEl('studentNotificationModal');
+            reqEl('studentNotificationTitle').textContent = '⚔️ MOBILIZATION REQUIRED';
+            reqEl('studentNotificationBody').innerHTML = `
+                <p class="font-semibold mb-4">Your nation is at war! You must mobilize your forces immediately.</p>
+                <div class="flex gap-3">
+                    <button onclick="openMobilizationFromNotification('${warId}', '${notificationId}')" 
+                            class="btn btn-danger flex-1 py-3">
+                        Mobilize Forces Now
+                    </button>
+                    <button onclick="closeStudentNotificationModal('${notificationId}')" 
+                            class="btn btn-secondary flex-1">
+                        Remind Me Later
+                    </button>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+            try { modal.dataset.notificationId = notificationId || ''; } catch (e) {}
+        }
+
+        window.openMobilizationFromNotification = async function(warId, notificationId) {
+            await deleteMyNotificationById(notificationId);
+            closeStudentNotificationModal();
+            showMobilizationPanel(warId);
         };
+
+        window.closeStudentNotificationModal = async function(notificationId = null) {
+                            const modal = document.getElementById('studentNotificationModal');
+                            modal.classList.add('hidden');
+
+                            // If a specific notificationId is provided, or stored on the modal dataset, delete only that notification.
+                            const notificationColRef = collection(db, `apps/${APP_ID}/simulations/${currentClassCode}/players/${userId}/notifications`);
+                            const idToDelete = notificationId || (modal && modal.dataset ? modal.dataset.notificationId : null);
+                            if (idToDelete) {
+                                try {
+                                    await deleteMyNotificationById(idToDelete);
+                                } catch (e) {
+                                    console.warn('Failed to delete notification', idToDelete, e?.message || e);
+                                }
+                                try { delete modal.dataset.notificationId; } catch (e) {}
+                                return;
+                            }
+
+                            // Legacy: delete all notifications if no ID specified
+                            const q = query(notificationColRef);
+                            const snapshot = await getDocs(q);
+                            const batch = writeBatch(db);
+                            snapshot.docs.forEach(doc => batch.delete(doc.ref));
+                            await batch.commit();
+                };
 
         window.acknowledgeWarDeclaration = async function() {
             // Same as closeStudentNotificationModal
@@ -1893,10 +2250,92 @@
         function normalizeEmail(email) {
             return (email || '').trim().toLowerCase();
         }
+        // Update: Dexter-specific email validation constants and helpers
+        const STUDENT_EMAIL_REGEX = /^[a-z]+\.[a-z]+@dexterschools\.org$/i;
+        const TEACHER_EMAIL_REGEX = /^[a-z]+@dexterschools\.org$/i;
+
+        // Email validation function
+        function isValidDexterEmail(email) {
+            if (!email || typeof email !== 'string') return false;
+            
+            const normalized = email.trim().toLowerCase();
+            
+            // Check if it's a valid teacher OR student email
+            if (TEACHER_EMAIL_REGEX.test(normalized)) {
+                // Teacher email (no period before @)
+                const localPart = normalized.split('@')[0];
+                return localPart.length > 0 && /^[a-z]+$/.test(localPart);
+            }
+            
+            if (STUDENT_EMAIL_REGEX.test(normalized)) {
+                // Student email (firstname.lastname format)
+                const parts = normalized.split('@')[0].split('.');
+                return parts.length === 2 && parts[0].length > 0 && parts[1].length > 0;
+            }
+            
+            return false;
+        }
+
+        // Determine if email is teacher or student
+        function isTeacherEmail(email) {
+            if (!email) return false;
+            const normalized = email.trim().toLowerCase();
+            const localPart = normalized.split('@')[0];
+            // Teacher emails have no period in the local part
+            return !localPart.includes('.') && normalized.endsWith('@dexterschools.org');
+        }
+
+        // User-friendly error message generator
+        function getEmailValidationError(email, context = 'student') {
+            if (!email || !email.trim()) {
+                return 'Email address is required.';
+            }
+            
+            const normalized = email.trim().toLowerCase();
+            
+            if (!normalized.includes('@')) {
+                return 'Email must include @ symbol.';
+            }
+            
+            if (!normalized.endsWith('@dexterschools.org')) {
+                return 'Email must end with @dexterschools.org';
+            }
+            
+            const localPart = normalized.split('@')[0];
+            
+            // If expecting student but got teacher format
+            if (context === 'student' && !localPart.includes('.')) {
+                return 'Student email must be formatted as: firstname.lastname@dexterschools.org';
+            }
+            
+            // If has period, validate student format
+            if (localPart.includes('.')) {
+                const parts = localPart.split('.');
+                if (parts.length !== 2) {
+                    return 'Email must have exactly one period before @dexterschools.org';
+                }
+                if (parts[0].length === 0) {
+                    return 'First name is required before the period.';
+                }
+                if (parts[1].length === 0) {
+                    return 'Last name is required after the period.';
+                }
+            }
+            
+            if (!/^[a-z.]+$/.test(localPart)) {
+                return 'Email can only contain lowercase letters and periods.';
+            }
+            
+            if (localPart.length === 0) {
+                return 'Email username cannot be empty.';
+            }
+            
+            return null; // Valid
+        }
         function normalizeCountry(raw) {
             if (!raw) return '';
             const m = String(raw).trim().toLowerCase();
-            const map = Object.keys(STARTING_BUDGETS).reduce((acc, k) => {
+            const map = getAllStartingCountries().reduce((acc, k) => {
                 acc[k.toLowerCase()] = k; return acc;
             }, {});
             return map[m] || '';
@@ -1942,7 +2381,7 @@
                 const text = await file.text();
                 const rows = parseCSV(text);
                 if (!rows.length) { toast('CSV appears empty.', 'warning'); return; }
-                // Detect header
+                
                 let startIdx = 0;
                 const header = rows[0].map(h => h.trim().toLowerCase());
                 const isHeader = header.includes('email') || header.includes('country');
@@ -1950,21 +2389,45 @@
 
                 const { rosterColRef } = getSimRefs();
                 const toWrite = [];
+                const errors = [];
+                
                 for (let r = startIdx; r < rows.length; r++) {
                     const [emailRaw, countryRaw, sectionRaw] = rows[r];
                     const email = normalizeEmail(emailRaw);
                     const country = normalizeCountry(countryRaw);
                     const period = (sectionRaw || '').toString().trim();
-                    if (!email) continue; // skip blanks
-                    if (!country) {
-                        console.warn('Skipping row due to invalid country:', rows[r]);
+                    
+                    if (!email) continue;
+                    
+                    // Check if this is a teacher email (shouldn't be in roster)
+                    if (isTeacherEmail(email)) {
+                        errors.push(`Row ${r+1}: ${email} appears to be a teacher email. Only student emails should be in the roster.`);
                         continue;
                     }
+                    
+                    // Validate student email format
+                    const emailError = getEmailValidationError(email, 'student');
+                    if (emailError) {
+                        errors.push(`Row ${r+1}: ${email} - ${emailError}`);
+                        continue;
+                    }
+                    
+                    if (!country) {
+                        errors.push(`Row ${r+1}: Invalid country "${countryRaw}" for ${email}`);
+                        continue;
+                    }
+                    
                     toWrite.push({ id: email, data: { country, period: period || null } });
                 }
-                if (!toWrite.length) { toast('No valid rows found to import.', 'warning'); return; }
+                
+                if (!toWrite.length) { 
+                    const errorList = errors.length > 0 
+                        ? '<ul class="text-xs list-disc list-inside mt-2">' + errors.map(e => `<li>${e}</li>`).join('') + '</ul>'
+                        : '';
+                    showInfoModal('No Valid Rows', `<p>No valid rows found to import.</p>${errorList}`);
+                    return; 
+                }
 
-                // Firestore batch in chunks (limit 500 ops)
                 let processed = 0;
                 while (processed < toWrite.length) {
                     const chunk = toWrite.slice(processed, processed + 400);
@@ -1976,7 +2439,17 @@
                     await batch.commit();
                     processed += chunk.length;
                 }
-                toast(`Imported ${toWrite.length} student${toWrite.length !== 1 ? 's' : ''}.`, 'success');
+                
+                let message = `<p>Successfully added ${toWrite.length} student(s) to the roster.</p>`;
+                if (errors.length > 0) {
+                    message += `<p class="mt-3 text-sm text-red-600">Errors (${errors.length}):</p><ul class="text-xs list-disc list-inside max-h-40 overflow-y-auto">`;
+                    errors.forEach(err => {
+                        message += `<li>${err}</li>`;
+                    });
+                    message += `</ul>`;
+                }
+                
+                showInfoModal('CSV Upload Complete', message);
                 await loadExistingRoster();
                 reqEl('csvFile').value = '';
             } catch (err) {
@@ -2001,12 +2474,30 @@
             URL.revokeObjectURL(url);
         }
 
-        async function addStudentToRoster() {
-            const email = normalizeEmail(reqEl('studentEmail').value);
+        window.addStudentToRoster = async function() {
+            const emailInput = reqEl('studentEmail').value.trim();
+            const email = normalizeEmail(emailInput);
             const country = normalizeCountry(reqEl('studentCountry').value);
             const period = (reqEl('studentPeriod').value || '').trim();
-            if (!email) { toast('Enter a student email.', 'warning'); return; }
-            if (!country) { toast('Select a valid country.', 'warning'); return; }
+            
+            // Check if teacher email was entered by mistake
+            if (isTeacherEmail(email)) {
+                showInfoModal('Teacher Email Detected', `<p>This appears to be a teacher email. Only student emails (firstname.lastname format) should be added to the roster.</p><p class="mt-2 text-sm text-gray-600">Example: john.smith@dexterschools.org</p>`);
+                return;
+            }
+            
+            // Validate student email
+            const emailError = getEmailValidationError(email, 'student');
+            if (emailError) {
+                showInfoModal('Invalid Email', `<p>${emailError}</p><p class="mt-2 text-sm text-gray-600">Example: john.smith@dexterschools.org</p>`);
+                return;
+            }
+            
+            if (!country) { 
+                toast('Select a valid country.', 'warning'); 
+                return; 
+            }
+            
             try {
                 const { rosterColRef } = getSimRefs();
                 const ref = doc(rosterColRef, email);
@@ -2020,7 +2511,7 @@
                 console.error('addStudentToRoster error', err);
                 toast(`Failed to add: ${err.message}`, 'error');
             }
-        }
+        };
 
         async function removeSelectedStudents() {
             const checks = Array.from(reqEl('rosterList').querySelectorAll('input[type="checkbox"]:checked'));
@@ -2068,8 +2559,56 @@
             try {
                 const period = (reqEl('classPeriodSelect').value || '').trim();
                 if (!period) { toast('Select a class period to start.', 'warning'); return; }
-                const { simRef } = getSimRefs();
-                await setDoc(simRef, {
+                
+                const { simRef, rosterColRef, playersColRef, countryDataColRef } = getSimRefs();
+                
+                const rosterSnap = await getDocs(query(rosterColRef, where('period', '==', period)));
+                
+                if (rosterSnap.empty) {
+                    toast('No students found in this period.', 'warning');
+                    return;
+                }
+                
+                const batch = writeBatch(db);
+                
+                rosterSnap.forEach(docSnap => {
+                    const studentData = docSnap.data();
+                    const email = docSnap.id;
+                    const country = studentData.country;
+                    
+                    const playerRef = doc(playersColRef, email);
+                    batch.set(playerRef, {
+                        email: email,
+                        displayName: email.split('@')[0],
+                        country: country,
+                        isTeacher: false,
+                        needsBudgetInitialization: true,  // NEW FLAG
+                        pnp: 100,
+                        income: BASE_INCOME,
+                        army: 0,
+                        navy: 0,
+                        colonies: [],
+                        colonialPlans: [],
+                        alliances: {},
+                        militaryBudgetPercentage: 25,
+                        domesticSpending: { healthcare: 20, education: 20, infrastructure: 20 },
+                        happinessIndex: 100,
+                        activeEvents: [],
+                        militarySpendingThisRound: 0,
+                        role: null,
+                        roles: [],
+                        hasSignedIn: false
+                    }, { merge: true });
+                    
+                    const countryRef = doc(countryDataColRef, country);
+                    batch.set(countryRef, {
+                        pnp: 100,
+                        roleAssignments: {},
+                        alliances: {}
+                    }, { merge: true });
+                });
+                
+                batch.set(simRef, {
                     currentPeriod: period,
                     round: 1,
                     phase: 'waiting',
@@ -2077,14 +2616,23 @@
                     timerDurationMinutes: null,
                     timerEnds: null
                 }, { merge: true });
-                toast(`Simulation started for Period ${period}.`, 'success');
-                // Show main game container for teacher view and begin listeners
+                
+                await batch.commit();
+                
+                // NEW: Auto-initialize budgets after creating players
+                toast('Initializing player budgets...', 'info');
+                await initializeBudgetsForCurrentPeriod();
+                
+                toast(`Simulation started for Period ${period}. ${rosterSnap.size} students initialized.`, 'success');
+                
                 document.getElementById('rosterScreen').classList.add('hidden');
                 document.getElementById('gameContainer').classList.remove('hidden');
                 document.getElementById('teacherPanel').classList.remove('hidden');
                 reqEl('displayClassCode').textContent = currentClassCode;
                 reqEl('displayPlayerName').textContent = user?.displayName || user?.email || 'Teacher';
+                
                 setupFirestoreListeners();
+                
             } catch (err) {
                 console.error('startSimulationDirectly error', err);
                 toast(`Failed to start: ${err.message}`, 'error');
@@ -2361,12 +2909,28 @@
             }
         }
 
-        // Helper: compute per-round income (minimal): base + sum of colony incomes
+        // Helper: compute per-round income: base + colony incomes, modified by domestic spending
         function computeIncomeForPlayer(p) {
-            const base = Number(BASE_INCOME || 0);
+            const base = Number(BASE_INCOME || 25);
+
+            // Colony income
             const colonies = Array.isArray(p.colonies) ? p.colonies : [];
             const colonyIncome = colonies.reduce((s, c) => s + Number(c.income || 0), 0);
-            return base + colonyIncome;
+
+            // Domestic spending modifiers (match endRound heuristics)
+            const spending = p.domesticSpending || { healthcare: 20, education: 20, infrastructure: 20 };
+            const total = (Number(spending.healthcare) || 0) + (Number(spending.education) || 0) + (Number(spending.infrastructure) || 0);
+
+            let modifier = 1.0;
+            if (total >= 75) modifier = 1.15;
+            else if (total >= 60) modifier = 1.05;
+            else if (total >= 45) modifier = 1.0;
+            else if (total >= 30) modifier = 0.85;
+            else if (total >= 15) modifier = 0.65;
+            else modifier = 0.4;
+
+            // Final per-round income (base + colonies) adjusted by domestic spending
+            return Math.floor((base + colonyIncome) * modifier);
         }
 
         // 11) Advance to Next Round: apply income, reset per-round fields
@@ -2445,7 +3009,7 @@
                 await forEachDocInBatches(playersColRef, async (d, batch) => {
                     const p = d.data();
                     if (p.isTeacher) return;
-                    const startBudget = STARTING_BUDGETS[p.country] ?? 0;
+                    const startBudget = getDefaultStartingBudget(p.country) ?? 0;
                     batch.update(d.ref, {
                         dollars: startBudget,
                         army: 0,
@@ -2469,6 +3033,73 @@
             }
         }
         
+        // Teacher initializes budgets for all players in current period
+        window.initializeBudgetsForCurrentPeriod = async function() {
+            if (!isTeacher) {
+                toast('Only teachers can initialize budgets', 'error');
+                return;
+            }
+            
+            try {
+                toast('Initializing player budgets...', 'info');
+                
+                // First, ensure game rules exist
+                const gameRulesRef = doc(db, `apps/${APP_ID}/gameRules/budgets`);
+                const rulesSnap = await getDoc(gameRulesRef);
+                
+                if (!rulesSnap.exists()) {
+                    const shouldInit = await confirmAction(
+                        'Initialize Game Rules?',
+                        '<p>Game rules not found. Initialize them now?</p>'
+                    );
+                    
+                    if (shouldInit) {
+                        await initializeGameRules();
+                    } else {
+                        return;
+                    }
+                }
+                
+                // Get all players needing budget initialization
+                const { playersColRef } = getSimRefs();
+                const playersSnap = await getDocs(query(playersColRef, 
+                    where('needsBudgetInitialization', '==', true)));
+                
+                if (playersSnap.empty) {
+                    toast('No players need budget initialization', 'info');
+                    return;
+                }
+                
+                const batch = writeBatch(db);
+                let count = 0;
+                
+                for (const playerDoc of playersSnap.docs) {
+                    const playerData = playerDoc.data();
+                    const country = playerData.country;
+                    
+                    if (!country) continue;
+                    
+                    const budget = await getStartingBudget(country);
+                    
+                    batch.update(playerDoc.ref, {
+                        dollars: budget,
+                        needsBudgetInitialization: false,
+                        budgetInitializedAt: serverTimestamp()
+                    });
+                    
+                    count++;
+                }
+                
+                await batch.commit();
+                
+                toast(`Successfully initialized budgets for ${count} player(s)`, 'success');
+                
+            } catch (err) {
+                console.error('initializeBudgetsForCurrentPeriod error:', err);
+                toast(`Failed to initialize budgets: ${err.message}`, 'error');
+            }
+        };
+
         async function notifyApprovers(warId, warDeclaration) {
              const approverRoles = ['Secretary of State', 'Minister of Domestic Tranquility'];
              const countryPlayers = Object.values(localPlayersState).filter(p => p.country === myCountryName);
@@ -2541,8 +3172,17 @@
         }
 
         async function setupNewTeacher(simSnap, simRef) {
+            if (!isTeacherEmail(user.email)) {
+                showError('classCodeError', 'Teachers must use their dexterschools.org email without a period (e.g., jsmith@dexterschools.org)');
+                return;
+            }
+
             isTeacher = true;
             myCountryName = 'Teacher';
+            
+            // NEW: Initialize game rules
+            await initializeGameRules();
+            
             if (!simSnap.exists()) {
                 await setDoc(simRef, {
                     teacherId: user.uid,
@@ -2552,8 +3192,9 @@
                     timerEnds: null,
                 });
             }
+            
             const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, userId);
-            await setDoc(playerRef, { name: user.displayName, isTeacher: true }, { merge: true });
+            await setDoc(playerRef, { name: user.displayName, isTeacher: true }, { merge: true});
 
             document.getElementById('classCodeScreen').classList.add('hidden');
             document.getElementById('rosterScreen').classList.remove('hidden');
@@ -2562,6 +3203,12 @@
         }
 
         async function setupNewStudent(simSnap, rosterSnap) {
+            // Validate that this is a student email format
+            if (!STUDENT_EMAIL_REGEX.test(user.email)) {
+                showError('classCodeError', 'Students must use their dexterschools.org email in firstname.lastname format');
+                return;
+            }
+
             isTeacher = false;
             if (!simSnap.exists()) {
                 showError('classCodeError', 'This class code does not exist.');
@@ -2569,31 +3216,39 @@
             }
             myCountryName = rosterSnap.data().country;
 
-            const countryRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/countryData`, myCountryName);
-            const countrySnap = await getDoc(countryRef);
-            const initialPnp = countrySnap.exists() ? countrySnap.data().pnp : 100;
-            const roleAssignments = countrySnap.exists() ? (countrySnap.data().roleAssignments || {}) : {};
-            const preAssignedRole = roleAssignments[user.email] || null;
+            const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, user.email);
+            
+            // CHANGED: Don't set dollars yet - teacher will initialize
+            await setDoc(playerRef, {
+                displayName: user.displayName || user.email,
+                country: myCountryName,
+                hasSignedIn: true,
+                lastSignInAt: serverTimestamp(),
+                needsBudgetInitialization: true,  // NEW FLAG
+                income: BASE_INCOME,
+                army: 0,
+                navy: 0,
+                colonies: [],
+                colonialPlans: [],
+                alliances: {},
+                militaryBudgetPercentage: 25,
+                domesticSpending: { healthcare: 20, education: 20, infrastructure: 20 },
+                happinessIndex: 100,
+                activeEvents: [],
+                militarySpendingThisRound: 0,
+                role: null,
+                roles: []
+            }, { merge: true });
 
-            const playerRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/players`, userId);
-            const playerSnap = await getDoc(playerRef);
-
-            if (!playerSnap.exists()) {
-                const initialPlayerData = {
-                    name: user.displayName, email: user.email, country: myCountryName,
-                    isTeacher: false, dollars: STARTING_BUDGETS[myCountryName] || 50000,
-                    pnp: initialPnp, income: BASE_INCOME, army: 0, navy: 0,
-                    colonies: {}, colonialPlans: {}, alliances: {},
-                    militaryBudgetPercentage: 25, 
-                    domesticSpending: { healthcare: 20, education: 20, infrastructure: 20 },
-                    happinessIndex: 100,
-                    activeEvents: [],
-                    militarySpendingThisRound: 0,
-                    role: preAssignedRole,
-                };
-                await setDoc(playerRef, initialPlayerData);
+            // Wait for player data to sync
+            const playerId = user.email;
+            const start = Date.now();
+            while (Date.now() - start < 5000) {
+                if (localPlayersState && localPlayersState[playerId]) break;
+                await new Promise(r => setTimeout(r, 200));
             }
-            setupStudentTabs();
+
+            // The setupFirestoreListeners will handle showing the interface once data arrives
         }
         
         function cleanupListeners() {
@@ -2624,6 +3279,12 @@
                 snapshot.forEach(doc => { localPlayersState[doc.id] = doc.data(); });
                 updateAllPlayersUI();
                 maybeTriggerRoleAssignment();
+                
+                // If this is a student, refresh their tabs whenever their player data changes
+                if (!isTeacher && localPlayersState[userId]) {
+                    setupStudentTabs();
+                }
+                
                 // after initial players load, ensure domestic UI is synced immediately
                 if (playersFirstLoad) {
                     playersFirstLoad = false;
@@ -2643,6 +3304,7 @@
                 localCountryData = {};
                 snapshot.forEach(doc => { localCountryData[doc.id] = doc.data(); });
                 updateAllPlayersUI(); 
+                try { renderTreasuryLockState(); } catch(_) {}
                 maybeTriggerRoleAssignment();
             });
             
@@ -2652,6 +3314,47 @@
                 snapshot.forEach(doc => { localWarDeclarations[doc.id] = doc.data(); });
                 updateAllPlayersUI();
             });
+
+            // Monitor wars for deadline expiration and auto-progress if appropriate
+            try {
+                const warsWatcher = onSnapshot(warDeclarationsColRef, async (snapshot) => {
+                    snapshot.forEach(async (d) => {
+                        try {
+                            const war = d.data();
+                            if (!war) return;
+                            if (war.status === 'mobilizing' && war.mobilizationDeadline) {
+                                // Support Firestore Timestamp or Date-like
+                                const deadline = (typeof war.mobilizationDeadline.toDate === 'function')
+                                    ? war.mobilizationDeadline.toDate()
+                                    : new Date(war.mobilizationDeadline);
+                                if (Date.now() > deadline.getTime()) {
+                                    console.log(`War ${d.id} mobilization deadline passed`);
+                                    // If teacher, automatically progress to in_battle and notify
+                                    if (isTeacher) {
+                                        try {
+                                            await handleMobilizationDeadline(d.id, war);
+                                            toast(`War ${d.id} mobilization deadline reached — progressed to battle.`, 'info');
+                                        } catch (e) {
+                                            console.error('Error handling mobilization deadline for', d.id, e);
+                                        }
+                                    } else {
+                                        // Non-teachers get a quiet console notice; teacher must act
+                                        console.debug(`Mobilization deadline passed for war ${d.id}; awaiting teacher action.`);
+                                    }
+                                }
+                            }
+                        } catch (e) { console.warn('warsWatcher change handler error', e); }
+                    });
+                });
+                // add to cleanup so listener can be removed when leaving
+                const origCleanup = cleanupListeners;
+                cleanupListeners = function() {
+                    try { warsWatcher(); } catch (e) {}
+                    try { origCleanup(); } catch (e) {}
+                };
+            } catch (e) {
+                console.warn('Failed to attach warsWatcher', e);
+            }
 
 
             if (!isTeacher) {
@@ -2666,12 +3369,13 @@
                     snapshot.docChanges().forEach((change) => {
                         if (change.type === "added") {
                             const data = change.doc.data();
-                            // If mobilization is required, automatically open mobilization UI for Secretaries of War
+                            // If mobilization is required, show a notification that allows the player
+                            // to open the mobilization UI explicitly rather than auto-opening it.
                             if (data && data.type === 'mobilization_required') {
                                 try {
-                                    showMobilizationPanel(data.warId);
+                                    showMobilizationNotification(data.warId, change.doc.id);
                                 } catch (e) {
-                                    console.error('Failed to open mobilization panel:', e);
+                                    console.error('Failed to show mobilization notification:', e);
                                     showStudentNotificationModal(data, change.doc.id);
                                 }
                             } else {
@@ -2683,17 +3387,7 @@
             }
         }
         
-        function getMyRoles() { // Plural
-            const myPlayerData = localPlayersState[userId];
-            if (myPlayerData && myPlayerData.roles && Array.isArray(myPlayerData.roles)) {
-                return myPlayerData.roles;
-            }
-            // Fallback for old structure
-            if (myPlayerData && myPlayerData.role) {
-                return [myPlayerData.role];
-            }
-            return [];
-        }
+        
 
         async function updateWarDeclarationUI() {
             const myRoles = getMyRoles();
@@ -2904,9 +3598,39 @@
             }
             updateWarDeclarationUI();
             updateLeaderboard();
-            const colonialPlanningUI = document.getElementById('colonialPlanning');
+                const colonialPlanningUI = document.getElementById('colonialPlanning');
             if(colonialPlanningUI) populateColonialOptions();
+
+            // Update colonies display in the Treasury card (students only)
+            if (!isTeacher && myCountryName) {
+                try { window.renderMyColonies(); } catch(e) { /* ignore if not ready */ }
+            }
+
+            // Reflect treasury lock state from country data
+            try { renderTreasuryLockState(); } catch(e) { /* ignore if not available yet */ }
         }
+
+        // Render the current player's owned colonies into #myColoniesDisplay (exposed on window)
+        window.renderMyColonies = function() {
+            const me = localPlayersState ? localPlayersState[userId] : null;
+            if (!me) return;
+
+            const container = document.getElementById('myColoniesDisplay');
+            if (!container) return;
+
+            const colonies = Array.isArray(me.colonies) ? me.colonies : [];
+            if (colonies.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No colonies yet.</p>';
+                return;
+            }
+
+            container.innerHTML = colonies.map(col => `
+                <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div class="font-semibold text-green-800">${col.name}</div>
+                    <div class="text-sm text-green-700">Income: +${col.income} per round</div>
+                </div>
+            `).join('');
+        };
         
         function updateEventLog(entries) {
             const logEl = document.getElementById('eventLog');
@@ -3119,33 +3843,7 @@
             if (typeof enablePlayerControlsIfReady === 'function') enablePlayerControlsIfReady();
         }
 
-        // Enable player controls only when the current player exists and has the expected fields
-        function enablePlayerControlsIfReady() {
-            try {
-                const me = localPlayersState[userId];
-                if (!me) return;
-
-                // Basic validation: must have dollars and income fields (indicates initialized player)
-                if (typeof me.dollars !== 'number' || typeof me.income !== 'number') return;
-
-                ['armyQuantity-main','navyQuantity-main','armyQuantity-war','navyQuantity-war'].forEach(id => {
-                    const el = document.getElementById(id); if (el) el.removeAttribute('disabled');
-                });
-                ['healthcareSlider','educationSlider','infrastructureSlider','militaryBudgetSlider'].forEach(id => {
-                    const el = document.getElementById(id); if (el) el.removeAttribute('disabled');
-                });
-
-                // Enable purchase buttons that call purchaseUnits
-                document.querySelectorAll('button[onclick]').forEach(btn => {
-                    try {
-                        const onclick = btn.getAttribute('onclick') || '';
-                        if (onclick.includes('purchaseUnits')) {
-                            btn.removeAttribute('disabled');
-                        }
-                    } catch(e) {}
-                });
-            } catch (e) { console.error('enablePlayerControlsIfReady failed:', e); }
-        }
+        
 
         // Debounced version for UI event handlers
         window.updateDomesticSpending = debounce(function() {
@@ -3256,13 +3954,29 @@
             }
             
             pendingDiv.classList.remove('hidden');
-            listDiv.innerHTML = snapshot.docs.map(doc => {
-                const data = doc.data();
-                const targets = data.targetCountries.map(t => t.country).join(', ');
-                return `<div class="bg-yellow-50 p-3 rounded">
-                    Awaiting approval to declare war on: <strong>${targets}</strong>
-                </div>`;
-            }).join('');
+            // Build rows so we can handle different statuses (pending, mobilizing, etc.)
+            const rows = [];
+            snapshot.docs.forEach(d => {
+                const data = d.data();
+                if (!data) return;
+
+                if (data.status === 'mobilizing') {
+                    // If the war is in mobilization, show a button to open/revise mobilization for this war
+                    const myMob = (data.mobilizations && data.mobilizations[myCountryName]) || null;
+                    rows.push(`<div class="bg-yellow-50 p-3 rounded flex items-center justify-between">
+                        <div><strong>${data.declaringCountry}</strong> → Mobilizing</div>
+                        <button onclick="showMobilizationPanel('${d.id}')" class="btn btn-warning text-xs">
+                            ${myMob?.submitted ? 'Revise Mobilization' : 'Submit Mobilization'}
+                        </button>
+                    </div>`);
+                } else {
+                    const targets = Array.isArray(data.targetCountries) ? data.targetCountries.map(t => t.country).join(', ') : (data.targets || []).join(', ');
+                    rows.push(`<div class="bg-yellow-50 p-3 rounded">
+                        Awaiting approval to declare war on: <strong>${targets}</strong>
+                    </div>`);
+                }
+            });
+            listDiv.innerHTML = rows.join('');
         }
 
         async function loadWarApprovals() {
@@ -3369,6 +4083,8 @@
         function maybeTriggerRoleAssignment() {
             if (isTeacher || !myCountryName || localGameState.round !== 1) return;
             if (roleAssignmentShown) return;
+            // Wait until our player data has loaded locally
+            if (!localPlayersState || !localPlayersState[userId]) return;
             
             const countryData = localCountryData[myCountryName];
             const rolesAssigned = countryData?.roleAssignments && 
@@ -3450,11 +4166,17 @@
                 // Collect and save role assignments (writes to Firestore)
                 window.saveRoleAssignments = async function() {
                     try {
-                        const selects = Array.from(document.querySelectorAll('#roleAssignmentList .role-select'));
+                        const selects = Array.from(document.querySelectorAll('#roleAssignmentList .role-select, #roleAssignmentList select'));
+
+                        if (selects.length === 0) {
+                            toast('No role selections found', 'warning');
+                            return;
+                        }
+
                         const assignments = selects.map(sel => ({
-                            playerId: sel.dataset.playerId,
+                            playerId: sel.dataset.playerId || sel.getAttribute('data-player-id'),
                             role: sel.value
-                        }));
+                        })).filter(a => a.playerId); // Remove any without IDs
 
                         // Validate that each required role appears only once
                         const uniqueRoles = new Set();
@@ -3467,26 +4189,60 @@
                             uniqueRoles.add(a.role);
                         }
 
-                        const { playersColRef } = getSimRefs();
+                        const { playersColRef, countryDataColRef } = getSimRefs();
                         const batch = writeBatch(db);
-                        assignments.forEach(({ playerId, role }) => {
+
+                        // If teacher editing, group assignments by country and prepare to write roleAssignments
+                        const byCountry = {};
+                        for (const { playerId, role } of assignments) {
+                            const p = localPlayersState[playerId];
+                            if (!p) continue;
+                            if (!byCountry[p.country]) byCountry[p.country] = {};
+                            // Use email as the key inside country roleAssignments (consistent with loadCountryRoles)
+                            byCountry[p.country][p.email] = role;
+                        }
+
+                        let updateCount = 0;
+                        for (const { playerId, role } of assignments) {
+                            if (!playerId) continue;
                             const ref = doc(playersColRef, playerId);
-                            batch.update(ref, { role });
-                        });
+                            // Update BOTH role and roles for consistency
+                            batch.update(ref, {
+                                role: role || null,
+                                roles: role ? [role] : []
+                            });
+                            updateCount++;
+                        }
+
+                        // Update country data with role assignments when teacher used the role editor
+                        if (isTeacherEditingRoles) {
+                            for (const [country, assigns] of Object.entries(byCountry)) {
+                                const cRef = doc(countryDataColRef, country);
+                                batch.set(cRef, { roleAssignments: assigns }, { merge: true });
+                            }
+                        }
+
+                        if (updateCount === 0) {
+                            toast('No valid player IDs found to update', 'warning');
+                            return;
+                        }
+
                         await batch.commit();
 
                         // Update local state if present
                         for (const { playerId, role } of assignments) {
                             if (localPlayersState && localPlayersState[playerId]) {
                                 localPlayersState[playerId].role = role;
+                                localPlayersState[playerId].roles = role ? [role] : [];
                             }
                         }
 
-                        toast('Roles successfully saved and synced!', 'success');
+                        // Reset teacher edit flag
+                        isTeacherEditingRoles = false;
+
+                        toast(`Roles successfully saved!`, 'success');
                         closeRoleAssignmentModal();
 
-                        // Optionally re-render country rosters or student cards if applicable
-                        if (typeof refreshRosterDisplay === 'function') refreshRosterDisplay();
                     } catch (err) {
                         console.error('saveRoleAssignments error', err);
                         toast(`Failed to save roles: ${err.message}`, 'error');
@@ -3535,14 +4291,14 @@
                 .map(([id, player]) => ({ 
                     id, 
                     email: player.email, 
-                    name: player.name, 
-                    currentRoles: currentAssignments[player.email] || player.roles || [player.role] || []
+                    name: player.displayName || player.email,
+                    currentRole: currentAssignments[player.email] || player.role || ''
                 }));
+
+            console.log(`Loading roles for ${countryName}, found ${teammates.length} players:`, teammates);
 
             const listEl = document.getElementById('roleAssignmentList');
             listEl.innerHTML = teammates.map(teammate => {
-                // For simplicity in the teacher editor, we'll assign one primary role.
-                const primaryRole = teammate.currentRoles[0] || '';
                 return `
                 <div class="bg-white p-4 rounded-lg border border-gray-200">
                     <div class="flex items-center justify-between mb-2">
@@ -3551,17 +4307,19 @@
                             <div class="text-sm text-gray-500">${teammate.email}</div>
                         </div>
                     </div>
-                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
-                            data-player-id="${teammate.id}" data-email="${teammate.email}">
+                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg role-select" 
+                            data-player-id="${teammate.id}">
                         <option value="">-- No Role Assigned --</option>
                         ${STUDENT_ROLES.map(role => 
-                            `<option value="${role.name}" ${role.name === primaryRole ? 'selected' : ''}>
+                            `<option value="${role.name}" ${role.name === teammate.currentRole ? 'selected' : ''}>
                                 ${role.name}
                             </option>`
                         ).join('')}
                     </select>
                 </div>
             `}).join('');
+            
+            console.log('Role assignment selects created:', document.querySelectorAll('.role-select').length);
         }
 
 
@@ -3799,8 +4557,9 @@
                     const militaryBudget = (playerData.dollars * (playerData.militaryBudgetPercentage / 100));
                     const remainingBudget = militaryBudget - (playerData.militarySpendingThisRound || 0);
 
-                    if (totalCost > remainingBudget) {
-                        throw `Not enough military funds. You have $${remainingBudget.toLocaleString()} left.`;
+                    // Defensive: require a valid remaining pool and enough funds
+                    if (!isFinite(remainingBudget) || remainingBudget <= 0 || totalCost > remainingBudget) {
+                        throw `Not enough military funds. Need $${totalCost.toLocaleString()}, have $${isFinite(remainingBudget) ? remainingBudget.toLocaleString() : '0'}.`;
                     }
 
                     const newUnitCount = (playerData[unitType] || 0) + quantity;
@@ -3885,7 +4644,7 @@
                         }
                         
                         // Validate country
-                        if (!STARTING_BUDGETS[country]) {
+                        if (!getDefaultStartingBudget(country)) {
                             errors.push(`Invalid country "${country}" for ${email}`);
                             continue;
                         }
@@ -3924,50 +4683,7 @@
             reader.readAsText(file);
         };
 
-        // Add single student to roster
-        window.addStudentToRoster = async function() {
-            const email = document.getElementById('studentEmail').value.trim();
-            const country = document.getElementById('studentCountry').value;
-            const period = document.getElementById('studentPeriod').value;
-            
-            if (!email) {
-                showInfoModal("Missing Email", "<p>Please enter a student email address.</p>");
-                return;
-            }
-            
-            if (!country) {
-                showInfoModal("Missing Country", "<p>Please select a country for this student.</p>");
-                return;
-            }
-            
-            if (!email.includes('@')) {
-                showInfoModal("Invalid Email", "<p>Please enter a valid email address.</p>");
-                return;
-            }
-            
-            try {
-                const rosterRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}/roster`, email);
-                await setDoc(rosterRef, {
-                    email: email,
-                    country: country,
-                    period: period,
-                    addedAt: serverTimestamp()
-                });
-                
-                showInfoModal("Student Added", `<p>${email} has been added to ${country}.</p>`);
-                
-                // Clear inputs
-                document.getElementById('studentEmail').value = '';
-                document.getElementById('studentCountry').value = '';
-                document.getElementById('studentPeriod').value = '';
-                
-                await loadExistingRoster();
-                
-            } catch (error) {
-                console.error("Failed to add student:", error);
-                showInfoModal("Error", `<p>Failed to add student: ${error.message}</p>`);
-            }
-        };
+        // ...existing code...
 
         // Remove selected students
         window.removeSelectedStudents = async function() {
@@ -4035,8 +4751,8 @@
                 const batch = writeBatch(db);
                 
                 // Initialize each student
-                snapshot.forEach(doc => {
-                    const studentData = doc.data();
+                snapshot.forEach(docSnap => {
+                    const studentData = docSnap.data();
                     const country = studentData.country;
                     
                     // Note: We don't create player docs here - they're created when students join
@@ -4313,13 +5029,31 @@
             }
         };
         window.nextRound = async function() {
-            const gameDocRef = doc(db, `apps/${APP_ID}/simulations/${currentClassCode}`);
-            const currentRound = localGameState.round || 1;
-            await updateDoc(gameDocRef, {
-                round: currentRound + 1,
-                phase: 'waiting'
-            });
-            showInfoModal("Round Advanced", `<p>Now starting Round ${currentRound + 1}</p>`);
+            try {
+                const { simRef, playersColRef } = getSimRefs();
+                // Load current round
+                const simSnap = await getDoc(simRef);
+                const curRound = Number(simSnap.exists() ? (simSnap.data().round || 1) : 1);
+
+                // Apply income + reset round fields + clear activeEvents
+                await forEachDocInBatches(playersColRef, async (d, batch) => {
+                    const p = d.data();
+                    if (p.isTeacher) return;
+                    const income = computeIncomeForPlayer(p);
+                    const newDollars = Number(p.dollars || 0) + income * 1000; // scale into currency units
+                    batch.update(d.ref, {
+                        dollars: newDollars,
+                        militarySpendingThisRound: 0,
+                        activeEvents: []
+                    });
+                });
+
+                await updateDoc(simRef, { round: curRound + 1, phase: 'waiting', timerStartedAt: null, timerDurationMinutes: null, timerEnds: null });
+                showInfoModal("Round Advanced", `<p>Now starting Round ${curRound + 1}</p>`);
+            } catch (err) {
+                console.error('nextRound error', err);
+                toast(`Failed to advance round: ${err.message}`, 'error');
+            }
         };
         window.showStudentDemoModal = () => { alert('Show student demo clicked'); };
         window.exitStudentDemo = () => { alert('Exit demo clicked'); };
@@ -4650,6 +5384,57 @@
                     }
                 }
 
+                        // Handle a mobilization deadline: teacher can auto-progress the war to 'in_battle'
+                        async function handleMobilizationDeadline(warId, warData) {
+                            if (!isTeacher) throw new Error('Only teachers may auto-progress wars');
+                            try {
+                                const { warDeclarationsColRef, basePath } = getSimRefs();
+                                const warRef = doc(warDeclarationsColRef, warId);
+
+                                // Refresh snapshot to ensure we have the latest
+                                const snap = await getDoc(warRef);
+                                if (!snap.exists()) throw new Error('War declaration not found');
+                                const data = snap.data();
+
+                                // Move to activeWars collection with status
+                                const activeWarRef = doc(db, `${basePath}/activeWars`, warId);
+                                await setDoc(activeWarRef, { ...data, status: 'active', declaredAt: serverTimestamp() });
+
+                                // Notify all involved players (attackers and defenders) about active war
+                                const allCountries = new Set();
+                                if (data.declaringCountry) allCountries.add(data.declaringCountry);
+                                (data.targets || []).forEach(t => allCountries.add(t));
+                                // include allies if present in data.alliances
+                                (data.alliances?.attacking || []).forEach(c => allCountries.add(c));
+                                (data.alliances?.defending || []).forEach(c => allCountries.add(c));
+
+                                for (const country of allCountries) {
+                                    for (const [pid, pdata] of getCountryPlayers(country)) {
+                                        try {
+                                            await sendNotification(pid, {
+                                                type: 'war_declared',
+                                                warId,
+                                                from: data.declaringCountry,
+                                                message: `⚔️ ${data.declaringCountry} has declared war on ${Array.isArray(data.targets)?data.targets.join(', '):data.targets}. Mobilization ended.`
+                                            });
+                                        } catch (e) { console.warn('notify player failed', pid, e); }
+                                    }
+                                }
+
+                                // Delete the pending/mobilizing declaration
+                                await deleteDoc(warRef);
+
+                                // Optionally log for teacher
+                                await createLog(`Auto-progressed war ${warId} to active status.`, userId);
+                            } catch (err) {
+                                console.error('handleMobilizationDeadline error', err);
+                                throw err;
+                            }
+                        }
+
+                        // Expose for debugging
+                        Object.assign(window, { handleMobilizationDeadline });
+
                 // Get all allied nations for a country
                 async function getAllianceMembers(countryName) {
                     const members = new Set([countryName]);
@@ -4668,6 +5453,9 @@
             
                     return members;
                 }
+
+                // Expose helpers for external callers/tests
+                Object.assign(window, { getAllianceMembers, startMobilizationPhase });
 
                 // Show mobilization panel for Secretary of War
                 window.showMobilizationPanel = async function(warId) {
@@ -4790,8 +5578,11 @@
 
                         // Start countdown timer for mobilization modal
                         try {
-                            // clear previous if any
-                            if (window._mobilizationCountdownInterval) clearInterval(window._mobilizationCountdownInterval);
+                            // Clear any existing countdown interval to avoid duplicates
+                            if (window._mobilizationCountdownInterval) {
+                                clearInterval(window._mobilizationCountdownInterval);
+                                window._mobilizationCountdownInterval = null;
+                            }
                             const updateCountdown = () => {
                                 const warRefLocal = warRef;
                                 getDoc(warRefLocal).then(snap => {
@@ -4802,7 +5593,10 @@
                                     const ms = deadline - Date.now();
                                     if (ms <= 0) {
                                         el.textContent = '00:00';
-                                        clearInterval(window._mobilizationCountdownInterval);
+                                        if (window._mobilizationCountdownInterval) {
+                                            clearInterval(window._mobilizationCountdownInterval);
+                                            window._mobilizationCountdownInterval = null;
+                                        }
                                         return;
                                     }
                                     const mins = Math.floor(ms / 60000);
@@ -4893,7 +5687,11 @@
                 };
 
                 window.closeMobilizationModal = function() {
-                    reqEl('mobilizationModal')?.classList.add('hidden');
+                                    reqEl('mobilizationModal')?.classList.add('hidden');
+                                    if (window._mobilizationCountdownInterval) {
+                                        clearInterval(window._mobilizationCountdownInterval);
+                                        window._mobilizationCountdownInterval = null;
+                                    }
                 };
 
                 // ================= TEACHER WAR MANAGEMENT =================
@@ -4911,7 +5709,24 @@
                 
                         mobilizingWars.forEach(warDoc => {
                             const war = warDoc.data();
-                            const allSubmitted = Object.values(war.mobilizations || {}).every(m => m.submitted);
+                                const allSubmitted = Object.values(war.mobilizations || {}).every(m => m.submitted);
+
+                                // Summarize total mobilized forces per side for teacher view
+                                const attackingForces = Object.entries(war.mobilizations || {})
+                                    .filter(([country]) => (war.alliances?.attacking || []).includes(country))
+                                    .reduce((sum, [, mob]) => ({
+                                        army: sum.army + (Array.isArray(mob.army) ? mob.army.reduce((a,b)=>a+b,0) : 0),
+                                        navy: sum.navy + (Array.isArray(mob.navy) ? mob.navy.reduce((a,b)=>a+b,0) : 0)
+                                    }), {army: 0, navy: 0});
+
+                                const defendingForces = Object.entries(war.mobilizations || {})
+                                    .filter(([country]) => (war.alliances?.defending || []).includes(country))
+                                    .reduce((sum, [, mob]) => ({
+                                        army: sum.army + (Array.isArray(mob.army) ? mob.army.reduce((a,b)=>a+b,0) : 0),
+                                        navy: sum.navy + (Array.isArray(mob.navy) ? mob.navy.reduce((a,b)=>a+b,0) : 0)
+                                    }), {army: 0, navy: 0});
+
+                                const summaryHtml = `<div class="text-sm mb-2">\n                                <strong>Attacking:</strong> ${attackingForces.army} Army, ${attackingForces.navy} Navy | \n                                <strong>Defending:</strong> ${defendingForces.army} Army, ${defendingForces.navy} Navy\n                            </div>`;
                     
                             html += `
                                 <div class="border-2 border-red-300 rounded-lg p-4 bg-red-50">
@@ -4923,6 +5738,7 @@
                                     </div>
                             
                                     ${war.status === 'mobilizing' ? `
+                                        ${summaryHtml}
                                         <div class="bg-white p-3 rounded mb-2 max-h-48 overflow-y-auto">
                                             <h5 class="font-semibold text-sm mb-1">Mobilizations:</h5>
                                             ${Object.entries(war.mobilizations || {}).map(([country, mob]) => `
@@ -5080,6 +5896,25 @@
                                 </p>
                             </div>
                         `);
+
+                        // Notify all participants (students) that the war has concluded
+                        const failedNotifications = [];
+                        for (const country of allCountries) {
+                            for (const [pid] of getCountryPlayers(country)) {
+                                try {
+                                    await sendNotification(pid, {
+                                        type: 'war_concluded',
+                                        message: `War concluded! ${winningAlliance === 'attacking' ? 'Attackers' : 'Defenders'} won. Game winner: ${gameWinner}`
+                                    });
+                                } catch (e) {
+                                    console.warn('Failed to send war_concluded notification to', pid, e?.message || e);
+                                    failedNotifications.push(pid);
+                                }
+                            }
+                        }
+                        if (failedNotifications.length) {
+                            toast(`Warning: ${failedNotifications.length} player(s) didn't receive war conclusion notification`, 'warning');
+                        }
                 
                     } catch (err) {
                         console.error('finalizeBattleResults error', err);
